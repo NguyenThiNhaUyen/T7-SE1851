@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ## React Login and Registration example with JWT and HttpOnly cookie
 
 Build React JWT Authentication and Authorization example using React Hooks, React Router, Axios and Bootstrap (without Redux):
@@ -89,3 +90,6 @@ Integration (run back-end & front-end on same server/port)
 > [Integrate React with Spring Boot](https://bezkoder.com/integrate-reactjs-spring-boot/)
 
 > [Integrate React with Node Express](https://bezkoder.com/integrate-react-express-same-server-port/)
+=======
+# T7-SE1851
+>>>>>>> 0036d5f4a4b80f3db63b8dadeaf7a1de009b8066
