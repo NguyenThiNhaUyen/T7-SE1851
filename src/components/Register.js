@@ -8,68 +8,42 @@ import AuthService from "../services/auth.service";
 
 const required = (value) => {
   if (!value) {
-    return (
-      <div className="invalid-feedback d-block">
-        This field is required!
-      </div>
-    );
+    return <div className="invalid-feedback d-block">This field is required!</div>;
   }
 };
 
 const validEmail = (value) => {
   if (!isEmail(value)) {
-    return (
-      <div className="invalid-feedback d-block">
-        This is not a valid email.
-      </div>
-    );
+    return <div className="invalid-feedback d-block">This is not a valid email.</div>;
   }
 };
 
 const vusername = (value) => {
   if (value.length < 3 || value.length > 20) {
-    return (
-      <div className="invalid-feedback d-block">
-        The username must be between 3 and 20 characters.
-      </div>
-    );
+    return <div className="invalid-feedback d-block">Username must be between 3 and 20 characters.</div>;
   }
 };
 
 const vpassword = (value) => {
   if (value.length < 6 || value.length > 40) {
-    return (
-      <div className="invalid-feedback d-block">
-        The password must be between 6 and 40 characters.
-      </div>
-    );
+    return <div className="invalid-feedback d-block">Password must be between 6 and 40 characters.</div>;
   }
 };
 
-const Register = (props) => {
+const Register = () => {
   const form = useRef();
   const checkBtn = useRef();
 
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [dob, setDob] = useState("");
+  const [gender, setGender] = useState("");
+
   const [successful, setSuccessful] = useState(false);
   const [message, setMessage] = useState("");
-
-  const onChangeUsername = (e) => {
-    const username = e.target.value;
-    setUsername(username);
-  };
-
-  const onChangeEmail = (e) => {
-    const email = e.target.value;
-    setEmail(email);
-  };
-
-  const onChangePassword = (e) => {
-    const password = e.target.value;
-    setPassword(password);
-  };
 
   const handleRegister = (e) => {
     e.preventDefault();
@@ -80,16 +54,19 @@ const Register = (props) => {
     form.current.validateAll();
 
     if (checkBtn.current.context._errors.length === 0) {
-      AuthService.register(username, email, password).then(
+      AuthService.register(username, email, password, {
+        first_name: firstName,
+        last_name: lastName,
+        dob,
+        gender
+      }).then(
         (response) => {
           setMessage(response.data.message);
           setSuccessful(true);
         },
         (error) => {
           const resMessage =
-            (error.response &&
-              error.response.data &&
-              error.response.data.message) ||
+            (error.response && error.response.data && error.response.data.message) ||
             error.message ||
             error.toString();
 
@@ -119,7 +96,7 @@ const Register = (props) => {
                   className="form-control"
                   name="username"
                   value={username}
-                  onChange={onChangeUsername}
+                  onChange={(e) => setUsername(e.target.value)}
                   validations={[required, vusername]}
                 />
               </div>
@@ -131,7 +108,7 @@ const Register = (props) => {
                   className="form-control"
                   name="email"
                   value={email}
-                  onChange={onChangeEmail}
+                  onChange={(e) => setEmail(e.target.value)}
                   validations={[required, validEmail]}
                 />
               </div>
@@ -143,9 +120,59 @@ const Register = (props) => {
                   className="form-control"
                   name="password"
                   value={password}
-                  onChange={onChangePassword}
+                  onChange={(e) => setPassword(e.target.value)}
                   validations={[required, vpassword]}
                 />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="firstName">First Name</label>
+                <Input
+                  type="text"
+                  className="form-control"
+                  name="firstName"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  validations={[required]}
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="lastName">Last Name</label>
+                <Input
+                  type="text"
+                  className="form-control"
+                  name="lastName"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  validations={[required]}
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="dob">Date of Birth</label>
+                <Input
+                  type="date"
+                  className="form-control"
+                  name="dob"
+                  value={dob}
+                  onChange={(e) => setDob(e.target.value)}
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="gender">Gender</label>
+                <select
+                  className="form-control"
+                  name="gender"
+                  value={gender}
+                  onChange={(e) => setGender(e.target.value)}
+                >
+                  <option value="">Select</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
               </div>
 
               <div className="form-group">
@@ -156,12 +183,7 @@ const Register = (props) => {
 
           {message && (
             <div className="form-group">
-              <div
-                className={
-                  successful ? "alert alert-success" : "alert alert-danger"
-                }
-                role="alert"
-              >
+              <div className={successful ? "alert alert-success" : "alert alert-danger"} role="alert">
                 {message}
               </div>
             </div>

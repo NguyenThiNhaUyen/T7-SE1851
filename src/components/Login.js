@@ -8,11 +8,7 @@ import AuthService from "../services/auth.service";
 
 const required = (value) => {
   if (!value) {
-    return (
-      <div className="invalid-feedback d-block">
-        This field is required!
-      </div>
-    );
+    return <div className="invalid-feedback d-block">This field is required!</div>;
   }
 };
 
@@ -28,13 +24,11 @@ const Login = () => {
   const navigate = useNavigate();
 
   const onChangeUsername = (e) => {
-    const username = e.target.value;
-    setUsername(username);
+    setUsername(e.target.value);
   };
 
   const onChangePassword = (e) => {
-    const password = e.target.value;
-    setPassword(password);
+    setPassword(e.target.value);
   };
 
   const handleLogin = (e) => {
@@ -47,15 +41,25 @@ const Login = () => {
 
     if (checkBtn.current.context._errors.length === 0) {
       AuthService.login(username, password).then(
-        () => {
-          navigate("/profile");
-          window.location.reload();
+        (data) => {
+          if (data && data.accessToken) {
+            const roles = data.roles || [];
+            if (roles.includes("ROLE_ADMIN")) {
+              navigate("/admin");
+            } else if (roles.includes("ROLE_STAFF")) {
+              navigate("/mod");
+            } else {
+              navigate("/user");
+            }
+            window.location.reload();
+          } else {
+            setLoading(false);
+            setMessage("Invalid login response");
+          }
         },
         (error) => {
           const resMessage =
-            (error.response &&
-              error.response.data &&
-              error.response.data.message) ||
+            (error.response && error.response.data && error.response.data.message) ||
             error.message ||
             error.toString();
 
@@ -104,9 +108,7 @@ const Login = () => {
 
           <div className="form-group">
             <button className="btn btn-primary btn-block" disabled={loading}>
-              {loading && (
-                <span className="spinner-border spinner-border-sm"></span>
-              )}
+              {loading && <span className="spinner-border spinner-border-sm"></span>}
               <span>Login</span>
             </button>
           </div>
