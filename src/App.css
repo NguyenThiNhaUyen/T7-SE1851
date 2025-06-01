@@ -1,0 +1,109 @@
+/* admin.css */
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+/* Sidebar */
+.admin-sidebar {
+  background-color: #1f2937;
+  color: white;
+  width: 250px;
+  padding: 20px;
+}
+
+.admin-sidebar h2 {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 24px;
+}
+
+.sidebar-btn {
+  display: block;
+  width: 100%;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  background: none;
+  border: none;
+  color: white;
+  text-align: left;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.sidebar-btn:hover {
+  background-color: #374151;
+}
+
+.sidebar-btn.active {
+  background-color: #2563eb;
+}
+
+/* Main */
+.admin-main {
+  flex: 1;
+  padding: 24px;
+  background-color: #f3f4f6;
+}
+
+.admin-main h2 {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+/* Dashboard cards */
+.dashboard-stats {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.stat-card {
+  flex: 1;
+  min-width: 200px;
+  background-color: white;
+  padding: 16px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card.green h3 {
+  color: #16a34a;
+}
+
+.stat-card.red h3 {
+  color: #dc2626;
+}
+
+.stat-card.yellow h3 {
+  color: #ca8a04;
+}
+
+.stat-card p {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* Table */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+.admin-table thead {
+  background-color: #f9fafb;
+}
