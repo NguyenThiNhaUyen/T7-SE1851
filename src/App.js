@@ -13,7 +13,10 @@ import BoardUser from "./components/BoardUser";
 import BoardModerator from "./components/BoardModerator";
 import BoardAdmin from "./components/BoardAdmin";
 
-// import AuthVerify from "./common/AuthVerify";
+import DonationRegister from "./components/DonationRegister";
+import DonationHistory from "./components/DonationHistory";
+import DonationAftercare from "./components/DonationAftercare";
+
 import EventBus from "./common/EventBus";
 
 const App = () => {
@@ -124,10 +127,13 @@ const App = () => {
           <Route path="/user" element={<BoardUser />} />
           <Route path="/mod" element={<BoardModerator />} />
           <Route path="/admin" element={<BoardAdmin />} />
+
+          {/* Các route mới cho hiến máu */}
+          <Route path="/donation/register" element={<DonationRegister />} />
+          <Route path="/donation/history" element={<DonationHistory />} />
+          <Route path="/donation/aftercare" element={<DonationAftercare />} />
         </Routes>
       </div>
-
-      {/* <AuthVerify logOut={logOut}/> */}
     </div>
   );
 };
