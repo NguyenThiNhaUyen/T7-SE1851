@@ -12,7 +12,8 @@ import Profile from "./components/Profile";
 import BoardUser from "./components/BoardUser";
 import BoardModerator from "./components/BoardModerator";
 import BoardAdmin from "./components/BoardAdmin";
-
+import Forgot from "./components/Forgot";
+import ChangePassword from "./components/ChangePassword";
 import DonationRegister from "./components/DonationRegister";
 import DonationHistory from "./components/DonationHistory";
 import DonationAftercare from "./components/DonationAftercare";
@@ -132,6 +133,8 @@ const App = () => {
           <Route path="/donation/register" element={<DonationRegister />} />
           <Route path="/donation/history" element={<DonationHistory />} />
           <Route path="/donation/aftercare" element={<DonationAftercare />} />
+          <Route path="/forgot" element={<Forgot />} />
+          <Route path="/change-password" element={<ChangePassword />} />
         </Routes>
       </div>
     </div>
