@@ -83,7 +83,7 @@ const Login = () => {
 
         <Form onSubmit={handleLogin} ref={form}>
           <div className="form-group">
-            <label htmlFor="username">Username</label>
+            <label htmlFor="username">So CMND/CCCD/Ho chieu</label>
             <Input
               type="text"
               className="form-control"
@@ -104,13 +104,21 @@ const Login = () => {
               onChange={onChangePassword}
               validations={[required]}
             />
+            <div className="text-right mt-2">
+              <a href="/forgot">Bạn quên mật khẩu?</a>
+            </div>
           </div>
 
           <div className="form-group">
             <button className="btn btn-primary btn-block" disabled={loading}>
               {loading && <span className="spinner-border spinner-border-sm"></span>}
-              <span>Login</span>
+              <span>Dang ki</span>
             </button>
+          </div>
+
+          <div className="text-center mt-3">
+            <span>Chưa có tài khoản? </span>
+            <a href="/register">Đăng ký</a>
           </div>
 
           {message && (

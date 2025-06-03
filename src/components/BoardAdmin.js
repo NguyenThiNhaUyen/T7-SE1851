@@ -1,6 +1,6 @@
 // src/pages/AdminDashboard.jsx
 import React, { useState } from "react";
-// import "../styles/admin.css";
+import "../styles/admin.css";
 import { Bar } from 'react-chartjs-2';
 import { Chart, BarElement, CategoryScale, LinearScale } from 'chart.js';
 Chart.register(BarElement, CategoryScale, LinearScale);
