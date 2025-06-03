@@ -9,15 +9,15 @@ const Forgot = () => {
   const [loading, setLoading] = useState(false);
 
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+ const handleSubmit = (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setTimeout(() => {
+    window.location.href = "/verify-otp";
+  }, 1000); // mô phỏng delay gửi OTP
+};
 
-    setMessage("Nếu thông tin hợp lệ, hệ thống sẽ gửi hướng dẫn đặt lại mật khẩu.");
-  };
 
-  const handleResendOTP = () => {
-    setResentMessage("Mã OTP đã được gửi lại.");
-  };
 
 
   return (
@@ -52,40 +52,13 @@ const Forgot = () => {
               onChange={(e) => setPhone(e.target.value)}
               required
             />
-
-
-
-            <label htmlFor="OTP">Mã OTP</label>
-            <input
-              type="text"
-              className="form-control"
-              name="otp"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              required
-            />
-            {resentMessage && (
-              <div className="alert alert-info mt-2">{resentMessage}</div>
-            )}
-
-            <div className="text-right mt-2">
-              <button
-                type="button"
-                className="btn btn-link p-0"
-                onClick={handleResendOTP}
-              >
-                Bạn không nhận được mã OTP?
-              </button>
-            </div>
-
           </div>
 
           <div className="form-group">
             <button
-              type="button"
+              type="submit"
               className="btn btn-primary btn-block"
               disabled={loading}
-              onClick={() => window.location.href = "/request-otp"}
             >
               {loading && <span className="spinner-border spinner-border-sm"></span>}
               <span>Tiep tuc</span>
