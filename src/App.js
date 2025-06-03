@@ -5,7 +5,6 @@ import "./App.css";
 
 import AuthService from "./services/auth.service";
 
-import BoardRecipient from "./components/BoardRecipient";
 import BoardStaff from "./components/BoardStaff";
 import BloodRequestForm from "./components/BloodRequestForm";
 import TransfusionConfirm from "./components/TransfusionConfirm";
@@ -133,7 +132,8 @@ const App = () => {
           <Route path="/user" element={<BoardUser />} />
           <Route path="/mod" element={<BoardModerator />} />
           <Route path="/admin" element={<BoardAdmin />} />
-          <Route path="/recipient" element={<BoardRecipient />} />
+
+          
           <Route path="/staff" element={<BoardStaff />} />
           <Route path="/requests/new" element={<BloodRequestForm />} />
           <Route path="/staff/transfusions" element={<TransfusionConfirm />} />
