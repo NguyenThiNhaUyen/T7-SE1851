@@ -22,6 +22,7 @@ import ChangePassword from "./components/ChangePassword";
 import DonationRegister from "./components/DonationRegister";
 import DonationHistory from "./components/DonationHistory";
 import DonationAftercare from "./components/DonationAftercare";
+import OtpVerify from "./components/OtpVerify";
 
 import EventBus from "./common/EventBus";
 
@@ -144,6 +145,7 @@ const App = () => {
           <Route path="/donation/aftercare" element={<DonationAftercare />} />
           <Route path="/forgot" element={<Forgot />} />
           <Route path="/change-password" element={<ChangePassword />} />
+          <Route path="/verify-otp" element={<OtpVerify />} />
         </Routes>
       </div>
     </div>
