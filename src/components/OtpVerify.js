@@ -28,6 +28,25 @@ const OtpVerify = () => {
     }
   };
 
+  const maskEmail = (email) => {
+  const [name, domain] = email.split("@");
+  const maskedName = name[0] + "*".repeat(name.length - 2) + name[name.length - 1];
+  const maskedDomain = domain[0] + "*".repeat(domain.indexOf(".")) + domain.slice(domain.indexOf("."));
+  return maskedName + "@" + maskedDomain;
+};
+
+
+  const [recoveryEmail, setRecoveryEmail] = useState("");
+
+  useEffect(() => {
+  const email = localStorage.getItem("recoveryEmail");
+  if (email) {
+    setRecoveryEmail(maskEmail(email));
+  }
+}, []);
+
+
+  
 
   return (
     <div className="d-flex justify-content-center align-items-center vh-100 bg-white">
@@ -35,7 +54,7 @@ const OtpVerify = () => {
         <h4 className="mb-3 fw-bold">Xác thực OTP</h4>
         <div className="mb-2" style={{ fontSize: 14, color: "#444" }}>
           Nhập mã xác thực đã được gửi đến địa chỉ<br />
-          Email <strong>...@g***l.com</strong>
+          Email <strong>{recoveryEmail}</strong>
         </div>
 
         <form onSubmit={handleSubmit}>
@@ -63,7 +82,7 @@ const OtpVerify = () => {
 
           <button
             type="submit"
-            className="btn w-100"
+            className="btn btn-block btn-gradient-red"
             style={{
               backgroundColor: otp.every(o => o) ? "#007bff" : "#cce0ff",
               color: otp.every(o => o) ? "#fff" : "#666",

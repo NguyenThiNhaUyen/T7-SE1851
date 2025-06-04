@@ -1,0 +1,168 @@
+/* ========== Global Layout ========== */
+.home-wrapper {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  background-color: #fff;
+  line-height: 1.6;
+  padding-bottom: 40px;
+}
+
+/* ========== Hero Section ========== */
+.hero {
+  background: linear-gradient(135deg, #e53935, #ff7043);
+  color: white;
+  text-align: center;
+  padding: 80px 20px;
+  border-radius: 0 0 40px 40px;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+}
+
+.cta-button {
+  background-color: white;
+  color: #e53935;
+  border: 2px solid white;
+  padding: 12px 28px;
+  border-radius: 30px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cta-button:hover {
+  background-color: #fff3f3;
+  color: #b71c1c;
+  border-color: #b71c1c;
+}
+
+/* ========== Info Section ========== */
+.info-section {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  padding: 40px 20px;
+  background-color: #fff8f8;
+}
+
+.info-card {
+  flex: 1 1 300px;
+  background-color: #ffffff;
+  margin: 15px;
+  padding: 25px;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(229, 57, 53, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.info-card:hover {
+  transform: translateY(-5px);
+}
+
+/* ========== Grid Section ========== */
+.grid-section {
+  padding: 50px 20px;
+  background-color: #fdf3f3;
+}
+
+.section-title {
+  text-align: center;
+  font-size: 1.8rem;
+  margin-bottom: 30px;
+  color: #b71c1c;
+  font-weight: bold;
+}
+
+.grid-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 25px;
+}
+
+.grid-card {
+  background-color: #ffffff;
+  padding: 20px;
+  width: 280px;
+  border-radius: 12px;
+  box-shadow: 0 1px 8px rgba(229, 57, 53, 0.15);
+  transition: transform 0.2s ease;
+}
+
+.grid-card:hover {
+  transform: translateY(-4px);
+}
+
+.grid-card ul {
+  padding-left: 18px;
+}
+
+/* ========== Accordion Section ========== */
+.accordion-section {
+  padding: 40px 20px;
+  background-color: #fff5f5;
+}
+
+.accordion-section summary {
+  font-weight: bold;
+  cursor: pointer;
+  padding: 10px;
+  background-color: #e53935;
+  color: white;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  list-style: none;
+}
+
+.accordion-section summary::-webkit-details-marker {
+  display: none;
+}
+
+.accordion-section details[open] summary {
+  background-color: #c62828;
+}
+
+.accordion-section p {
+  padding: 10px 20px;
+  background-color: #fff;
+  border-left: 3px solid #e53935;
+  border-radius: 0 0 6px 6px;
+  margin-bottom: 15px;
+}
+
+/* ========== Blog Preview Section ========== */
+.blog-preview-section {
+  background-color: #fffafa;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.blog-preview-section .grid-card a {
+  text-decoration: none;
+  color: #d32f2f;
+  font-weight: 600;
+}
+
+.blog-preview-section .grid-card a:hover {
+  text-decoration: underline;
+}
+
+/* ========== Footer ========== */
+.footer {
+  text-align: center;
+  padding: 20px;
+  background-color: #b71c1c;
+  color: #fff;
+  font-size: 0.9rem;
+  margin-top: 50px;
+  border-radius: 20px 20px 0 0;
+}

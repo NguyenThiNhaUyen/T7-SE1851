@@ -112,7 +112,7 @@ const Profile = () => {
             />
           </div>
 
-          <button className="btn btn-primary btn-block mt-3" type="submit">Lưu</button>
+          <button className="btn btn-block btn-gradient-red" type="submit">Lưu</button>
         </form>
       </div>
     </div>

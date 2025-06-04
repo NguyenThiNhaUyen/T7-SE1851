@@ -180,7 +180,7 @@ const Register = () => {
               </div>
 
               <div className="form-group">
-                <button className="btn btn-primary btn-block">Sign Up</button>
+                <button className="btn btn-block btn-gradient-red">Sign Up</button>
               </div>
             </div>
           )}

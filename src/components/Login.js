@@ -76,7 +76,7 @@ const Login = () => {
     <div className="col-md-12">
       <div className="card card-container">
         <img
-          src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
+          src="/donor.png"
           alt="profile-img"
           className="profile-img-card"
         />
@@ -115,7 +115,7 @@ const Login = () => {
           </div>
 
           <div className="form-group">
-            <button className="btn btn-primary btn-block" disabled={loading}>
+            <button className="btn btn-block btn-gradient-red" disabled={loading}>
               {loading && <span className="spinner-border spinner-border-sm"></span>}
               <span>Đăng nhập</span>
             </button>
