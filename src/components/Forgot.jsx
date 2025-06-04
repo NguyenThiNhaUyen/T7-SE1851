@@ -3,22 +3,14 @@ import React, { useState } from "react";
 const Forgot = () => {
   const [idNumber, setIdNumber] = useState("");
   const [message, setMessage] = useState("");
-  const [resentMessage, setResentMessage] = useState("");
   const [phone, setPhone] = useState("");
-  const [otp, setOtp] = useState("");
-  const [loading, setLoading] = useState(false);
 
 
- const handleSubmit = (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setTimeout(() => {
-    window.location.href = "/verify-otp";
-  }, 1000); // mô phỏng delay gửi OTP
-};
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-
-
+    setMessage("Nếu thông tin hợp lệ, hệ thống sẽ gửi hướng dẫn đặt lại mật khẩu.");
+  };
 
   return (
     <div className="col-md-12">
@@ -33,7 +25,9 @@ const Forgot = () => {
           <h4 className="text-center mb-3">Đặt lại mật khẩu</h4>
 
           <div className="form-group">
-            <label htmlFor="idNumber">Số CMND/CCCD/Hộ chiếu</label>
+            <label htmlFor="idNumber">
+              Số CMND/CCCD/Hộ chiếu<span style={{ color: "red" }}>*</span>
+            </label>
             <input
               type="text"
               className="form-control"
@@ -43,7 +37,9 @@ const Forgot = () => {
               required
             />
 
-            <label htmlFor="phone">Số điện thoại</label>
+            <label htmlFor="phone">
+              Số điện thoại<span style={{ color: "red" }}>*</span>
+            </label>
             <input
               type="text"
               className="form-control"
@@ -52,19 +48,18 @@ const Forgot = () => {
               onChange={(e) => setPhone(e.target.value)}
               required
             />
+
           </div>
 
           <div className="form-group">
             <button
-              type="submit"
+              type="button"
               className="btn btn-primary btn-block"
-              disabled={loading}
+              onClick={() => window.location.href = "/verify-otp"}
             >
-              {loading && <span className="spinner-border spinner-border-sm"></span>}
-              <span>Tiep tuc</span>
+              Tiếp tục
             </button>
           </div>
-
 
           {message && (
             <div className="form-group mt-3">
