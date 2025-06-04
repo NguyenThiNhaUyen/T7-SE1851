@@ -3,10 +3,7 @@ import React, { useState } from "react";
 const Forgot = () => {
   const [idNumber, setIdNumber] = useState("");
   const [message, setMessage] = useState("");
-  const [resentMessage, setResentMessage] = useState("");
   const [phone, setPhone] = useState("");
-  const [otp, setOtp] = useState("");
-  const [loading, setLoading] = useState(false);
 
 
   const handleSubmit = (e) => {
@@ -14,11 +11,6 @@ const Forgot = () => {
 
     setMessage("Nếu thông tin hợp lệ, hệ thống sẽ gửi hướng dẫn đặt lại mật khẩu.");
   };
-
-  const handleResendOTP = () => {
-    setResentMessage("Mã OTP đã được gửi lại.");
-  };
-
 
   return (
     <div className="col-md-12">
@@ -33,7 +25,9 @@ const Forgot = () => {
           <h4 className="text-center mb-3">Đặt lại mật khẩu</h4>
 
           <div className="form-group">
-            <label htmlFor="idNumber">Số CMND/CCCD/Hộ chiếu</label>
+            <label htmlFor="idNumber">
+              Số CMND/CCCD/Hộ chiếu<span style={{ color: "red" }}>*</span>
+            </label>
             <input
               type="text"
               className="form-control"
@@ -43,7 +37,9 @@ const Forgot = () => {
               required
             />
 
-            <label htmlFor="phone">Số điện thoại</label>
+            <label htmlFor="phone">
+              Số điện thoại<span style={{ color: "red" }}>*</span>
+            </label>
             <input
               type="text"
               className="form-control"
@@ -53,45 +49,17 @@ const Forgot = () => {
               required
             />
 
-
-
-            <label htmlFor="OTP">Mã OTP</label>
-            <input
-              type="text"
-              className="form-control"
-              name="otp"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              required
-            />
-            {resentMessage && (
-              <div className="alert alert-info mt-2">{resentMessage}</div>
-            )}
-
-            <div className="text-right mt-2">
-              <button
-                type="button"
-                className="btn btn-link p-0"
-                onClick={handleResendOTP}
-              >
-                Bạn không nhận được mã OTP?
-              </button>
-            </div>
-
           </div>
 
           <div className="form-group">
             <button
               type="button"
               className="btn btn-primary btn-block"
-              disabled={loading}
-              onClick={() => window.location.href = "/request-otp"}
+              onClick={() => window.location.href = "/verify-otp"}
             >
-              {loading && <span className="spinner-border spinner-border-sm"></span>}
-              <span>Tiep tuc</span>
+              Tiếp tục
             </button>
           </div>
-
 
           {message && (
             <div className="form-group mt-3">

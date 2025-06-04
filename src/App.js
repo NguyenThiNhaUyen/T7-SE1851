@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route, Link, Navigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
 import AuthService from "./services/auth.service";
 
-import BoardRecipient from "./components/BoardRecipient";
 import BoardStaff from "./components/BoardStaff";
 import BloodRequestForm from "./components/BloodRequestForm";
 import TransfusionConfirm from "./components/TransfusionConfirm";
@@ -15,18 +14,18 @@ import Register from "./components/Register";
 import Home from "./components/Home";
 import Profile from "./components/Profile";
 import BoardUser from "./components/BoardUser";
-import BoardModerator from "./components/BoardModerator";
 import BoardAdmin from "./components/BoardAdmin";
 import Forgot from "./components/Forgot";
 import ChangePassword from "./components/ChangePassword";
 import DonationRegister from "./components/DonationRegister";
 import DonationHistory from "./components/DonationHistory";
 import DonationAftercare from "./components/DonationAftercare";
+import OtpVerify from "./components/OtpVerify";
 
 import EventBus from "./common/EventBus";
 
 const App = () => {
-  const [showModeratorBoard, setShowModeratorBoard] = useState(false);
+  const [showStaffBoard, setShowStaffBoard] = useState(false);
   const [showAdminBoard, setShowAdminBoard] = useState(false);
   const [currentUser, setCurrentUser] = useState(undefined);
 
@@ -35,8 +34,8 @@ const App = () => {
 
     if (user) {
       setCurrentUser(user);
-      setShowModeratorBoard(user.roles.includes("ROLE_MODERATOR"));
       setShowAdminBoard(user.roles.includes("ROLE_ADMIN"));
+      setShowStaffBoard(user.roles.includes("ROLE_STAFF"));
     }
 
     EventBus.on("logout", () => {
@@ -50,7 +49,7 @@ const App = () => {
 
   const logOut = () => {
     AuthService.logout();
-    setShowModeratorBoard(false);
+    setShowStaffBoard(false);
     setShowAdminBoard(false);
     setCurrentUser(undefined);
   };
@@ -59,7 +58,7 @@ const App = () => {
     <div>
       <nav className="navbar navbar-expand navbar-dark bg-dark">
         <Link to={"/"} className="navbar-brand">
-          bezKoder
+          Group 7
         </Link>
         <div className="navbar-nav mr-auto">
           <li className="nav-item">
@@ -67,14 +66,6 @@ const App = () => {
               Home
             </Link>
           </li>
-
-          {showModeratorBoard && (
-            <li className="nav-item">
-              <Link to={"/mod"} className="nav-link">
-                Moderator Board
-              </Link>
-            </li>
-          )}
 
           {showAdminBoard && (
             <li className="nav-item">
@@ -84,7 +75,15 @@ const App = () => {
             </li>
           )}
 
-          {currentUser && (
+          {showStaffBoard && (
+            <li className="nav-item">
+              <Link to={"/staff"} className="nav-link">
+                Staff Board
+              </Link>
+            </li>
+          )}
+
+          {currentUser && !showAdminBoard && !showStaffBoard && (
             <li className="nav-item">
               <Link to={"/user"} className="nav-link">
                 User
@@ -130,20 +129,19 @@ const App = () => {
           <Route exact path="/login" element={<Login />} />
           <Route exact path="/register" element={<Register />} />
           <Route exact path="/profile" element={<Profile />} />
-          <Route path="/user" element={<BoardUser />} />
-          <Route path="/mod" element={<BoardModerator />} />
+          <Route path="/user" element={showAdminBoard || showStaffBoard ? <Navigate to="/home" /> : <BoardUser />} />
           <Route path="/admin" element={<BoardAdmin />} />
-          <Route path="/recipient" element={<BoardRecipient />} />
+
           <Route path="/staff" element={<BoardStaff />} />
           <Route path="/requests/new" element={<BloodRequestForm />} />
           <Route path="/staff/transfusions" element={<TransfusionConfirm />} />
           <Route path="/requests/history" element={<RequestHistory />} />
-          {/* Các route mới cho hiến máu */}
           <Route path="/donation/register" element={<DonationRegister />} />
           <Route path="/donation/history" element={<DonationHistory />} />
           <Route path="/donation/aftercare" element={<DonationAftercare />} />
           <Route path="/forgot" element={<Forgot />} />
           <Route path="/change-password" element={<ChangePassword />} />
+          <Route path="/verify-otp" element={<OtpVerify />} />
         </Routes>
       </div>
     </div>

@@ -1,35 +1,21 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:3000/api/auth/";
-
-const register = (username, email, password) => {
-  return axios.post(API_URL + "signup", {
-    username,
-    email,
-    password,
-  });
-};
+// CHỈ dùng proxy, KHÔNG cần http://localhost:3000 nếu đã dùng setupProxy.js
+const API_URL = "/api/auth/";
 
 const login = (username, password) => {
   return axios
-    .post(API_URL + "signin", {
-      username,
-      password,
-    })
+    .post(API_URL + "signin", { username, password })
     .then((response) => {
-      if (response.data.username) {
+      if (response.data.accessToken) {
         localStorage.setItem("user", JSON.stringify(response.data));
       }
-
       return response.data;
     });
 };
 
 const logout = () => {
   localStorage.removeItem("user");
-  return axios.post(API_URL + "signout").then((response) => {
-    return response.data;
-  });
 };
 
 const getCurrentUser = () => {
@@ -37,10 +23,9 @@ const getCurrentUser = () => {
 };
 
 const AuthService = {
-  register,
   login,
   logout,
   getCurrentUser,
-}
+};
 
 export default AuthService;
