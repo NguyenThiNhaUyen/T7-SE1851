@@ -47,7 +47,7 @@ const Login = () => {
             if (roles.includes("ROLE_ADMIN")) {
               navigate("/admin");
             } else if (roles.includes("ROLE_STAFF")) {
-              navigate("/mod");
+              navigate("/staff");
             } else {
               navigate("/user");
             }
