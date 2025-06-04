@@ -22,6 +22,11 @@ import DonationRegister from "./components/DonationRegister";
 import DonationHistory from "./components/DonationHistory";
 import DonationAftercare from "./components/DonationAftercare";
 import OtpVerify from "./components/OtpVerify";
+import BlogDetail from "./components/BlogDetail";
+import BlogList from "./components/BlogList";
+import NotificationList from "./components/NotificationList";
+import NotificationForm from "./components/NotificationForm";
+import VnPayForm from "./components/VnPayForm";
 
 import EventBus from "./common/EventBus";
 
@@ -146,6 +151,12 @@ const App = () => {
           <Route path="/forgot" element={<Forgot />} />
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/verify-otp" element={<OtpVerify />} />
+          {/* Blog, Thông báo, VnPay */}
+          <Route path="/blog" element={<BlogList />} />
+          <Route path="/blog/:id" element={<BlogDetail />} />
+          <Route path="/notifications" element={<NotificationList />} />
+          <Route path="/notifications/send" element={<NotificationForm />} />
+          <Route path="/vnpay" element={<VnPayForm />} />
         </Routes>
       </div>
     </div>
