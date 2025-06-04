@@ -9,6 +9,7 @@
     "axios": "^0.24.0",
     "bootstrap": "4.6.0",
     "chart.js": "^4.4.9",
+    "cors": "^2.8.5",
     "http-proxy-middleware": "^2.0.1",
     "mssql": "^11.0.1",
     "react": "^17.0.2",
