@@ -73,7 +73,6 @@ const Profile = () => {
               <option value="">Chọn</option>
               <option value="Male">Nam</option>
               <option value="Female">Nữ</option>
-              <option value="Other">Khác</option>
             </select>
           </div>
 

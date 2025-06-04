@@ -6,15 +6,21 @@ const ChangePassword = () => {
   const [message, setMessage] = useState("");
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (newPassword !== confirmPassword) {
-      setMessage("Mật khẩu xác nhận không khớp.");
-      return;
-    }
+  if (!newPassword || !confirmPassword) {
+    setMessage("Điền hết đi!!!");
+    return;
+  }
 
-    setMessage("Mật khẩu của bạn đã được thay đổi thành công!");
-  };
+  if (newPassword !== confirmPassword) {
+    setMessage("Mật khẩu không khớp");
+    return;
+  }
+
+  setMessage("Mật khẩu thay đổi thành công!");
+};
+
 
   return (
     <div className="col-md-12">
@@ -23,24 +29,26 @@ const ChangePassword = () => {
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Mật khẩu mới</label>
+            <label>
+              Mật khẩu mới<span style={{ color: "red" }}>*</span>
+            </label>
             <input
               type="password"
               className="form-control"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              required
             />
           </div>
 
           <div className="form-group mt-2">
-            <label>Xác nhận mật khẩu</label>
+            <label>
+              Xác nhận mật khẩu<span style={{ color: "red" }}>*</span>
+            </label>
             <input
               type="password"
               className="form-control"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              required
             />
           </div>
 

@@ -8,7 +8,7 @@ import AuthService from "../services/auth.service";
 
 const required = (value) => {
   if (!value) {
-    return <div className="invalid-feedback d-block">This field is required!</div>;
+    return <div className="invalid-feedback d-block">Điền đủ vào</div>;
   }
 };
 
@@ -83,7 +83,9 @@ const Login = () => {
 
         <Form onSubmit={handleLogin} ref={form}>
           <div className="form-group">
-            <label htmlFor="username">So CMND/CCCD/Ho chieu</label>
+            <label htmlFor="username">
+              Username<span style={{ color: "red" }}>*</span>
+            </label>
             <Input
               type="text"
               className="form-control"
@@ -94,8 +96,11 @@ const Login = () => {
             />
           </div>
 
+
           <div className="form-group">
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password">
+              Password<span style={{ color: "red" }}>*</span>
+            </label>
             <Input
               type="password"
               className="form-control"
@@ -112,7 +117,7 @@ const Login = () => {
           <div className="form-group">
             <button className="btn btn-primary btn-block" disabled={loading}>
               {loading && <span className="spinner-border spinner-border-sm"></span>}
-              <span>Dang ki</span>
+              <span>Đăng nhập</span>
             </button>
           </div>
 
