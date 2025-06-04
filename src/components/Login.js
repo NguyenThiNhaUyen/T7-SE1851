@@ -76,7 +76,7 @@ const Login = () => {
     <div className="col-md-12">
       <div className="card card-container">
         <img
-          src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
+          src="/donor.png"
           alt="profile-img"
           className="profile-img-card"
         />
@@ -101,21 +101,21 @@ const Login = () => {
             <label htmlFor="password">
               Password<span style={{ color: "red" }}>*</span>
             </label>
-            <Input
+            <input
               type="password"
               className="form-control"
               name="password"
               value={password}
-              onChange={onChangePassword}
-              validations={[required]}
+              onChange={(e) => setPassword(e.target.value)}
             />
+
             <div className="text-right mt-2">
               <a href="/forgot">Bạn quên mật khẩu?</a>
             </div>
           </div>
 
           <div className="form-group">
-            <button className="btn btn-primary btn-block" disabled={loading}>
+            <button className="btn btn-block btn-gradient-red" disabled={loading}>
               {loading && <span className="spinner-border spinner-border-sm"></span>}
               <span>Đăng nhập</span>
             </button>

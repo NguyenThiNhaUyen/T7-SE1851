@@ -25,6 +25,12 @@ const ChangePassword = () => {
   return (
     <div className="col-md-12">
       <div className="card card-container">
+        <img
+          src="/donor.png"
+          alt="profile-img"
+          className="profile-img-card"
+        />
+        
         <h4 className="text-center mb-3">Đổi mật khẩu</h4>
 
         <form onSubmit={handleSubmit}>
@@ -53,7 +59,7 @@ const ChangePassword = () => {
           </div>
 
           <div className="form-group mt-3">
-            <button className="btn btn-primary btn-block" type="submit">
+            <button className="btn btn-block btn-gradient-red" type="submit">
               Đổi mật khẩu
             </button>
           </div>

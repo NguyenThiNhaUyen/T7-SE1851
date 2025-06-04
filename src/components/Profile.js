@@ -64,7 +64,10 @@ const Profile = () => {
 
           <div className="form-group mt-2">
             <label>Ngày sinh</label>
-            <input type="date" className="form-control" name="dob" value={profile.dob} onChange={handleChange} />
+            <input type="date" className="form-control" name="dob" value={profile.dob} onChange={handleChange} 
+            min="1900-01-01"
+            max={new Date().toISOString().split("T")[0]}
+            />
           </div>
 
           <div className="form-group mt-2">
@@ -103,10 +106,13 @@ const Profile = () => {
 
           <div className="form-group mt-2">
             <label>Ngày hiến máu gần nhất</label>
-            <input type="date" className="form-control" name="lastDonation" value={profile.lastDonation} onChange={handleChange} />
+            <input type="date" className="form-control" name="lastDonation" value={profile.lastDonation} onChange={handleChange} 
+            min="1900-01-01"
+            max={new Date().toISOString().split("T")[0]}
+            />
           </div>
 
-          <button className="btn btn-primary btn-block mt-3" type="submit">Lưu</button>
+          <button className="btn btn-block btn-gradient-red" type="submit">Lưu</button>
         </form>
       </div>
     </div>
