@@ -45,6 +45,8 @@ const Register = () => {
   const [successful, setSuccessful] = useState(false);
   const [message, setMessage] = useState("");
 
+  const today = new Date().toISOString().split("T")[0];
+
   const handleRegister = (e) => {
     e.preventDefault();
 
@@ -157,7 +159,10 @@ const Register = () => {
                   name="dob"
                   value={dob}
                   onChange={(e) => setDob(e.target.value)}
+                  min="1900-01-01"
+                  max={today}
                 />
+
               </div>
 
               <div className="form-group">

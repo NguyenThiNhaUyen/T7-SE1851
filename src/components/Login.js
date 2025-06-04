@@ -47,7 +47,7 @@ const Login = () => {
             if (roles.includes("ROLE_ADMIN")) {
               navigate("/admin");
             } else if (roles.includes("ROLE_STAFF")) {
-              navigate("/mod");
+              navigate("/staff");
             } else {
               navigate("/user");
             }
@@ -101,14 +101,14 @@ const Login = () => {
             <label htmlFor="password">
               Password<span style={{ color: "red" }}>*</span>
             </label>
-            <Input
+            <input
               type="password"
               className="form-control"
               name="password"
               value={password}
-              onChange={onChangePassword}
-              validations={[required]}
+              onChange={(e) => setPassword(e.target.value)}
             />
+
             <div className="text-right mt-2">
               <a href="/forgot">Bạn quên mật khẩu?</a>
             </div>
