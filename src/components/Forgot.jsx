@@ -1,14 +1,12 @@
 import React, { useState } from "react";
 
 const Forgot = () => {
-  const [idNumber, setIdNumber] = useState("");
   const [message, setMessage] = useState("");
-  const [phone, setPhone] = useState("");
-
+  const [email, setEmail] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
+localStorage.setItem("recoveryEmail", email);
     setMessage("Nếu thông tin hợp lệ, hệ thống sẽ gửi hướng dẫn đặt lại mật khẩu.");
   };
 
@@ -16,7 +14,7 @@ const Forgot = () => {
     <div className="col-md-12">
       <div className="card card-container">
         <img
-          src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
+          src="/donor.png"
           alt="profile-img"
           className="profile-img-card"
         />
@@ -25,36 +23,23 @@ const Forgot = () => {
           <h4 className="text-center mb-3">Đặt lại mật khẩu</h4>
 
           <div className="form-group">
-            <label htmlFor="idNumber">
-              Số CMND/CCCD/Hộ chiếu<span style={{ color: "red" }}>*</span>
+            <label htmlFor="email">
+              Email<span style={{ color: "red" }}>*</span>
             </label>
             <input
               type="text"
               className="form-control"
-              name="idNumber"
-              value={idNumber}
-              onChange={(e) => setIdNumber(e.target.value)}
+              name="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
-
-            <label htmlFor="phone">
-              Số điện thoại<span style={{ color: "red" }}>*</span>
-            </label>
-            <input
-              type="text"
-              className="form-control"
-              name="phone"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              required
-            />
-
           </div>
 
           <div className="form-group">
             <button
-              type="button"
-              className="btn btn-primary btn-block"
+              type="submit"
+              className="btn btn-block btn-gradient-red"
               onClick={() => window.location.href = "/verify-otp"}
             >
               Tiếp tục

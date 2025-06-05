@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import UserService from "../services/user.service";
 import "./Home.css";
 
 const Home = () => {
   const [content, setContent] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     UserService.getPublicContent().then(
@@ -23,105 +24,127 @@ const Home = () => {
 
   return (
     <div className="home-wrapper">
-      {/* Server Content Section */}
+      {/* Nội dung từ server */}
       <div className="container">
         <header className="jumbotron">
           <h3>{content}</h3>
         </header>
       </div>
 
-      {/* Hero Section */}
+      {/* Khu vực tiêu đề chính */}
       <section className="hero">
-        <h1>Give Blood, Save Lives</h1>
-        <p>Your donation can make a big difference</p>
-        <button className="cta-button">Donate Now</button>
+        <h1>Hiến máu - Cứu người</h1>
+        <p>Mỗi giọt máu cho đi là một cuộc đời ở lại</p>
+        <button className="cta-button" onClick={() => navigate("/login")}>
+          Hiến máu ngay
+        </button>
       </section>
 
-      {/* Info Cards */}
+      {/* Thẻ thông tin nhanh */}
       <section className="info-section">
         <div className="info-card">
-          <h3>Benefits of Donation</h3>
-          <p>Learn about the positive impact and health benefits of donating blood.</p>
+          <h3>Lợi ích khi hiến máu</h3>
+          <p>
+            Hiểu rõ về tác động tích cực và lợi ích sức khỏe khi hiến máu thường xuyên.
+          </p>
         </div>
         <div className="info-card">
-          <h3>Who Can Donate</h3>
-          <p>Check if you meet the eligibility criteria to become a donor.</p>
+          <h3>Ai có thể hiến máu?</h3>
+          <p>
+            Kiểm tra điều kiện để biết bạn có đủ điều kiện tham gia hiến máu không.
+          </p>
         </div>
         <div className="info-card">
-          <h3>How It Works</h3>
-          <p>Understand the blood donation process in a few simple steps.</p>
+          <h3>Quy trình hiến máu</h3>
+          <p>
+            Tìm hiểu các bước cơ bản trong quy trình hiến máu an toàn và hiệu quả.
+          </p>
         </div>
       </section>
 
-      {/* Additional Information Grid */}
+      {/* Khu vực kiến thức bổ sung */}
       <section className="grid-section">
-        <h2 className="section-title">Learn More</h2>
+        <h2 className="section-title">Tìm hiểu thêm</h2>
         <div className="grid-cards">
           <div className="grid-card">
-            <h4>Frequently Asked Questions</h4>
+            <h4>Câu hỏi thường gặp</h4>
             <ul>
-              <li>Am I eligible to donate?</li>
-              <li>How often can I donate?</li>
-              <li>Is it safe and hygienic?</li>
+              <li>Tôi có đủ điều kiện hiến máu không?</li>
+              <li>Hiến máu bao lâu một lần?</li>
+              <li>Việc hiến máu có an toàn không?</li>
             </ul>
           </div>
           <div className="grid-card">
-            <h4>Types of Donations</h4>
+            <h4>Các hình thức hiến máu</h4>
             <ul>
-              <li>Whole Blood</li>
-              <li>Platelet Apheresis</li>
-              <li>Plasma Donation</li>
+              <li>Toàn phần</li>
+              <li>Tiểu cầu</li>
+              <li>Huyết tương</li>
             </ul>
           </div>
           <div className="grid-card">
-            <h4>Preparation & Recovery</h4>
+            <h4>Chuẩn bị & phục hồi</h4>
             <ul>
-              <li>Before you donate</li>
-              <li>What to expect</li>
-              <li>Aftercare instructions</li>
+              <li>Cần chuẩn bị gì trước khi hiến?</li>
+              <li>Quy trình hiến như thế nào?</li>
+              <li>Chăm sóc sau hiến máu ra sao?</li>
             </ul>
           </div>
         </div>
       </section>
 
-      {/* Accordion Section */}
+      {/* Accordion thông tin mở rộng */}
       <section className="accordion-section">
-        <h2 className="section-title">Key Information</h2>
+        <h2 className="section-title">Thông tin quan trọng</h2>
         <details>
-          <summary>Is blood donation safe?</summary>
-          <p>Yes, the donation process is safe and uses sterile, single-use equipment.</p>
+          <summary>Hiến máu có an toàn không?</summary>
+          <p>
+            Có. Quy trình hiến máu được thực hiện với thiết bị vô trùng, dùng một lần.
+          </p>
         </details>
         <details>
-          <summary>How long does it take?</summary>
-          <p>The donation itself takes about 10–15 minutes, with extra time for rest and recovery.</p>
+          <summary>Thời gian hiến mất bao lâu?</summary>
+          <p>
+            Khoảng 10–15 phút cho quá trình hiến, thêm vài phút để nghỉ ngơi sau đó.
+          </p>
         </details>
         <details>
-          <summary>What should I do before donating?</summary>
-          <p>Stay hydrated, eat a healthy meal, and bring identification.</p>
+          <summary>Cần làm gì trước khi hiến máu?</summary>
+          <p>
+            Uống đủ nước, ăn nhẹ trước khi hiến và mang theo giấy tờ tùy thân.
+          </p>
         </details>
       </section>
 
-      {/* Blog Preview Section */}
+      {/* Gợi ý bài viết blog */}
       <section className="blog-preview-section">
-        <h2 className="section-title">From Our Blog</h2>
+        <h2 className="section-title">Từ Blog của chúng tôi</h2>
         <div className="grid-cards">
           <div className="grid-card">
-            <h4><Link to="/blog/1">Why You Should Donate Blood</Link></h4>
-            <p>Discover the life-saving impact of your donation.</p>
+            <h4>
+              <Link to="/blog/1">Vì sao nên hiến máu?</Link>
+            </h4>
+            <p>Khám phá tác động tích cực từ việc bạn cho đi giọt máu quý giá.</p>
           </div>
           <div className="grid-card">
-            <h4><Link to="/blog/2">Blood Donation Tips</Link></h4>
-            <p>How to prepare for a safe and effective donation.</p>
+            <h4>
+              <Link to="/blog/2">Mẹo nhỏ trước khi hiến máu</Link>
+            </h4>
+            <p>Làm thế nào để quá trình hiến máu an toàn và nhẹ nhàng hơn?</p>
           </div>
         </div>
         <div style={{ marginTop: "1rem" }}>
-          <Link to="/blog" className="cta-button">Read More Articles</Link>
+          <Link to="/blog" className="cta-button">
+            Xem tất cả bài viết
+          </Link>
         </div>
       </section>
 
       {/* Footer */}
       <footer className="footer">
-        <p>© 2025 Blood Donation Initiative | Committed to saving lives with compassion and care.</p>
+        <p>
+          © 2025 Sáng kiến Hiến Máu Việt Nam | Chung tay cứu người với lòng nhân ái.
+        </p>
       </footer>
     </div>
   );
