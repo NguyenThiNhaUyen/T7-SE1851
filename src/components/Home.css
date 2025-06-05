@@ -59,7 +59,7 @@
   margin: 16px;
   flex: 1 1 300px;
   border-radius: 16px;
-  box-shadow: 0 8px 20px rgba(221, 45, 36, 0.15); /* Bóng đổ đỏ */
+  box-shadow: 0 8px 20px rgba(221, 45, 36, 0.15);
   transition: all 0.3s ease;
 }
 
@@ -94,7 +94,7 @@
   padding: 24px;
   width: 280px;
   border-radius: 12px;
-  box-shadow: 0 1px 8px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.05);
   transition: transform 0.2s ease;
 }
 
