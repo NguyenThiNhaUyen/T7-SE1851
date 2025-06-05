@@ -1,22 +1,23 @@
 import React, { useState, useEffect } from "react";
+import "./NotificationList.css"; // Đừng quên tạo file CSS
 
 const mockNotifications = [
   {
     id: 1,
-    title: "Blood Drive this Saturday!",
-    message: "Join our community donation event at the city center.",
+    title: "Hiến máu cuối tuần này!",
+    message: "Tham gia sự kiện hiến máu tại trung tâm thành phố.",
     date: "2025-06-01"
   },
   {
     id: 2,
-    title: "Urgent Need for O+ Donors",
-    message: "Our inventory is low. If you're O+, please consider donating.",
+    title: "Khẩn: Cần người hiến máu nhóm O+",
+    message: "Ngân hàng máu đang thiếu nhóm O+. Nếu bạn phù hợp, hãy hiến máu ngay.",
     date: "2025-05-30"
   },
   {
     id: 3,
-    title: "Thank You!",
-    message: "We appreciate your generous donation last week. You made a difference.",
+    title: "Cảm ơn bạn!",
+    message: "Cảm ơn vì lần hiến máu gần đây của bạn. Bạn đã cứu được một mạng người.",
     date: "2025-05-28"
   }
 ];
@@ -25,13 +26,12 @@ const NotificationList = () => {
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
-    // Giả lập gọi API
     setNotifications(mockNotifications);
   }, []);
 
   return (
     <div className="notification-wrapper">
-      <h2>Notifications</h2>
+      <h2>Thông báo từ hệ thống</h2>
       <div className="notification-list">
         {notifications.map((note) => (
           <div className="notification-card" key={note.id}>
