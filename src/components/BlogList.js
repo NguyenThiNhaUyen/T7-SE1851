@@ -2,17 +2,18 @@ import React from "react";
 import { Link } from "react-router-dom";
 import "./BlogList.css";
 
+// Danh sách các bài viết blog
 const blogs = [
   {
     id: "1",
-    title: "Why You Should Donate Blood",
-    summary: "Donating blood can save lives. Here's why it's important...",
+    title: "Vì sao bạn nên hiến máu?",
+    summary: "Hiến máu có thể cứu sống nhiều người. Đây là lý do vì sao hành động này lại quan trọng...",
     published_at: "2025-06-03"
   },
   {
     id: "2",
-    title: "Blood Donation Tips",
-    summary: "Stay hydrated, eat well, and relax before donating blood...",
+    title: "Mẹo để hiến máu hiệu quả",
+    summary: "Hãy uống đủ nước, ăn đầy đủ và giữ tâm lý thoải mái trước khi hiến máu...",
     published_at: "2025-06-01"
   },
   {
@@ -38,21 +39,21 @@ const blogs = [
   }
 ];
 
-const BlogList = () => {
+const DanhSachBaiViet = () => {
   return (
     <div className="blog-list-wrapper container mt-5">
       <h2 className="mb-4">Bài viết nổi bật</h2>
-      {blogs.map((b) => (
-        <div className="blog-card mb-4" key={b.id}>
-          <Link to={`/blog/${b.id}`}>
-            <h4>{b.title}</h4>
+      {blogs.map((baiViet) => (
+        <div className="blog-card mb-4" key={baiViet.id}>
+          <Link to={`/blog/${baiViet.id}`}>
+            <h4>{baiViet.title}</h4>
           </Link>
-          <p>{b.summary}</p>
-          <small>Ngày đăng: {b.published_at}</small>
+          <p>{baiViet.summary}</p>
+          <small>Ngày đăng: {baiViet.published_at}</small>
         </div>
       ))}
     </div>
   );
 };
 
-export default BlogList;
+export default DanhSachBaiViet;
