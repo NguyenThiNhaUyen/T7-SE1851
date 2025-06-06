@@ -1,30 +1,56 @@
 // src/components/BoardStaff.js
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "../styles/staff.css";
 
 const BoardStaff = () => {
   const navigate = useNavigate();
+  const [active, setActive] = useState("requests");
+
+  const handleNavigate = (path, key) => {
+    navigate(path);
+    setActive(key);
+  };
 
   return (
-    <div className="container">
-      <header className="jumbotron">
-        <h3>Bảng điều khiển nhân viên y tế</h3>
-      </header>
+    <div className="staff-layout">
+      <aside className="staff-sidebar">
+        <h2>NHÂN VIÊN</h2>
+        <button
+          onClick={() => handleNavigate("/staff/requests", "requests")}
+          className={active === "requests" ? "active" : ""}
+        >
+          📥 Yêu cầu nhận máu
+        </button>
+        <button
+          onClick={() => handleNavigate("/staff/transfusions", "transfusions")}
+          className={active === "transfusions" ? "active" : ""}
+        >
+          💉 Xác nhận truyền máu
+        </button>
+        <button
+          onClick={() => handleNavigate("/staff/inventory", "inventory")}
+          className={active === "inventory" ? "active" : ""}
+        >
+          📦 Kho máu
+        </button>
+        <button
+          onClick={() => handleNavigate("/staff/statistics", "statistics")}
+          className={active === "statistics" ? "active" : ""}
+        >
+          📊 Thống kê
+        </button>
+        <button
+          onClick={() => handleNavigate("/staff/urgent-requests", "urgent")}
+          className={active === "urgent" ? "active" : ""}
+        >
+          🚨 Yêu cầu khẩn cấp
+        </button>
+      </aside>
 
-      <div className="btn-group-vertical mt-3 w-100">
-        <button className="btn btn-primary mb-2" onClick={() => navigate("/staff/requests")}>
-          Xử lý yêu cầu nhận máu
-        </button>
-        <button className="btn btn-secondary mb-2" onClick={() => navigate("/staff/transfusions")}>
-          Xác nhận truyền máu
-        </button>
-        <button className="btn btn-success mb-2" onClick={() => navigate("/staff/inventory")}>
-          Kiểm tra kho máu
-        </button>
-        <button className="btn btn-warning mb-2" onClick={() => navigate("/staff/statistics")}>
-          Thống kê truyền máu
-        </button>
-      </div>
+      <main className="staff-main">
+        <h3>Chọn một chức năng từ menu bên trái</h3>
+      </main>
     </div>
   );
 };
