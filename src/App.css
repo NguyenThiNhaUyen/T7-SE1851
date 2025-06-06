@@ -33,6 +33,17 @@ label {
   margin-bottom: 20px;
 }
 
+.text-danger {
+  font-size: 0.85rem;
+}
+
+.alert-custom-red {
+  background-color: #fcebea;
+  border: 1px solid #dd2d24;
+  color: #771813;
+  padding: 10px;
+  border-radius: 4px;
+}
 
 .btn-gradient-red {
   background: linear-gradient(to right, #771813, #DD2D24);
