@@ -1,60 +1,171 @@
-/* Giao diện tổng thể cho người dùng */
+/* Giao diện tổng thể */
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f8f8f8;
+  background-color: #f0f2f5;
   margin: 0;
   padding: 0;
 }
 
-/* Cột bố cục 2 bên */
+/* Container chính */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Header */
+.header {
+  background-color: #dd2d24;
+  color: white;
+  text-align: center;
+  padding: 2.5rem 1rem;
+  border-radius: 0 0 20px 20px;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 2.2rem;
+  font-weight: 700;
+}
+
+.header p {
+  margin: 0.75rem 0;
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.header .btn {
+  background-color: white;
+  color: #dd2d24;
+  padding: 0.6rem 1.8rem;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.header .btn:hover {
+  background-color: #e74c3c;
+  transform: scale(1.05);
+}
+
+
+/* Cột bố cục chính */
 .user-main-columns {
   display: flex;
-  justify-content: space-between;
-  gap: 2rem;
+  justify-content: center;
+  gap: 5px; /* Khoảng cách giữa các user-card là 5px */
   flex-wrap: wrap;
 }
 
-/* Hộp chức năng từng loại người dùng */
+/* Hộp chức năng */
 .user-card {
   background-color: white;
   padding: 1.5rem;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1), 0 4px 10px rgba(0, 0, 0, 0.05);
   flex: 1 1 45%;
   min-width: 300px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.user-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15), 0 6px 15px rgba(0, 0, 0, 0.1);
 }
 
 .user-card h4 {
   color: #dd2d24;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  font-size: 1.2rem;
+  font-weight: 600;
 }
 
-/* Nhóm các nút chức năng */
+/* Nhóm nút chức năng */
 .user-button-group {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-/* Style từng nút */
+/* Nút chức năng */
 .user-button-group .btn {
-  background-color: #dd2d24;
-  color: white;
+  background-color: #fff;
+  color: rgb(0, 0, 0);
   border: none;
   padding: 0.75rem 1.2rem;
   font-size: 1rem;
   font-weight: 500;
   text-align: left;
-  border-radius: 8px;
-  transition: background-color 0.3s ease;
+  border-radius: 10px;
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
+  width: 100%;
 }
 
 .user-button-group .btn:hover {
   background-color: #b21d1d;
+  transform: translateX(5px);
 }
 
 .user-button-group .btn span {
-  margin-left: 8px;
+  margin-left: 10px;
+}
+.user-button-group1 .btn {
+  background-color: #ffffff;
+  color: rgb(0, 0, 0);
+  border: none;
+  padding: 0.75rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: left;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.user-button-group1 .btn:hover {
+  background-color: #111;
+  color: rgb(255, 255, 255);
+  transform: translateX(5px);
+}
+
+.user-button-group1 .btn span {
+  margin-left: 10px;
+}
+/* Phần Tìm hiểu thêm */
+.additional-section {
+  text-align: center;
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #ddd;
+}
+
+.additional-section h3 {
+  color: #dd2d24;
+  margin-bottom: 2rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+.additional-section h4 {
+  color: #030303;
+  margin-bottom: 1.5rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+.additional-section .user-main-columns {
+  gap: 5px; /* Khoảng cách giữa các user-card trong additional-section là 5px */
+}
+
+.additional-section .user-card {
+  flex: 1 1 20%;
+  min-width: 200px;
+  display: inline-block;
+  vertical-align: top;
+  margin: 0;
 }
