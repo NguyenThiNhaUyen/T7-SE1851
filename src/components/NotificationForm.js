@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "./NotificationForm.css";
 
 const NotificationForm = () => {
   const [title, setTitle] = useState("");
@@ -7,35 +8,36 @@ const NotificationForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Tạm thời hiển thị thông tin gửi thành công
-    console.log("Submitted:", { title, message });
-    setStatus("Notification sent successfully!");
+    console.log("Đã gửi:", { title, message });
+    setStatus("Thông báo đã được gửi thành công!");
     setTitle("");
     setMessage("");
   };
 
   return (
     <div className="notification-form-wrapper">
-      <h2>Send Notification</h2>
+      <h2>Gửi thông báo</h2>
       <form onSubmit={handleSubmit} className="notification-form">
         <div className="form-group">
-          <label>Title</label>
+          <label>Tiêu đề</label>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
+            placeholder="Nhập tiêu đề thông báo..."
           />
         </div>
         <div className="form-group">
-          <label>Message</label>
+          <label>Nội dung</label>
           <textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             required
+            placeholder="Nhập nội dung thông báo..."
           ></textarea>
         </div>
-        <button type="submit">Send</button>
+        <button type="submit">Gửi thông báo</button>
         {status && <p className="status">{status}</p>}
       </form>
     </div>

@@ -1,100 +1,100 @@
-/* ========== Global Layout ========== */
+/* ========== Global Styles ========== */
 .home-wrapper {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #333;
-  background-color: #fff;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  background-color: #FAFAFA;
+  color: #2E2E2E;
   line-height: 1.6;
   padding-bottom: 40px;
 }
 
 /* ========== Hero Section ========== */
 .hero {
-  background: linear-gradient(135deg, #e53935, #ff7043);
-  color: white;
+  background: linear-gradient(135deg, #771813, #dd2d24);
   text-align: center;
   padding: 80px 20px;
-  border-radius: 0 0 40px 40px;
+  border-radius: 0 0 48px 48px;
+  box-shadow: inset 0 -1px 0 #ddd;
+  color: white;
 }
 
 .hero h1 {
   font-size: 3rem;
+  font-weight: 700;
   margin-bottom: 10px;
-  font-weight: bold;
 }
 
 .hero p {
   font-size: 1.2rem;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 
 .cta-button {
-  background-color: white;
-  color: #e53935;
-  border: 2px solid white;
+  background: linear-gradient(to right, #771813, #dd2d24);
+  color: white;
+  border: none;
   padding: 12px 28px;
-  border-radius: 30px;
+  border-radius: 8px;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .cta-button:hover {
-  background-color: #fff3f3;
-  color: #b71c1c;
-  border-color: #b71c1c;
+  background: linear-gradient(to right, #5e110e, #c7221d);
 }
 
-/* ========== Info Section ========== */
+/* ========== Info Cards Section ========== */
 .info-section {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
-  padding: 40px 20px;
-  background-color: #fff8f8;
+  padding: 60px 20px;
+  background-color: #ffffff;
 }
 
 .info-card {
+  background-color: #fff;
+  padding: 24px;
+  margin: 16px;
   flex: 1 1 300px;
-  background-color: #ffffff;
-  margin: 15px;
-  padding: 25px;
   border-radius: 16px;
-  box-shadow: 0 2px 12px rgba(229, 57, 53, 0.1);
-  transition: transform 0.2s ease;
+  box-shadow: 0 8px 20px rgba(221, 45, 36, 0.15);
+  transition: all 0.3s ease;
 }
 
 .info-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-6px);
+  box-shadow: 0 12px 24px rgba(221, 45, 36, 0.3), 0 0 0 2px rgba(119, 24, 19, 0.1);
 }
 
 /* ========== Grid Section ========== */
 .grid-section {
-  padding: 50px 20px;
-  background-color: #fdf3f3;
+  padding: 60px 20px;
+  background-color: #FFF4F4;
 }
 
 .section-title {
   text-align: center;
   font-size: 1.8rem;
+  color: #771813;
+  font-weight: 600;
   margin-bottom: 30px;
-  color: #b71c1c;
-  font-weight: bold;
 }
 
 .grid-cards {
   display: flex;
   flex-wrap: wrap;
+  gap: 24px;
   justify-content: center;
-  gap: 25px;
 }
 
 .grid-card {
   background-color: #ffffff;
-  padding: 20px;
+  padding: 24px;
   width: 280px;
   border-radius: 12px;
-  box-shadow: 0 1px 8px rgba(229, 57, 53, 0.15);
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.05);
   transition: transform 0.2s ease;
 }
 
@@ -102,53 +102,59 @@
   transform: translateY(-4px);
 }
 
+.grid-card h4 {
+  color: #771813;
+  margin-bottom: 10px;
+}
+
 .grid-card ul {
-  padding-left: 18px;
+  padding-left: 20px;
 }
 
 /* ========== Accordion Section ========== */
 .accordion-section {
-  padding: 40px 20px;
-  background-color: #fff5f5;
+  padding: 60px 20px;
+  background-color: #fff;
 }
 
 .accordion-section summary {
-  font-weight: bold;
+  font-weight: 600;
   cursor: pointer;
-  padding: 10px;
-  background-color: #e53935;
-  color: white;
-  border-radius: 6px;
+  padding: 12px 20px;
+  background-color: #ffe9e8;
+  color: #333;
+  border-radius: 8px;
   margin-bottom: 10px;
   list-style: none;
+  transition: background 0.2s;
 }
 
-.accordion-section summary::-webkit-details-marker {
-  display: none;
+.accordion-section summary:hover {
+  background-color: #ffd2d1;
 }
 
 .accordion-section details[open] summary {
-  background-color: #c62828;
+  background-color: #ffc9c8;
 }
 
 .accordion-section p {
-  padding: 10px 20px;
+  padding: 12px 24px;
   background-color: #fff;
-  border-left: 3px solid #e53935;
-  border-radius: 0 0 6px 6px;
-  margin-bottom: 15px;
+  border-left: 3px solid #dd2d24;
+  border-radius: 0 0 8px 8px;
+  margin-bottom: 20px;
 }
 
 /* ========== Blog Preview Section ========== */
 .blog-preview-section {
-  background-color: #fffafa;
-  padding: 40px 20px;
+  background-color: #fff7f7;
+  padding: 50px 20px;
   text-align: center;
 }
 
 .blog-preview-section .grid-card a {
   text-decoration: none;
-  color: #d32f2f;
+  color: #dd2d24;
   font-weight: 600;
 }
 
@@ -158,11 +164,11 @@
 
 /* ========== Footer ========== */
 .footer {
+  background: linear-gradient(135deg, #771813, #dd2d24);
+  color: white;
   text-align: center;
   padding: 20px;
-  background-color: #b71c1c;
-  color: #fff;
   font-size: 0.9rem;
-  margin-top: 50px;
+  margin-top: 60px;
   border-radius: 20px 20px 0 0;
 }

@@ -121,6 +121,7 @@ CREATE TABLE BloodRequests (
   component_id INT,
   quantity_ml INT,
   urgency_level VARCHAR(20),
+  is_urgent BIT DEFAULT 0,
   status VARCHAR(20),
   created_at DATETIME,
   FOREIGN KEY (requester_id) REFERENCES Users(id),
