@@ -6,12 +6,6 @@ import CheckButton from "react-validation/build/button";
 
 import AuthService from "../services/auth.service";
 
-const required = (value) => {
-  if (!value) {
-    return <div className="invalid-feedback d-block">Điền đủ vào</div>;
-  }
-};
-
 const Login = () => {
   const form = useRef();
   const checkBtn = useRef();
@@ -27,12 +21,30 @@ const Login = () => {
     setUsername(e.target.value);
   };
 
-  const onChangePassword = (e) => {
-    setPassword(e.target.value);
+  const validatePassword = (value) => {
+    if (!value) return "Mật khẩu không được để trống";
+    if (value.length < 8) return "Mật khẩu phải từ 8 ký tự trở lên";
+    return null;
   };
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = (e) => {
     e.preventDefault();
+
+    if (!username) {
+      setMessage("Username không được để trống");
+      setLoading(false);
+      return;
+    }
+
+    const error = validatePassword(password);
+    if (error) {
+      setMessage(error);
+      setLoading(false);
+      return;
+    }
+
 
     setMessage("");
     setLoading(true);
@@ -83,6 +95,7 @@ const Login = () => {
 
         <Form onSubmit={handleLogin} ref={form}>
           <div className="form-group">
+            <h4 className="text-center mb-3">Đăng nhập</h4>
             <label htmlFor="username">
               Username<span style={{ color: "red" }}>*</span>
             </label>
@@ -92,27 +105,48 @@ const Login = () => {
               name="username"
               value={username}
               onChange={onChangeUsername}
-              validations={[required]}
             />
           </div>
 
 
-          <div className="form-group">
+          <div className="form-group position-relative">
             <label htmlFor="password">
               Password<span style={{ color: "red" }}>*</span>
             </label>
-            <input
-              type="password"
-              className="form-control"
-              name="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+
+            <div style={{ position: "relative" }}>
+              <input
+                type={showPassword ? "text" : "password"}
+                className="form-control"
+                name="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                style={{ paddingRight: "40px" }}
+              />
+
+              <span
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  right: "10px",
+                  transform: "translateY(-50%)",
+                  cursor: "pointer"
+                }}
+              >
+                <img
+                  src={showPassword ? "/eye-open.png" : "/eye-close.png"}
+                  alt="toggle"
+                  width={20}
+                />
+              </span>
+            </div>
 
             <div className="text-right mt-2">
               <a href="/forgot">Bạn quên mật khẩu?</a>
             </div>
           </div>
+
 
           <div className="form-group">
             <button className="btn btn-block btn-gradient-red" disabled={loading}>
@@ -135,8 +169,8 @@ const Login = () => {
           )}
           <CheckButton style={{ display: "none" }} ref={checkBtn} />
         </Form>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 };
 

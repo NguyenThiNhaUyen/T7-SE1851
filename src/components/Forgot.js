@@ -3,12 +3,32 @@ import React, { useState } from "react";
 const Forgot = () => {
   const [message, setMessage] = useState("");
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false); 
+
+  const isValidEmail = (value) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(value);
+};
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-localStorage.setItem("recoveryEmail", email);
-    setMessage("Nếu thông tin hợp lệ, hệ thống sẽ gửi hướng dẫn đặt lại mật khẩu.");
-  };
+  e.preventDefault();
+
+  if (!email) {
+    setMessage("Vui lòng nhập email");
+    return;
+  }
+
+  if (!isValidEmail(email)) {
+    setMessage("Email không hợp lệ");
+    return;
+  }
+
+  setLoading(true);
+  localStorage.setItem("recoveryEmail", email);
+  setTimeout(() => {
+    window.location.href = "verify-otp";
+  }, 1000);
+};
 
   return (
     <div className="col-md-12">
@@ -32,25 +52,24 @@ localStorage.setItem("recoveryEmail", email);
               name="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required
             />
           </div>
 
-          <div className="form-group">
-            <button
-              type="submit"
-              className="btn btn-block btn-gradient-red"
-              onClick={() => window.location.href = "/verify-otp"}
-            >
-              Tiếp tục
-            </button>
-          </div>
+          <button
+            type="submit"
+            className="btn btn-block btn-gradient-red"
+            disabled={loading}
+          >
+            Tiếp tục
+          </button>
+
 
           {message && (
             <div className="form-group mt-3">
-              <div className="alert alert-info" role="alert">
+              <div className="alert-custom-red" role="alert">
                 {message}
               </div>
+
             </div>
 
           )}

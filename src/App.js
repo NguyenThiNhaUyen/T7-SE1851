@@ -7,6 +7,7 @@ import AuthService from "./services/auth.service";
 
 import BoardStaff from "./components/BoardStaff";
 import BloodRequestForm from "./components/BloodRequestForm";
+import StaffRequests from "./components/StaffRequests"; // ✅ thêm mới
 import TransfusionConfirm from "./components/TransfusionConfirm";
 import RequestHistory from "./components/RequestHistory";
 import Login from "./components/Login";
@@ -26,6 +27,12 @@ import BlogList from "./components/BlogList";
 import NotificationList from "./components/NotificationList";
 import NotificationForm from "./components/NotificationForm";
 import VnPayForm from "./components/VnPayForm";
+import UrgentRequests from "./components/UrgentRequests"; // ✅ nếu dùng yêu cầu khẩn cấp
+import InventoryChart from "./components/InventoryChart ";
+import StaffStatistics from "./components/StaffStatistics";
+
+
+
 
 import EventBus from "./common/EventBus";
 
@@ -138,8 +145,10 @@ const App = () => {
           <Route path="/admin" element={<BoardAdmin />} />
 
           <Route path="/staff" element={<BoardStaff />} />
-          <Route path="/requests/new" element={<BloodRequestForm />} />
+          <Route path="/staff/requests" element={<StaffRequests />} /> {/* ✅ mới thêm */}
           <Route path="/staff/transfusions" element={<TransfusionConfirm />} />
+          <Route path="/staff/urgent-requests" element={<UrgentRequests />} /> {/* ✅ đã có */}
+          <Route path="/requests/new" element={<BloodRequestForm />} />
           <Route path="/requests/history" element={<RequestHistory />} />
           <Route path="/donation/register" element={<DonationRegister />} />
           <Route path="/donation/history" element={<DonationHistory />} />
@@ -147,6 +156,10 @@ const App = () => {
           <Route path="/forgot" element={<Forgot />} />
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/verify-otp" element={<OtpVerify />} />
+          <Route path="/staff/inventory" element={<InventoryChart />} />
+          <Route path="/staff/statistics" element={<StaffStatistics />} />
+
+
           {/* Blog, Thông báo, VnPay */}
           <Route path="/blog" element={<BlogList />} />
           <Route path="/blog/:id" element={<BlogDetail />} />

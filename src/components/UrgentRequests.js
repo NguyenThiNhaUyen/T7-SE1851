@@ -1,24 +1,23 @@
-
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-
-const StaffRequests = () => {
+import "../styles/staff.css";
+const UrgentRequests = () => {
   const [requests, setRequests] = useState([]);
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/api/requests")
+      .get("http://localhost:3000/api/requests/urgent")
       .then((res) => setRequests(res.data))
-      .catch((err) => console.error("Lỗi khi tải danh sách yêu cầu:", err));
+      .catch((err) => console.error("Lỗi khi tải danh sách yêu cầu khẩn cấp:", err));
   }, []);
 
   return (
     <div className="container mt-4">
-      <h3>📋 Danh sách yêu cầu nhận máu</h3>
+      <h3>📢 Danh sách yêu cầu khẩn cấp</h3>
       {requests.length === 0 ? (
-        <p>Chưa có yêu cầu nào.</p>
+        <p>Không có yêu cầu khẩn cấp nào.</p>
       ) : (
-        <table className="table table-bordered table-striped">
+        <table className="table table-striped table-bordered">
           <thead>
             <tr>
               <th>Người yêu cầu</th>
@@ -26,8 +25,7 @@ const StaffRequests = () => {
               <th>Thành phần</th>
               <th>Số lượng (ml)</th>
               <th>Trạng thái</th>
-              <th>Khẩn cấp</th>
-              <th>Thời gian</th>
+              <th>Thời gian yêu cầu</th>
             </tr>
           </thead>
           <tbody>
@@ -38,7 +36,6 @@ const StaffRequests = () => {
                 <td>{r.component_name}</td>
                 <td>{r.quantity_ml}</td>
                 <td>{r.status}</td>
-                <td>{r.is_urgent ? "✅" : "❌"}</td>
                 <td>{new Date(r.created_at).toLocaleString()}</td>
               </tr>
             ))}
@@ -49,4 +46,4 @@ const StaffRequests = () => {
   );
 };
 
-export default StaffRequests;
+export default UrgentRequests;
