@@ -47,5 +47,16 @@ label {
   border-color: #DD2D24;
   box-shadow: 0 0 0 0.2rem rgba(221, 45, 36, 0.25);
 }
+.navbar-custom {
+  background: linear-gradient(to right, #771813, #DD2D24);
+}
 
+.navbar-custom .navbar-brand,
+.navbar-custom .nav-link {
+  color: white;
+}
+
+.navbar-custom .nav-link:hover {
+  opacity: 0.85;
+}
 
