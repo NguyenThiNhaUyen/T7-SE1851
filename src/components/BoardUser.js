@@ -40,32 +40,32 @@ const BoardUser = () => {
       <div className="user-main-columns">
         {/* Người hiến máu */}
         <div className="user-card">
-          <h4>🧑‍🔬 Người hiến máu</h4>
+          <h4> Người hiến máu</h4>
           <div className="user-button-group">
             <button className="btn" onClick={() => navigate("/donation/register")}>
-              📝 <span>Đăng ký hiến máu</span>
+               <span>Đăng ký hiến máu</span>
             </button>
             <button className="btn" onClick={() => navigate("/donation/history")}>
-              📅 <span>Lịch sử hiến máu</span>
+               <span>Lịch sử hiến máu</span>
             </button>
             <button className="btn" onClick={() => navigate("/donation/aftercare")}>
-              🩹 <span>Thông báo sau hiến máu</span>
+               <span>Thông báo sau hiến máu</span>
             </button>
           </div>
         </div>
 
         {/* Người nhận máu */}
         <div className="user-card">
-          <h4>🏥 Người nhận máu</h4>
+          <h4> Người nhận máu</h4>
           <div className="user-button-group">
             <button className="btn" onClick={() => navigate("/requests/new")}>
-              🚨 <span>Gửi yêu cầu nhận máu</span>
+               <span>Gửi yêu cầu nhận máu</span>
             </button>
             <button className="btn" onClick={() => navigate("/requests/history")}>
-              📄 <span>Lịch sử yêu cầu máu</span>
+               <span>Lịch sử yêu cầu máu</span>
             </button>
             <button className="btn" onClick={() => navigate("/transfusions/history")}>
-              💉 <span>Lịch sử truyền máu</span>
+               <span>Lịch sử truyền máu</span>
             </button>
           </div>
         </div>
