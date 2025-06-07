@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios"; // giả định bạn có axios để gửi dữ liệu lên server
-import "./VnPayForm.css";
+import "../styles/VnPayForm.css";
 
 const VnPayForm = () => {
   const [username, setUsername] = useState("");
