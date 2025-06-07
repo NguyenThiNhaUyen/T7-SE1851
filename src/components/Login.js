@@ -85,8 +85,9 @@ const Login = () => {
   };
 
   return (
-    <div className="col-md-12">
-      <div className="card card-container">
+    <div className="login-fullpage">
+                      <div className="login-box">
+
         <img
           src="/donor.png"
           alt="profile-img"
@@ -169,8 +170,8 @@ const Login = () => {
           )}
           <CheckButton style={{ display: "none" }} ref={checkBtn} />
         </Form>
+      </div > 
       </div >
-    </div >
   );
 };
 
