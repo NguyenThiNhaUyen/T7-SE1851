@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import "./BlogDetail.css";
+import "../styles/BlogDetail.css"
 
 const blogs = [
   {
