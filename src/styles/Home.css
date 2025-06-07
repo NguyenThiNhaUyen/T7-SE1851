@@ -10,29 +10,29 @@
 /* ========== Hero Section ========== */
 .hero {
   background: linear-gradient(135deg, #771813, #dd2d24);
-  text-align: center;
-  padding: 80px 20px;
-  border-radius: 0 0 48px 48px;
-  box-shadow: inset 0 -1px 0 #ddd;
   color: white;
+  text-align: center;
+  padding: 60px 20px;
+  box-shadow: inset 0 -1px 0 #ddd;
 }
 
+
 .hero h1 {
-  font-size: 3rem;
+  font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 10px;
 }
 
 .hero p {
-  font-size: 1.2rem;
-  margin-bottom: 25px;
+  font-size: 1.1rem;
+  margin-bottom: 20px;
 }
 
 .cta-button {
   background: linear-gradient(to right, #771813, #dd2d24);
   color: white;
   border: none;
-  padding: 12px 28px;
+  padding: 10px 24px;
   border-radius: 8px;
   font-size: 1rem;
   font-weight: 500;
@@ -43,6 +43,7 @@
 .cta-button:hover {
   background: linear-gradient(to right, #5e110e, #c7221d);
 }
+
 
 /* ========== Info Cards Section ========== */
 .info-section {
@@ -150,6 +151,7 @@
   background-color: #fff7f7;
   padding: 50px 20px;
   text-align: center;
+  margin-top: 60px;
 }
 
 .blog-preview-section .grid-card a {
@@ -160,6 +162,10 @@
 
 .blog-preview-section .grid-card a:hover {
   text-decoration: underline;
+}
+
+.blog-preview-section .cta-button {
+  margin-top: 20px;
 }
 
 /* ========== Footer ========== */

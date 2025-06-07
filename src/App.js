@@ -1,40 +1,46 @@
 import React, { useState, useEffect } from "react";
-import { Routes, Route, Link, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
 import AuthService from "./services/auth.service";
+import EventBus from "./common/EventBus";
 
-import BoardStaff from "./components/BoardStaff";
-import BloodRequestForm from "./components/BloodRequestForm";
-import StaffRequests from "./components/StaffRequests"; // ✅ thêm mới
-import TransfusionConfirm from "./components/TransfusionConfirm";
-import RequestHistory from "./components/RequestHistory";
+// Giao diện
+import Navbar from "./components/Navbar";
+
+// Các trang và component
+import Home from "./components/Home";
 import Login from "./components/Login";
 import Register from "./components/Register";
-import Home from "./components/Home";
 import Profile from "./components/Profile";
-import BoardUser from "./components/BoardUser";
-import BoardAdmin from "./components/BoardAdmin";
 import Forgot from "./components/Forgot";
 import ChangePassword from "./components/ChangePassword";
+import OtpVerify from "./components/OtpVerify";
+import BoardUser from "./components/BoardUser";
+import BoardAdmin from "./components/BoardAdmin";
+import BoardStaff from "./components/BoardStaff";
+
+// Người hiến máu và nhận máu
 import DonationRegister from "./components/DonationRegister";
 import DonationHistory from "./components/DonationHistory";
 import DonationAftercare from "./components/DonationAftercare";
-import OtpVerify from "./components/OtpVerify";
-import BlogDetail from "./components/BlogDetail";
+import BloodRequestForm from "./components/BloodRequestForm";
+import RequestHistory from "./components/RequestHistory";
+
+// Staff
+import StaffRequests from "./components/StaffRequests";
+import TransfusionConfirm from "./components/TransfusionConfirm";
+import InventoryChart from "./components/InventoryChart";
+import StaffStatistics from "./components/StaffStatistics";
+import UrgentRequests from "./components/UrgentRequests";
+
+// Blog, Thông báo, Thanh toán
 import BlogList from "./components/BlogList";
+import BlogDetail from "./components/BlogDetail";
 import NotificationList from "./components/NotificationList";
 import NotificationForm from "./components/NotificationForm";
 import VnPayForm from "./components/VnPayForm";
-import UrgentRequests from "./components/UrgentRequests"; // ✅ nếu dùng yêu cầu khẩn cấp
-import InventoryChart from "./components/InventoryChart ";
-import StaffStatistics from "./components/StaffStatistics";
-
-
-
-
-import EventBus from "./common/EventBus";
 
 const App = () => {
   const [showStaffBoard, setShowStaffBoard] = useState(false);
@@ -68,76 +74,18 @@ const App = () => {
 
   return (
     <div>
-      <nav className="navbar navbar-expand navbar-custom">
-        <Link to={"/"} className="navbar-brand">
-          Group 7
-        </Link>
-        <div className="navbar-nav mr-auto">
-          <li className="nav-item">
-            <Link to={"/home"} className="nav-link">
-              Home
-            </Link>
-          </li>
-
-          {showAdminBoard && (
-            <li className="nav-item">
-              <Link to={"/admin"} className="nav-link">
-                Admin Board
-              </Link>
-            </li>
-          )}
-
-          {showStaffBoard && (
-            <li className="nav-item">
-              <Link to={"/staff"} className="nav-link">
-                Staff Board
-              </Link>
-            </li>
-          )}
-
-          {currentUser && !showAdminBoard && !showStaffBoard && (
-            <li className="nav-item">
-              <Link to={"/user"} className="nav-link">
-                User
-              </Link>
-            </li>
-          )}
-        </div>
-
-        {currentUser ? (
-          <div className="navbar-nav ml-auto">
-            <li className="nav-item">
-              <Link to={"/profile"} className="nav-link">
-                {currentUser.username}
-              </Link>
-            </li>
-            <li className="nav-item">
-              <a href="/login" className="nav-link" onClick={logOut}>
-                LogOut
-              </a>
-            </li>
-          </div>
-        ) : (
-          <div className="navbar-nav ml-auto">
-            <li className="nav-item">
-              <Link to={"/login"} className="nav-link">
-                Login
-              </Link>
-            </li>
-
-            <li className="nav-item">
-              <Link to={"/register"} className="nav-link">
-                Sign Up
-              </Link>
-            </li>
-          </div>
-        )}
-      </nav>
+      {/* Sử dụng Navbar component */}
+      <Navbar
+        currentUser={currentUser}
+        showAdminBoard={showAdminBoard}
+        showStaffBoard={showStaffBoard}
+        logOut={logOut}
+      />
 
       <div className="container mt-3">
         <Routes>
-          <Route exact path={"/"} element={<Home />} />
-          <Route exact path={"/home"} element={<Home />} />
+          <Route exact path="/" element={<Home />} />
+          <Route exact path="/home" element={<Home />} />
           <Route exact path="/login" element={<Login />} />
           <Route exact path="/register" element={<Register />} />
           <Route exact path="/profile" element={<Profile />} />
@@ -145,9 +93,9 @@ const App = () => {
           <Route path="/admin" element={<BoardAdmin />} />
 
           <Route path="/staff" element={<BoardStaff />} />
-          <Route path="/staff/requests" element={<StaffRequests />} /> {/* ✅ mới thêm */}
+          <Route path="/staff/requests" element={<StaffRequests />} />
           <Route path="/staff/transfusions" element={<TransfusionConfirm />} />
-          <Route path="/staff/urgent-requests" element={<UrgentRequests />} /> {/* ✅ đã có */}
+          <Route path="/staff/urgent-requests" element={<UrgentRequests />} />
           <Route path="/requests/new" element={<BloodRequestForm />} />
           <Route path="/requests/history" element={<RequestHistory />} />
           <Route path="/donation/register" element={<DonationRegister />} />
@@ -159,8 +107,6 @@ const App = () => {
           <Route path="/staff/inventory" element={<InventoryChart />} />
           <Route path="/staff/statistics" element={<StaffStatistics />} />
 
-
-          {/* Blog, Thông báo, VnPay */}
           <Route path="/blog" element={<BlogList />} />
           <Route path="/blog/:id" element={<BlogDetail />} />
           <Route path="/notifications" element={<NotificationList />} />
