@@ -82,7 +82,7 @@ const App = () => {
         logOut={logOut}
       />
 
-      <div className="container mt-3">
+      <div className="full-width">
         <Routes>
           <Route exact path="/" element={<Home />} />
           <Route exact path="/home" element={<Home />} />
