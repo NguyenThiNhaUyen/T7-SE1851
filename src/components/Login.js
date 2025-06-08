@@ -23,11 +23,7 @@ const Login = () => {
 
   const validatePassword = (value) => {
     if (!value) return "Mật khẩu không được để trống";
-<<<<<<< HEAD
-    if (value.length < 5) return "Mật khẩu phải từ 8 ký tự trở lên";
-=======
     if (value.length < 5) return "Mật khẩu phải từ 6 ký tự trở lên";
->>>>>>> 91928777cdb238fe5b87344814cba5b570a5c080
     return null;
   };
 
@@ -89,9 +85,8 @@ const Login = () => {
   };
 
   return (
-    <div className="login-fullpage">
-                      <div className="login-box">
-
+    <div className="col-md-12">
+      <div className="card card-container">
         <img
           src="/donor.png"
           alt="profile-img"
@@ -174,8 +169,8 @@ const Login = () => {
           )}
           <CheckButton style={{ display: "none" }} ref={checkBtn} />
         </Form>
-      </div > 
       </div >
+    </div >
   );
 };
 
