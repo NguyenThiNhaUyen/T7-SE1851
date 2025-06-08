@@ -80,8 +80,8 @@ const Register = () => {
   };
 
   return (
-    <div className="col-md-12">
-      <div className="card card-container">
+    <div className="regis-fullpage">
+  <div className="change-box">
         <img
           src="/donor.png"
           alt="profile-img"

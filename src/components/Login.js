@@ -23,7 +23,7 @@ const Login = () => {
 
   const validatePassword = (value) => {
     if (!value) return "Mật khẩu không được để trống";
-    if (value.length < 5) return "Mật khẩu phải từ 6 ký tự trở lên";
+    if (value.length < 6) return "Mật khẩu phải từ 6 ký tự trở lên";
     return null;
   };
 
@@ -86,7 +86,13 @@ const Login = () => {
 
   return (
     <div className="login-fullpage">
-                      <div className="login-box">
+      <div className="login-left">
+    <div>
+      <h2>Welcome back!</h2>
+      <p>You can sign in to access with your existing account.</p>
+    </div>
+  </div>
+      <div className="login-box">
 
         <img
           src="/donor.png"
@@ -116,14 +122,15 @@ const Login = () => {
             </label>
 
             <div style={{ position: "relative" }}>
-              <input
+              <Input
                 type={showPassword ? "text" : "password"}
                 className="form-control"
                 name="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                style={{ paddingRight: "40px" }}
+                style={{ paddingRight: "40px" }} 
               />
+
 
               <span
                 onClick={() => setShowPassword(!showPassword)}
@@ -170,8 +177,8 @@ const Login = () => {
           )}
           <CheckButton style={{ display: "none" }} ref={checkBtn} />
         </Form>
-      </div > 
       </div >
+    </div >
   );
 };
 

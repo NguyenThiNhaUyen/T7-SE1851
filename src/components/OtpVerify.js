@@ -3,6 +3,14 @@ import React, { useState, useEffect } from "react";
 const OtpVerify = () => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [countdown, setCountdown] = useState(60);
+  const [recoveryEmail, setRecoveryEmail] = useState("");
+
+  useEffect(() => {
+    const email = localStorage.getItem("recoveryEmail");
+    if (email) {
+      setRecoveryEmail(maskEmail(email));
+    }
+  }, []);
 
   useEffect(() => {
     const timer = countdown > 0 && setInterval(() => setCountdown(c => c - 1), 1000);
@@ -29,28 +37,15 @@ const OtpVerify = () => {
   };
 
   const maskEmail = (email) => {
-  const [name, domain] = email.split("@");
-  const maskedName = name[0] + "*".repeat(name.length - 2) + name[name.length - 1];
-  const maskedDomain = domain[0] + "*".repeat(domain.indexOf(".")) + domain.slice(domain.indexOf("."));
-  return maskedName + "@" + maskedDomain;
-};
-
-
-  const [recoveryEmail, setRecoveryEmail] = useState("");
-
-  useEffect(() => {
-  const email = localStorage.getItem("recoveryEmail");
-  if (email) {
-    setRecoveryEmail(maskEmail(email));
-  }
-}, []);
-
-
-  
+    const [name, domain] = email.split("@");
+    const maskedName = name[0] + "*".repeat(name.length - 2) + name[name.length - 1];
+    const maskedDomain = domain[0] + "*".repeat(domain.indexOf(".")) + domain.slice(domain.indexOf("."));
+    return maskedName + "@" + maskedDomain;
+  };
 
   return (
-    <div className="d-flex justify-content-center align-items-center vh-100 bg-white">
-      <div className="text-center" style={{ maxWidth: 320, width: "100%" }}>
+    <div className="change-fullpage">
+      <div className="change-box">
         <h4 className="mb-3 fw-bold">Xác thực OTP</h4>
         <div className="mb-2" style={{ fontSize: 14, color: "#444" }}>
           Nhập mã xác thực đã được gửi đến địa chỉ<br />
@@ -71,7 +66,6 @@ const OtpVerify = () => {
                   borderRadius: "8px",
                   border: "1px solid #ddd",
                   fontSize: "20px",
-                  backgroundColor: "#f9f9f9",
                 }}
                 maxLength={1}
                 value={digit}
@@ -83,11 +77,6 @@ const OtpVerify = () => {
           <button
             type="submit"
             className="btn btn-block btn-gradient-red"
-            style={{
-              backgroundColor: otp.every(o => o) ? "#007bff" : "#cce0ff",
-              color: otp.every(o => o) ? "#fff" : "#666",
-              cursor: otp.every(o => o) ? "pointer" : "not-allowed",
-            }}
             disabled={!otp.every(o => o)}
           >
             Tiếp tục

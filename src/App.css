@@ -19,6 +19,50 @@
   width: 100%;
 }
 
+.login-left {
+  /* flex: 1; */
+  /* background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: 60px; */
+  color: white;
+}
+
+.change-fullpage {
+  background-image: url("/public/9069379.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 92.4vh;
+  display: flex;
+  justify-content: center; 
+  align-items: center;
+  padding-right: 0;
+}
+
+.change-box {
+  background: white;
+  padding: 60px 80px;
+  border-radius: 12px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.regis-fullpage {
+  background-image: url("/public/9069379.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  justify-content: center; 
+  align-items: center;
+  padding: 40px 0;
+}
+
 .card-container.card {
   max-width: 350px !important;
   padding: 40px 40px;
