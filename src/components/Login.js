@@ -87,11 +87,18 @@ const Login = () => {
   return (
     <div className="login-fullpage">
       <div className="login-left">
-    <div>
-      <h2>Welcome back!</h2>
-      <p>You can sign in to access with your existing account.</p>
-    </div>
+  <div className="login-left-content">
+    <h2>Hiến máu - Hành động nhỏ, ý nghĩa lớn</h2>
+    <p style={{ lineHeight: 1.6 }}>
+      Ở Việt Nam, cứ mỗi <strong>2 giây</strong> lại có một người cần truyền máu.  
+      <br />
+      Sự đóng góp của bạn thật sự quan trọng!  
+      <br />
+      Hãy tiếp tục đồng hành cùng mạng lưới hiến máu toàn quốc – nơi trái tim chung một nhịp yêu thương.
+    </p>
   </div>
+</div>
+
       <div className="login-box">
 
         <img
@@ -179,6 +186,7 @@ const Login = () => {
         </Form>
       </div >
     </div >
+   
   );
 };
 

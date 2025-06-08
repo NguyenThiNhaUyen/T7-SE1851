@@ -64,12 +64,13 @@ const OtpVerify = () => {
                   width: "44px",
                   height: "48px",
                   borderRadius: "8px",
-                  border: "1px solid #ddd",
+                  border: "2px solid #dd2d24",
                   fontSize: "20px",
                 }}
                 maxLength={1}
                 value={digit}
                 onChange={(e) => handleChange(e.target.value, index)}
+              
               />
             ))}
           </div>
@@ -83,7 +84,7 @@ const OtpVerify = () => {
           </button>
         </form>
 
-        <div className="mt-3 text-muted" style={{ fontSize: "13px" }}>
+        <div className="mt-3 text-muted text-center" style={{ fontSize: "13px" }}>
           Gửi lại mã OTP ({countdown}s)
         </div>
       </div>

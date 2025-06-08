@@ -10,20 +10,26 @@ const ChangePassword = () => {
   const [showConfirm, setShowConfirm] = useState(false);
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!newPassword || !confirmPassword) {
-      setMessage("Điền hết đi!!!");
-      return;
-    }
+  if (!newPassword || !confirmPassword) {
+    setMessage("Điền hết đi!!!");
+    return;
+  }
 
-    if (newPassword !== confirmPassword) {
-      setMessage("Mật khẩu không khớp");
-      return;
-    }
+  if (newPassword.length < 6) {
+    setMessage("Mật khẩu phải từ 6 ký tự trở lên");
+    return;
+  }
 
-    setMessage("Mật khẩu thay đổi thành công!");
-  };
+  if (newPassword !== confirmPassword) {
+    setMessage("Mật khẩu không khớp");
+    return;
+  }
+
+  setMessage("Mật khẩu thay đổi thành công!");
+};
+
 
   return (
     <div className="change-fullpage">
