@@ -23,7 +23,9 @@ const Login = () => {
 
   const validatePassword = (value) => {
     if (!value) return "Mật khẩu không được để trống";
-    if (value.length < 5) return "Mật khẩu phải từ 6 ký tự trở lên";
+
+    if (value.length < 6) return "Mật khẩu phải từ 6 ký tự trở lên";
+
     return null;
   };
 
@@ -85,8 +87,24 @@ const Login = () => {
   };
 
   return (
-    <div className="col-md-12">
-      <div className="card card-container">
+
+    <div className="login-fullpage">
+      <div className="login-left">
+  <div className="login-left-content">
+    <h2>Hiến máu - Hành động nhỏ, ý nghĩa lớn</h2>
+    <p style={{ lineHeight: 1.6 }}>
+      Ở Việt Nam, cứ mỗi <strong>2 giây</strong> lại có một người cần truyền máu.  
+      <br />
+      Sự đóng góp của bạn thật sự quan trọng!  
+      <br />
+      Hãy tiếp tục đồng hành cùng mạng lưới hiến máu toàn quốc – nơi trái tim chung một nhịp yêu thương.
+    </p>
+  </div>
+</div>
+
+      <div className="login-box">
+
+
         <img
           src="/donor.png"
           alt="profile-img"
@@ -115,14 +133,15 @@ const Login = () => {
             </label>
 
             <div style={{ position: "relative" }}>
-              <input
+              <Input
                 type={showPassword ? "text" : "password"}
                 className="form-control"
                 name="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                style={{ paddingRight: "40px" }}
+                style={{ paddingRight: "40px" }} 
               />
+
 
               <span
                 onClick={() => setShowPassword(!showPassword)}
