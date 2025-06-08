@@ -33,6 +33,4 @@ public class UserDetail {
     private User user;
 
 
-
-
 }

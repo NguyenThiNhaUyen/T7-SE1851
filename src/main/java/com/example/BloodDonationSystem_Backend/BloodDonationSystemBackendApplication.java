@@ -7,7 +7,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class BloodDonationSystemBackendApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(BloodDonationSystemBackendApplication.class, args);
+
+
 	}
+	public static void insertUser(){
+
+	}
+
 
 }
