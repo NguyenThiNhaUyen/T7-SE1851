@@ -1,72 +1,63 @@
-// src/components/TransfusionConfirm.js
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
+import "../styles/user.css";
+import { toast } from "react-toastify";
 
-const TransfusionConfirm = () => {
-  const [requests, setRequests] = useState([]);
-  const [loading, setLoading] = useState(true);
+const TransfusionHistory = () => {
+  const [transfusions, setTransfusions] = useState([]);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    fetchRequests();
+    const currentUser = JSON.parse(localStorage.getItem("user"));
+    setUser(currentUser);
+
+    if (!currentUser) return;
+
+    axios
+      .get(`/users/transfusions/history/${currentUser.id}`)
+      .then((res) => {
+        setTransfusions(res.data);
+        if (res.data.length === 0) {
+          setTimeout(() => {
+            toast.info("📭 Bạn chưa có lịch sử truyền máu nào.");
+          }, 200);
+        }
+      })
+      .catch((err) => {
+        console.error("Lỗi khi tải lịch sử truyền máu:", err);
+        setTimeout(() => {
+          toast.error("❌ Không thể tải dữ liệu. Vui lòng thử lại sau.");
+        }, 200);
+      });
   }, []);
 
-  const fetchRequests = async () => {
-    try {
-      const res = await axios.get("http://localhost:3000/api/requests/pending");
-      setRequests(res.data);
-    } catch (error) {
-      console.error("Lỗi khi tải danh sách yêu cầu máu:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const confirmTransfusion = async (requestId) => {
-    try {
-      await axios.post(`http://localhost:3000/api/transfusions/confirm`, {
-        request_id: requestId,
-        staff_id: JSON.parse(localStorage.getItem("user")).id,
-      });
-      alert("Đã xác nhận truyền máu!");
-      fetchRequests(); // reload danh sách
-    } catch (error) {
-      console.error("Lỗi khi xác nhận truyền máu:", error);
-      alert("Xác nhận thất bại!");
-    }
-  };
-
-  if (loading) return <div className="container">Đang tải dữ liệu...</div>;
-
   return (
-    <div className="container">
-      <h3>Danh sách yêu cầu chờ xử lý</h3>
-      {requests.length === 0 ? (
-        <p>Không có yêu cầu chờ xử lý.</p>
+    <div className="container mt-4">
+      <h3 className="text-danger mb-4">💉 Lịch sử truyền máu</h3>
+
+      {!user ? (
+        <div className="alert alert-danger">Người dùng chưa đăng nhập.</div>
+      ) : transfusions.length === 0 ? (
+        <p>Chưa có lần truyền máu nào.</p>
       ) : (
-        <table className="table table-bordered">
+        <table className="styled-table">
           <thead>
             <tr>
-              <th>Người yêu cầu</th>
-              <th>Nhóm máu</th>
               <th>Thành phần</th>
+              <th>Nhóm máu</th>
               <th>Số lượng (ml)</th>
-              <th>Mức độ khẩn cấp</th>
-              <th>Hành động</th>
+              <th>Ngày truyền</th>
+              <th>Trạng thái</th>
             </tr>
           </thead>
           <tbody>
-            {requests.map((req) => (
-              <tr key={req.id}>
-                <td>{req.requester_name || req.requester_id}</td>
-                <td>{req.blood_type}</td>
-                <td>{req.component_name || req.component_id}</td>
-                <td>{req.quantity_ml}</td>
-                <td>{req.urgency_level}</td>
-                <td>
-                  <button className="btn btn-success" onClick={() => confirmTransfusion(req.id)}>
-                    Xác nhận truyền
-                  </button>
-                </td>
+            {transfusions.map((item) => (
+              <tr key={item.id}>
+                <td>{item.component_name}</td>
+                <td>{item.blood_type}</td>
+                <td>{item.quantity_ml}</td>
+                <td>{new Date(item.transfusion_date).toLocaleDateString()}</td>
+                <td>{item.status}</td>
               </tr>
             ))}
           </tbody>
@@ -76,4 +67,4 @@ const TransfusionConfirm = () => {
   );
 };
 
-export default TransfusionConfirm;
+export default TransfusionHistory;
