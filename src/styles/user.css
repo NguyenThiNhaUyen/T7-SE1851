@@ -20,8 +20,11 @@ body {
   text-align: center;
   padding: 2.5rem 1rem;
   border-radius: 0 0 20px 20px;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1rem;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  border-radius: 0;
 }
 
 .header h1 {
@@ -51,12 +54,57 @@ body {
   transform: scale(1.05);
 }
 
+/* Sidebar bố cục mới */
+.user-layout {
+  display: flex;
+  flex-direction: row;
+}
+
+.sidebar-user {
+  width: 250px;
+  background-color: #c62828;
+  color: white;
+  padding: 1.5rem;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sidebar-title {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.sidebar-btn {
+  background-color: transparent;
+  border: none;
+  color: white;
+  font-size: 1rem;
+  padding: 0.5rem 0;
+  text-align: left;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.sidebar-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding-left: 5px;
+}
+
+.main-content-user {
+  flex: 1;
+  padding: 1.5rem;
+}
 
 /* Cột bố cục chính */
 .user-main-columns {
   display: flex;
   justify-content: center;
-  gap: 5px; /* Khoảng cách giữa các user-card là 5px */
+  gap: 5px;
   flex-wrap: wrap;
 }
 
@@ -84,14 +132,15 @@ body {
 }
 
 /* Nhóm nút chức năng */
-.user-button-group {
+.user-button-group,
+.user-button-group1 {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-/* Nút chức năng */
-.user-button-group .btn {
+.user-button-group .btn,
+.user-button-group1 .btn {
   background-color: #fff;
   color: rgb(0, 0, 0);
   border: none;
@@ -109,24 +158,7 @@ body {
 .user-button-group .btn:hover {
   background-color: #b21d1d;
   transform: translateX(5px);
-}
-
-.user-button-group .btn span {
-  margin-left: 10px;
-}
-.user-button-group1 .btn {
-  background-color: #ffffff;
-  color: rgb(0, 0, 0);
-  border: none;
-  padding: 0.75rem 1.2rem;
-  font-size: 1rem;
-  font-weight: 500;
-  text-align: left;
-  border-radius: 10px;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  width: 100%;
+  color: white;
 }
 
 .user-button-group1 .btn:hover {
@@ -135,9 +167,11 @@ body {
   transform: translateX(5px);
 }
 
+.user-button-group .btn span,
 .user-button-group1 .btn span {
   margin-left: 10px;
 }
+
 /* Phần Tìm hiểu thêm */
 .additional-section {
   text-align: center;
@@ -152,14 +186,16 @@ body {
   font-size: 1.5rem;
   font-weight: 600;
 }
+
 .additional-section h4 {
   color: #030303;
   margin-bottom: 1.5rem;
   font-size: 1.2rem;
   font-weight: 600;
 }
+
 .additional-section .user-main-columns {
-  gap: 5px; /* Khoảng cách giữa các user-card trong additional-section là 5px */
+  gap: 5px;
 }
 
 .additional-section .user-card {
@@ -168,4 +204,202 @@ body {
   display: inline-block;
   vertical-align: top;
   margin: 0;
+}
+
+.user-section {
+  background-color: white;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.section-title {
+  color: #dd2d24;
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  text-align: left;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 15px;
+}
+.education-section {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.education-section:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+.education-item {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  border-left: 5px solid #dd2d24;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.education-item:hover {
+  background-color: #e9ecef;
+}
+
+.education-item h4 {
+  color: #dd2d24;
+  margin-bottom: 0.75rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.education-item p {
+  color: #333;
+  line-height: 1.8;
+  margin: 0;
+}
+
+.education-item ul {
+  list-style-type: disc;
+  padding-left: 20px;
+  color: #555;
+  margin-top: 0.5rem;
+}
+
+.education-item .note {
+  font-style: italic;
+  color: #777;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  color: #dd2d24;
+  font-size: 1.5rem;
+}
+
+.contact-info {
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: #f1f1f1;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.contact-info p {
+  margin: 0.5rem 0;
+  color: #444;
+}
+
+.contact-info a {
+  color: #dd2d24;
+  text-decoration: none;
+}
+
+.contact-info a:hover {
+  text-decoration: underline;
+}
+/* Thêm vào user.css */
+.education-section {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+  background-color: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.education-content {
+  margin-top: 2rem;
+}
+
+.education-item {
+  margin-bottom: 3rem;
+  padding-left: 1.5rem;
+  border-left: 6px solid #dd2d24;
+}
+
+.education-item h4 {
+  color: #dd2d24;
+  margin-bottom: 1rem;
+  font-size: 2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.education-item ul {
+  list-style-type: decimal;
+  padding-left: 2.5rem;
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+.education-item ul li {
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  line-height: 1.8;
+}
+
+.education-item .note {
+  font-style: italic;
+  color: #666;
+  margin-top: 1rem;
+  font-size: 1rem;
+}
+
+.contact-info {
+  margin-top: 3rem;
+  padding: 2rem;
+  background-color: #f8f9fa;
+  border-top: 1px solid #ddd;
+  text-align: center;
+}
+
+.contact-info p {
+  margin: 0.75rem 0;
+  color: #444;
+  font-size: 1.1rem;
+}
+
+.contact-info a {
+  color: #dd2d24;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.contact-info a:hover {
+  text-decoration: underline;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  color: #dd2d24;
+  font-size: 1.8rem;
+}
+
+.main-content-user {
+  flex: 1;
+  padding: 2rem;
+  background-color: #f5f5f5;
+}
+@media (max-width: 768px) {
+  .education-item h4 { font-size: 1.5rem; }
+  .education-item ul { padding-left: 1.5rem; }
+  .education-section { padding: 1.5rem; }
 }

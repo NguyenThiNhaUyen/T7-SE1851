@@ -1,12 +1,27 @@
 // src/pages/AdminDashboard.jsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../styles/admin.css";
 import { Bar } from 'react-chartjs-2';
 import { Chart, BarElement, CategoryScale, LinearScale } from 'chart.js';
+import { getAllTransfusions } from "../services/transfusion.service";
 Chart.register(BarElement, CategoryScale, LinearScale);
 
 const AdminDashboard = () => {
   const [tab, setTab] = useState("dashboard");
+  const [transfusions, setTransfusions] = useState([]);
+
+ useEffect(() => {
+  getAllTransfusions()
+    .then(res => {
+      console.log("✅ Dữ liệu từ API:", res.data); // Thêm dòng này để kiểm tra
+      setTransfusions(res.data);
+    })
+    .catch(error => {
+      console.error("❌ Lỗi khi gọi API:", error);
+    });
+}, []);
+
+
 
   const stats = {
     donorsToday: 25,
@@ -33,13 +48,6 @@ const AdminDashboard = () => {
     }
   };
 
-  const recentUrgentRequests = [
-    { date: "04/05/2024", hospital: "Bệnh viện TP", bloodType: "O+", units: 6, status: "Đang chờ" },
-    { date: "04/05/2024", hospital: "Phòng khám Mercy", bloodType: "O−", units: 2, status: "Đang chờ" },
-    { date: "04/05/2024", hospital: "Bệnh viện Trung ương", bloodType: "O+", units: 4, status: "Đang chờ" },
-    { date: "04/04/2024", hospital: "Bệnh viện New Town", bloodType: "O+", units: 8, status: "Đang chờ" },
-  ];
-
   const users = [
     { username: "admin", email: "admin@example.com", role: "Quản trị", status: "Hoạt động" },
     { username: "user1", email: "user1@example.com", role: "Nhân viên", status: "Hoạt động" },
@@ -59,9 +67,7 @@ const AdminDashboard = () => {
     <div className="admin-layout">
       <aside className="admin-sidebar">
         <h2>QUẢN TRỊ</h2>
-        {[
-          "dashboard", "users", "blood", "compatibility", "urgent"
-        ].map((key) => (
+        {["dashboard", "users", "blood", "compatibility", "urgent"].map((key) => (
           <button key={key} onClick={() => setTab(key)} className={tab === key ? "active" : ""}>
             {key === "dashboard" ? "Tổng quan" :
               key === "users" ? "Người dùng & Vai trò" :
@@ -86,7 +92,7 @@ const AdminDashboard = () => {
                 Đơn vị máu còn: {stats.bloodUnits}
               </div>
               <div className="stat-card">
-                <img src="khancap.png" alt="Urgent Requests" />
+                <img src="/khancap.png" alt="Urgent Requests" />
                 Yêu cầu khẩn cấp: {stats.urgentRequests}
               </div>
             </div>
@@ -95,25 +101,25 @@ const AdminDashboard = () => {
               <Bar data={chartData} options={chartOptions} />
             </div>
             <div className="chart-container">
-              <h3>Yêu cầu khẩn cấp gần đây</h3>
+              <h3>Lịch sử truyền máu gần đây</h3>
               <table>
                 <thead>
                   <tr>
-                    <th>Ngày</th>
-                    <th>Bệnh viện</th>
+                    <th>Người nhận</th>
                     <th>Nhóm máu</th>
-                    <th>Số đơn vị</th>
+                    <th>Đơn vị</th>
+                    <th>Ngày</th>
                     <th>Trạng thái</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {recentUrgentRequests.map((r, i) => (
+                  {transfusions.map((t, i) => (
                     <tr key={i}>
-                      <td>{r.date}</td>
-                      <td>{r.hospital}</td>
-                      <td>{r.bloodType}</td>
-                      <td>{r.units}</td>
-                      <td>{r.status}</td>
+                      <td>{t.recipientName}</td>
+                      <td>{t.bloodType}</td>
+                      <td>{t.units}</td>
+                      <td>{t.confirmedAt ? new Date(t.confirmedAt).toLocaleDateString() : '—'}</td>
+                      <td>{t.status}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -210,15 +216,13 @@ const AdminDashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {recentUrgentRequests.map((r, i) => (
-                  <tr key={i}>
-                    <td>{r.date}</td>
-                    <td>{r.hospital}</td>
-                    <td>{r.bloodType}</td>
-                    <td>{r.units}</td>
-                    <td>{r.status}</td>
-                  </tr>
-                ))}
+                <tr>
+                  <td>—</td>
+                  <td>Chưa có dữ liệu từ API</td>
+                  <td>—</td>
+                  <td>—</td>
+                  <td>—</td>
+                </tr>
               </tbody>
             </table>
           </div>
