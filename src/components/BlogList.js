@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "../styles/BlogList.css"
+import "../styles/BlogList.css";
+
 // Danh sách các bài viết blog
 const blogs = [
   {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import "../styles/user.css";
+import { getUserTransfusions } from "../services/transfusion.service";
 import { toast } from "react-toastify";
+import "../styles/user.css";
 
 const TransfusionHistory = () => {
   const [transfusions, setTransfusions] = useState([]);
@@ -13,8 +13,7 @@ const TransfusionHistory = () => {
 
     if (!currentUser) return;
 
-    axios
-      .get(`http://localhost:3000/api/transfusions/user/${currentUser.id}`)
+    getUserTransfusions(currentUser.id)
       .then((res) => {
         setTransfusions(res.data);
         if (res.data.length === 0) {
@@ -25,9 +24,7 @@ const TransfusionHistory = () => {
       })
       .catch((err) => {
         console.error("Lỗi khi tải lịch sử truyền máu:", err);
-        setTimeout(() => {
-          toast.error("❌ Không thể tải dữ liệu. Vui lòng thử lại sau.");
-        }, 200);
+        toast.error("❌ Không thể tải dữ liệu. Vui lòng thử lại sau.");
       });
   }, []);
 
@@ -43,9 +40,9 @@ const TransfusionHistory = () => {
         <table className="styled-table">
           <thead>
             <tr>
-              <th>Thành phần</th>
+              <th>Người nhận</th>
               <th>Nhóm máu</th>
-              <th>Số lượng (ml)</th>
+              <th>Số lượng (đơn vị)</th>
               <th>Ngày truyền</th>
               <th>Trạng thái</th>
             </tr>
@@ -53,10 +50,14 @@ const TransfusionHistory = () => {
           <tbody>
             {transfusions.map((item) => (
               <tr key={item.id}>
-                <td>{item.component_name}</td>
-                <td>{item.blood_type}</td>
-                <td>{item.quantity_ml}</td>
-                <td>{new Date(item.transfusion_date).toLocaleDateString()}</td>
+                <td>{item.recipientName}</td>
+                <td>{item.bloodType}</td>
+                <td>{item.units}</td>
+                <td>
+                  {item.confirmedAt
+                    ? new Date(item.confirmedAt).toLocaleDateString()
+                    : "—"}
+                </td>
                 <td>{item.status}</td>
               </tr>
             ))}

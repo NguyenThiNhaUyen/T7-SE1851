@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import UserService from "../services/user.service";
-import "../styles/Home.css"
+import "../styles/Home.css";
+
 const Home = () => {
   const [content, setContent] = useState("");
   const navigate = useNavigate();
