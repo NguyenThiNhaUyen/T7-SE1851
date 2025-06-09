@@ -1,17 +1,21 @@
 import axios from "axios";
 
-// CHỈ dùng proxy, KHÔNG cần http://localhost:3000 nếu đã dùng setupProxy.js
-const API_URL = "/api/auth/";
+// ✅ Đảm bảo dùng đúng URL backend
+const API_URL = "http://localhost:8080/api/auth/";
 
 const login = (username, password) => {
-  return axios
-    .post(API_URL + "signin", { username, password })
-    .then((response) => {
-      if (response.data.accessToken) {
-        localStorage.setItem("user", JSON.stringify(response.data));
-      }
-      return response.data;
-    });
+  return axios.post(API_URL + "login", {
+    username,
+    password
+  }, {
+    withCredentials: true   // ✅ Thêm dòng này để gửi kèm cookie (JSESSIONID)
+  })
+  .then((response) => {
+    if (response.data.username) {
+      localStorage.setItem("user", JSON.stringify(response.data));
+    }
+    return response.data;
+  });
 };
 
 const logout = () => {

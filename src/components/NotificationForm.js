@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../styles/NotificationForm.css"
+import "../styles/NotificationForm.css";
 
 const NotificationForm = () => {
   const [title, setTitle] = useState("");

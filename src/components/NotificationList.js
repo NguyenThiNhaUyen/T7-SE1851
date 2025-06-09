@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "../styles/NotificationList.css"
+import "../styles/NotificationList.css"; // Đừng quên tạo file CSS
 
 const mockNotifications = [
   {

@@ -14,7 +14,7 @@ const DonationAftercare = () => {
       return;
     }
 
-    axios.get(`/api/notifications/user/${currentUser.id}`)
+    axios.get(`/users/notifications/aftercare/${currentUser.id}`)
       .then((res) => setNotifications(res.data))
       .catch(() => setError("Không thể tải thông báo."));
   }, [currentUser]);

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
@@ -22,11 +24,16 @@ import BoardAdmin from "./components/BoardAdmin";
 import BoardStaff from "./components/BoardStaff";
 
 // Người hiến máu và nhận máu
+import UserLayout from "./layouts/UserLayout";
 import DonationRegister from "./components/DonationRegister";
 import DonationHistory from "./components/DonationHistory";
 import DonationAftercare from "./components/DonationAftercare";
 import BloodRequestForm from "./components/BloodRequestForm";
 import RequestHistory from "./components/RequestHistory";
+import TransfusionHistory from "./components/TransfusionHistory";
+import BloodTypes from "./components/BloodTypes";
+import BloodReceive from "./components/BloodReceive";
+import BloodRoles from "./components/BloodRoles";
 
 // Staff
 import StaffRequests from "./components/StaffRequests";
@@ -34,6 +41,7 @@ import TransfusionConfirm from "./components/TransfusionConfirm";
 import InventoryChart from "./components/InventoryChart";
 import StaffStatistics from "./components/StaffStatistics";
 import UrgentRequests from "./components/UrgentRequests";
+import StaffLayout from "./layouts/StaffLayout";
 
 // Blog, Thông báo, Thanh toán
 import BlogList from "./components/BlogList";
@@ -95,21 +103,24 @@ const App = () => {
           <Route path="/user" element={showAdminBoard || showStaffBoard ? <Navigate to="/home" /> : <BoardUser />} />
           <Route path="/admin" element={<BoardAdmin />} />
 
-          <Route path="/staff" element={<BoardStaff />} />
-          <Route path="/staff/requests" element={<StaffRequests />} />
-          <Route path="/staff/transfusions" element={<TransfusionConfirm />} />
-          <Route path="/staff/urgent-requests" element={<UrgentRequests />} />
-          <Route path="/requests/new" element={<BloodRequestForm />} />
-          <Route path="/requests/history" element={<RequestHistory />} />
-          <Route path="/donation/register" element={<DonationRegister />} />
-          <Route path="/donation/history" element={<DonationHistory />} />
-          <Route path="/donation/aftercare" element={<DonationAftercare />} />
+          
+          <Route path="/user" element={<UserLayout />}>
+            <Route index element={<BoardUser />} />
+            <Route path="register" element={<DonationRegister />} />
+            <Route path="donation-history" element={<DonationHistory />} />
+            <Route path="aftercare" element={<DonationAftercare />} />
+            <Route path="new" element={<BloodRequestForm />} />
+            <Route path="request-history" element={<RequestHistory />} />
+            <Route path="transfusion-history" element={<TransfusionHistory />} />
+            <Route path="types" element={<BloodTypes />} />
+            <Route path="receive" element={<BloodReceive />} />
+            <Route path="roles" element={<BloodRoles />} />
+          </Route>
+          
           <Route path="/forgot" element={<Forgot />} />
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/verify-otp" element={<OtpVerify />} />
-          <Route path="/staff/inventory" element={<InventoryChart />} />
-          <Route path="/staff/statistics" element={<StaffStatistics />} />
-
+          
           <Route path="/blog" element={<BlogList />} />
           <Route path="/blog/:id" element={<BlogDetail />} />
           <Route path="/faq" element={<BlogAccordion />} />
@@ -117,8 +128,21 @@ const App = () => {
           <Route path="/notifications" element={<NotificationList />} />
           <Route path="/notifications/send" element={<NotificationForm />} />
           <Route path="/vnpay" element={<VnPayForm />} />
+
+          <Route path="/staff" element={<StaffLayout />}>
+            <Route index element={<BoardStaff />} />
+            <Route path="requests" element={<StaffRequests />} />
+            <Route path="transfusions" element={<TransfusionConfirm />} />
+            <Route path="inventory" element={<InventoryChart />} />
+            <Route path="statistics" element={<StaffStatistics />} />
+            <Route path="urgent-requests" element={<UrgentRequests />} />
+          </Route>
         </Routes>
+
+
+        <ToastContainer position="top-right" autoClose={3000} />
       </div>
+
     </div>
   );
 };

@@ -11,11 +11,15 @@ const Profile = () => {
     bloodType: "",
     phone: "",
     address: "",
-    lastDonation: ""
+    lastDonation: "",
+    recoveryTime: ""
   });
-const [initialProfile, setInitialProfile] = useState(null);
+
+  const [initialProfile, setInitialProfile] = useState(null);
+  const [message, setMessage] = useState("");
+  const today = new Date().toISOString().split("T")[0];
+
   useEffect(() => {
-    // Giả lập dữ liệu user từ localStorage (hoặc backend sau này)
     const storedUser = JSON.parse(localStorage.getItem("user"));
     if (storedUser) {
       const initData = {
@@ -28,12 +32,12 @@ const [initialProfile, setInitialProfile] = useState(null);
         bloodType: "",
         phone: "",
         address: "",
-        lastDonation: ""
+        lastDonation: "",
+        recoveryTime: ""
       };
       setProfile(initData);
       setInitialProfile(initData);
     }
-
   }, []);
 
   const handleChange = (e) => {
@@ -44,21 +48,16 @@ const [initialProfile, setInitialProfile] = useState(null);
   const handleSubmit = (e) => {
     e.preventDefault();
     if (JSON.stringify(profile) === JSON.stringify(initialProfile)) {
-  setMessage("Không có thay đổi để lưu");
-  return;
-}
+      setMessage("Không có thay đổi để lưu");
+      return;
+    }
 
     setMessage("Hồ sơ đã được cập nhật");
   };
 
-  const [message, setMessage] = useState("");
-
-  const today = new Date().toISOString().split("T")[0];
-
-
   return (
-    <div className="col-md-8 offset-md-2">
-      <div className="card card-container">
+    <div className="regis-fullpage">
+      <div className="change-box">
         <img
           src="/donor.png"
           alt="profile-img"
@@ -88,7 +87,12 @@ const [initialProfile, setInitialProfile] = useState(null);
 
           <div className="form-group mt-2">
             <label>Ngày sinh</label>
-            <input type="date" className="form-control" name="dob" value={profile.dob} onChange={handleChange}
+            <input
+              type="date"
+              className="form-control"
+              name="dob"
+              value={profile.dob}
+              onChange={handleChange}
               min="1900-01-01"
               max={today}
             />
@@ -119,7 +123,7 @@ const [initialProfile, setInitialProfile] = useState(null);
           </div>
 
           <div className="form-group mt-2">
-            <label>SDT</label>
+            <label>Số điện thoại</label>
             <input className="form-control" name="phone" value={profile.phone} onChange={handleChange} />
           </div>
 
@@ -130,22 +134,37 @@ const [initialProfile, setInitialProfile] = useState(null);
 
           <div className="form-group mt-2">
             <label>Ngày hiến máu gần nhất</label>
-            <input type="date" className="form-control" name="lastDonation" value={profile.lastDonation} onChange={handleChange}
+            <input
+              type="date"
+              className="form-control"
+              name="lastDonation"
+              value={profile.lastDonation}
+              onChange={handleChange}
               min="1900-01-01"
               max={today}
             />
           </div>
 
+          <div className="form-group mt-2">
+            <label>Thời gian hồi phục (ngày)</label>
+            <input
+              type="number"
+              className="form-control"
+              name="recoveryTime"
+              value={profile.recoveryTime}
+              onChange={handleChange}
+              min={0}
+            />
+          </div>
+
           {message && (
-            <div className="form-group">
-              <div className="alert alert-info" role="alert">{message}</div>
+            <div className="form-group mt-3">
+              <div className="alert-custom-red" role="alert">{message}</div>
             </div>
           )}
 
-
-          <button className="btn btn-block btn-gradient-red" type="submit">Lưu</button>
+          <button className="btn btn-block btn-gradient-red mt-3" type="submit">Lưu</button>
         </form>
-
       </div>
     </div>
   );

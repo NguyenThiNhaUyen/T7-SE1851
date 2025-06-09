@@ -14,7 +14,7 @@ const DonationHistory = () => {
       return;
     }
 
-    axios.get(`/api/donations/user/${currentUser.id}`)
+    axios.get(`/users/donations/history/${currentUser.id}`)
       .then((res) => {
         setHistory(res.data);
       })
