@@ -104,11 +104,11 @@ const App = () => {
           <Route path="/user" element={<UserLayout />}>
             <Route index element={<BoardUser />} />
             <Route path="register" element={<DonationRegister />} />
-            <Route path="history" element={<DonationHistory />} />
+            <Route path="donation-history" element={<DonationHistory />} />
             <Route path="aftercare" element={<DonationAftercare />} />
             <Route path="new" element={<BloodRequestForm />} />
-            <Route path="history" element={<RequestHistory />} />
-            <Route path="history" element={<TransfusionHistory />} />
+            <Route path="request-history" element={<RequestHistory />} />
+            <Route path="transfusion-history" element={<TransfusionHistory />} />
             <Route path="types" element={<BloodTypes />} />
             <Route path="receive" element={<BloodReceive />} />
             <Route path="roles" element={<BloodRoles />} />
