@@ -7,9 +7,19 @@ const dbConfig = require("./config/db.config");
 
 const app = express();
 
-app.use(cors());
+// ✅ Cấu hình CORS chính xác
+const corsOptions = {
+  origin: "http://localhost:3000", // FE đang chạy ở đây
+  methods: "GET,POST,PUT,DELETE,OPTIONS",
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+};
+app.use(cors(corsOptions));
+
+// ✅ Middleware cần thiết
 app.use(express.json());
 
+// ✅ Route: Đăng nhập
 app.post("/api/auth/signin", async (req, res) => {
   const { username, password } = req.body;
   try {
@@ -32,7 +42,7 @@ app.post("/api/auth/signin", async (req, res) => {
         username: user.username,
         email: user.email,
         roles: [`ROLE_${user.role.toUpperCase()}`],
-        accessToken: "fake-jwt-token",
+        accessToken: "fake-jwt-token", // Thay bằng JWT thực nếu cần
       });
     } else {
       res.status(401).json({ message: "Sai tài khoản hoặc mật khẩu" });
@@ -43,7 +53,6 @@ app.post("/api/auth/signin", async (req, res) => {
   }
 });
 
+// ✅ Khởi động server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`✅ Backend đang chạy tại http://localhost:${PORT}`));
-
-
