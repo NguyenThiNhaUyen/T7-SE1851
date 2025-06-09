@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "UserDetails")
 @Data
@@ -27,6 +29,12 @@ public class UserDetail {
 
     @Column(name = "Address", columnDefinition = "NVARCHAR(50)", nullable = false)
     private String address;
+
+    @Column(name = "DOB")
+    private LocalDate dob;
+
+    @Column(name = "Gender", columnDefinition = "NVARCHAR(10)")
+    private String gender;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "User_Id")
