@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import "../styles/Navbar.css";
 
 const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, logOut }) => {
@@ -12,82 +12,66 @@ const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, logOut }) => {
   };
 
   return (
-    <nav className="navbar navbar-expand navbar-custom">
-      <Link to="/" className="navbar-brand">Group 7</Link>
+    <nav className="navbar-custom">
+      {/* Bên trái - logo */}
+      <div className="navbar-left">
+        <img
+          src="/Logo-Blood-Donation.jpg"
+          alt="Logo"
+          className="navbar-logo"
+        />
+      </div>
 
-      <ul className="navbar-nav mr-auto">
-        <li className="nav-item">
-          <Link to="/home" className="nav-link">Home</Link>
-        </li>
+      {/* Giữa - điều hướng chính */}
+      <div className="navbar-center">
+        <NavLink to="/home" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Trang chủ</NavLink>
+        <NavLink to="/blog" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Tin tức</NavLink>
+        <NavLink to="/faq" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Hỏi - Đáp</NavLink>
+        <NavLink to="/activities" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Hoạt động</NavLink>
 
         {/* Admin */}
         {showAdminBoard && (
           <>
-            <li className="nav-item">
-              <Link to="/admin" className="nav-link">Admin</Link>
-            </li>
-            <li className="nav-item">
-              <Link to="/notifications" className="nav-link">Thông báo</Link>
-            </li>
-            <li className="nav-item">
-              <Link to="/notifications/send" className="nav-link">Gửi thông báo</Link>
-            </li>
-            <li className="nav-item">
-              <Link to="/blog" className="nav-link">Bài viết</Link>
-            </li>
+            <NavLink to="/admin" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Admin</NavLink>
+            <NavLink to="/notifications" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Thông báo</NavLink>
+            <NavLink to="/notifications/send" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Gửi thông báo</NavLink>
+            <NavLink to="/blog" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Bài viết</NavLink>
           </>
         )}
 
-        {/* Staff */}
+        {/* Nhân viên */}
         {showStaffBoard && (
           <>
-            <li className="nav-item">
-              <Link to="/staff" className="nav-link">Trang nhân viên</Link>
-            </li>
-            <li className="nav-item">
-              <Link to="/staff/requests" className="nav-link">Yêu cầu máu</Link>
-            </li>
-            <li className="nav-item">
-              <Link to="/staff/transfusions" className="nav-link">Truyền máu</Link>
-            </li>
-            <li className="nav-item">
-              <Link to="/staff/inventory" className="nav-link">Kho máu</Link>
-            </li>
-            <li className="nav-item">
-              <Link to="/staff/statistics" className="nav-link">Thống kê</Link>
-            </li>
+            <NavLink to="/staff" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Trang nhân viên</NavLink>
+            <NavLink to="/staff/requests" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Yêu cầu máu</NavLink>
+            <NavLink to="/staff/transfusions" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Truyền máu</NavLink>
+            <NavLink to="/staff/inventory" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Kho máu</NavLink>
+            <NavLink to="/staff/statistics" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Thống kê</NavLink>
           </>
         )}
 
         {/* Người dùng */}
         {currentUser && !showAdminBoard && !showStaffBoard && (
-          <li className="nav-item">
-            <Link to={`/user/${currentUser.id}`} className="nav-link">Trang người dùng</Link>
-          </li>
+          <NavLink to={`/user/${currentUser.id}`} className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Trang người dùng</NavLink>
         )}
-      </ul>
+      </div>
 
-      <ul className="navbar-nav ml-auto">
+      {/* Phải - tài khoản */}
+      <div className="navbar-right">
         {currentUser ? (
           <>
-            <li className="nav-item">
-              <Link to="/profile" className="nav-link">{currentUser.username}</Link>
-            </li>
-            <li className="nav-item">
-              <a href="/" className="nav-link" onClick={handleLogout}>LogOut</a>
-            </li>
+            <NavLink to="/profile" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+              {currentUser.username}
+            </NavLink>
+            <a href="/" onClick={handleLogout} className="nav-link">Đăng xuất</a>
           </>
         ) : (
           <>
-            <li className="nav-item">
-              <Link to="/login" className="nav-link">Login</Link>
-            </li>
-            <li className="nav-item">
-              <Link to="/register" className="nav-link">Sign Up</Link>
-            </li>
+            <NavLink to="/login" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Đăng nhập</NavLink>
+            <NavLink to="/register" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Đăng ký</NavLink>
           </>
         )}
-      </ul>
+      </div>
     </nav>
   );
 };
