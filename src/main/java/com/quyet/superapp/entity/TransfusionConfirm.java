@@ -12,33 +12,33 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "TransfusionConfirm") // tên bảng đúng như SQL Server
+@Table(name = "TransfusionConfirm") // đúng tên trong SQL Server
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class TransfusionConfirm {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id") // phải đúng như tên cột trong DB
+    @Column(name = "id") // đúng tên trong DB
     private Long id;
 
     @NotBlank
     @Size(max = 100)
-    @Column(name = "recipientName") // đúng tên cột trong DB
+
+    @Column(name = "recipientName", columnDefinition = "NVARCHAR(50)", nullable = false) // đúng tên trong DB
     private String recipientName;
 
-    @Column(name = "bloodType") // đúng tên cột trong DB
+    @Column(name = "bloodType", columnDefinition = "VARCHAR(5)", nullable = false)
     private String bloodType;
 
     @Min(1)
-    @Column(name = "units") // đúng tên cột trong DB
+    @Column(name = "units", columnDefinition = "VARCHAR(20)", nullable = false)
     private int units;
 
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") // định dạng ISO chuẩn
-    @Column(name = "confirmedAt") // đúng tên cột trong DB
+    @Column(name = "confirmedAt")
     private LocalDateTime confirmedAt;
 
-    @Column(name = "status") // đúng tên cột trong DB
+    @Column(name = "status")
     private String status;
 }
