@@ -38,9 +38,12 @@ import UrgentRequests from "./components/UrgentRequests";
 // Blog, Thông báo, Thanh toán
 import BlogList from "./components/BlogList";
 import BlogDetail from "./components/BlogDetail";
+import BlogAccordion from './components/BlogAccordion';
 import NotificationList from "./components/NotificationList";
 import NotificationForm from "./components/NotificationForm";
 import VnPayForm from "./components/VnPayForm";
+import Activities from "./components/Activities";
+
 
 const App = () => {
   const [showStaffBoard, setShowStaffBoard] = useState(false);
@@ -82,7 +85,7 @@ const App = () => {
         logOut={logOut}
       />
 
-      <div className="full-width">
+      <div className="container mt-3">
         <Routes>
           <Route exact path="/" element={<Home />} />
           <Route exact path="/home" element={<Home />} />
@@ -109,6 +112,8 @@ const App = () => {
 
           <Route path="/blog" element={<BlogList />} />
           <Route path="/blog/:id" element={<BlogDetail />} />
+          <Route path="/faq" element={<BlogAccordion />} />
+          <Route path="/activities" element={<Activities />} />
           <Route path="/notifications" element={<NotificationList />} />
           <Route path="/notifications/send" element={<NotificationForm />} />
           <Route path="/vnpay" element={<VnPayForm />} />
