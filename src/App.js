@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -9,10 +8,10 @@ import "./App.css";
 import AuthService from "./services/auth.service";
 import EventBus from "./common/EventBus";
 
-// Giao diện
+// Giao diện chung
 import Navbar from "./components/Navbar";
 
-// Các trang và component
+// Các trang chính
 import Home from "./components/Home";
 import Login from "./components/Login";
 import Register from "./components/Register";
@@ -20,11 +19,21 @@ import Profile from "./components/Profile";
 import Forgot from "./components/Forgot";
 import ChangePassword from "./components/ChangePassword";
 import OtpVerify from "./components/OtpVerify";
-import BoardUser from "./components/BoardUser";
-import BoardAdmin from "./components/BoardAdmin";
-import BoardStaff from "./components/BoardStaff";
 
-// Người hiến máu và nhận máu
+// Quản trị viên
+import BoardAdmin from "./components/BoardAdmin";
+
+// Nhân viên
+import BoardStaff from "./components/BoardStaff";
+import StaffLayout from "./layouts/StaffLayout";
+import StaffRequests from "./components/StaffRequests";
+import TransfusionConfirm from "./components/TransfusionConfirm";
+import InventoryChart from "./components/InventoryChart";
+import StaffStatistics from "./components/StaffStatistics";
+import UrgentRequests from "./components/UrgentRequests";
+
+// Người dùng
+import BoardUser from "./components/BoardUser";
 import UserLayout from "./layouts/UserLayout";
 import DonationRegister from "./components/DonationRegister";
 import DonationHistory from "./components/DonationHistory";
@@ -36,15 +45,7 @@ import BloodTypes from "./components/BloodTypes";
 import BloodReceive from "./components/BloodReceive";
 import BloodRoles from "./components/BloodRoles";
 
-// Staff
-import StaffRequests from "./components/StaffRequests";
-import TransfusionConfirm from "./components/TransfusionConfirm";
-import InventoryChart from "./components/InventoryChart";
-import StaffStatistics from "./components/StaffStatistics";
-import UrgentRequests from "./components/UrgentRequests";
-import StaffLayout from "./layouts/StaffLayout";
-
-// Blog, Thông báo, Thanh toán
+// Khác
 import BlogList from "./components/BlogList";
 import BlogDetail from "./components/BlogDetail";
 import NotificationList from "./components/NotificationList";
@@ -55,24 +56,28 @@ const App = () => {
   const [showStaffBoard, setShowStaffBoard] = useState(false);
   const [showAdminBoard, setShowAdminBoard] = useState(false);
   const [currentUser, setCurrentUser] = useState(undefined);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const user = AuthService.getCurrentUser();
 
     if (user) {
       setCurrentUser(user);
-      setShowAdminBoard(user.roles.includes("ROLE_ADMIN"));
-      setShowStaffBoard(user.roles.includes("ROLE_STAFF"));
+      const isAdmin = user.roles.includes("ROLE_ADMIN");
+      const isStaff = user.roles.includes("ROLE_STAFF");
+      setShowAdminBoard(isAdmin);
+      setShowStaffBoard(isStaff);
+
+      // Chuyển hướng nếu là staff
+      if (isStaff && (location.pathname === "/login" || location.pathname === "/home" || location.pathname === "/")) {
+        navigate("/staff");
+      }
     }
 
-    EventBus.on("logout", () => {
-      logOut();
-    });
-
-    return () => {
-      EventBus.remove("logout");
-    };
-  }, []);
+    EventBus.on("logout", logOut);
+    return () => EventBus.remove("logout");
+  }, [location]);
 
   const logOut = () => {
     AuthService.logout();
@@ -83,7 +88,6 @@ const App = () => {
 
   return (
     <div>
-      {/* Sử dụng Navbar component */}
       <Navbar
         currentUser={currentUser}
         showAdminBoard={showAdminBoard}
@@ -93,16 +97,32 @@ const App = () => {
 
       <div className="full-width">
         <Routes>
-          <Route exact path="/" element={<Home />} />
-          <Route exact path="/home" element={<Home />} />
-          <Route exact path="/login" element={<Login />} />
-          <Route exact path="/register" element={<Register />} />
-          <Route exact path="/profile" element={<Profile />} />
-          <Route path="/user" element={showAdminBoard || showStaffBoard ? <Navigate to="/home" /> : <BoardUser />} />
+          {/* Chung */}
+          <Route path="/" element={<Home />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/forgot" element={<Forgot />} />
+          <Route path="/change-password" element={<ChangePassword />} />
+          <Route path="/verify-otp" element={<OtpVerify />} />
+
+          {/* Admin */}
           <Route path="/admin" element={<BoardAdmin />} />
 
-          
-          <Route path="/user" element={<UserLayout />}>
+          {/* Staff */}
+          <Route path="/staff" element={showStaffBoard ? <StaffLayout /> : <Navigate to="/home" />}>
+            <Route index element={<BoardStaff />} />
+            <Route path="requests" element={<StaffRequests />} />
+            <Route path="transfusions" element={<TransfusionConfirm />} />
+            <Route path="inventory" element={<InventoryChart />} />
+            <Route path="statistics" element={<StaffStatistics />} />
+            <Route path="urgent-requests" element={<UrgentRequests />} />
+          </Route>
+
+          {/* User */}
+          <Route path="/user" element={showAdminBoard || showStaffBoard ? <Navigate to="/home" /> : <BoardUser />} />
+          <Route path="/user/:id" element={<UserLayout />}>
             <Route index element={<BoardUser />} />
             <Route path="register" element={<DonationRegister />} />
             <Route path="donation-history" element={<DonationHistory />} />
@@ -114,31 +134,17 @@ const App = () => {
             <Route path="receive" element={<BloodReceive />} />
             <Route path="roles" element={<BloodRoles />} />
           </Route>
-          
-          <Route path="/forgot" element={<Forgot />} />
-          <Route path="/change-password" element={<ChangePassword />} />
-          <Route path="/verify-otp" element={<OtpVerify />} />
-          
+
+          {/* Blog - Notification - Thanh toán */}
           <Route path="/blog" element={<BlogList />} />
           <Route path="/blog/:id" element={<BlogDetail />} />
           <Route path="/notifications" element={<NotificationList />} />
           <Route path="/notifications/send" element={<NotificationForm />} />
           <Route path="/vnpay" element={<VnPayForm />} />
-
-          <Route path="/staff" element={<StaffLayout />}>
-            <Route index element={<BoardStaff />} />
-            <Route path="requests" element={<StaffRequests />} />
-            <Route path="transfusions" element={<TransfusionConfirm />} />
-            <Route path="inventory" element={<InventoryChart />} />
-            <Route path="statistics" element={<StaffStatistics />} />
-            <Route path="urgent-requests" element={<UrgentRequests />} />
-          </Route>
         </Routes>
-
 
         <ToastContainer position="top-right" autoClose={3000} />
       </div>
-
     </div>
   );
 };

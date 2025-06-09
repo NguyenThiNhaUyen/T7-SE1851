@@ -14,25 +14,22 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
 
-  const onChangeUsername = (e) => {
-    setUsername(e.target.value);
-  };
+  const onChangeUsername = (e) => setUsername(e.target.value);
 
   const validatePassword = (value) => {
     if (!value) return "Mật khẩu không được để trống";
-
     if (value.length < 6) return "Mật khẩu phải từ 6 ký tự trở lên";
-
     return null;
   };
 
-  const [showPassword, setShowPassword] = useState(false);
-
   const handleLogin = (e) => {
     e.preventDefault();
+    setLoading(true);
+    setMessage("");
 
     if (!username) {
       setMessage("Username không được để trống");
@@ -47,28 +44,23 @@ const Login = () => {
       return;
     }
 
-
-    setMessage("");
-    setLoading(true);
-
     form.current.validateAll();
 
     if (checkBtn.current.context._errors.length === 0) {
       AuthService.login(username, password).then(
         (data) => {
-          if (data && data.accessToken) {
+          if (data && data.accessToken && data.id) {
             const roles = data.roles || [];
             if (roles.includes("ROLE_ADMIN")) {
               navigate("/admin");
             } else if (roles.includes("ROLE_STAFF")) {
               navigate("/staff");
             } else {
-              navigate("/user");
+              navigate(`/user/${data.id}`);
             }
-            window.location.reload();
           } else {
+            setMessage("Phản hồi đăng nhập không hợp lệ.");
             setLoading(false);
-            setMessage("Invalid login response");
           }
         },
         (error) => {
@@ -76,9 +68,8 @@ const Login = () => {
             (error.response && error.response.data && error.response.data.message) ||
             error.message ||
             error.toString();
-
-          setLoading(false);
           setMessage(resMessage);
+          setLoading(false);
         }
       );
     } else {
@@ -87,29 +78,22 @@ const Login = () => {
   };
 
   return (
-
     <div className="login-fullpage">
       <div className="login-left">
-  <div className="login-left-content">
-    <h2>Hiến máu - Hành động nhỏ, ý nghĩa lớn</h2>
-    <p style={{ lineHeight: 1.6 }}>
-      Ở Việt Nam, cứ mỗi <strong>2 giây</strong> lại có một người cần truyền máu.  
-      <br />
-      Sự đóng góp của bạn thật sự quan trọng!  
-      <br />
-      Hãy tiếp tục đồng hành cùng mạng lưới hiến máu toàn quốc – nơi trái tim chung một nhịp yêu thương.
-    </p>
-  </div>
-</div>
+        <div className="login-left-content">
+          <h2>Hiến máu - Hành động nhỏ, ý nghĩa lớn</h2>
+          <p style={{ lineHeight: 1.6 }}>
+            Ở Việt Nam, cứ mỗi <strong>2 giây</strong> lại có một người cần truyền máu.  
+            <br />
+            Sự đóng góp của bạn thật sự quan trọng!  
+            <br />
+            Hãy tiếp tục đồng hành cùng mạng lưới hiến máu toàn quốc – nơi trái tim chung một nhịp yêu thương.
+          </p>
+        </div>
+      </div>
 
       <div className="login-box">
-
-
-        <img
-          src="/donor.png"
-          alt="profile-img"
-          className="profile-img-card"
-        />
+        <img src="/donor.png" alt="profile-img" className="profile-img-card" />
 
         <Form onSubmit={handleLogin} ref={form}>
           <div className="form-group">
@@ -126,12 +110,10 @@ const Login = () => {
             />
           </div>
 
-
           <div className="form-group position-relative">
             <label htmlFor="password">
               Password<span style={{ color: "red" }}>*</span>
             </label>
-
             <div style={{ position: "relative" }}>
               <Input
                 type={showPassword ? "text" : "password"}
@@ -139,10 +121,8 @@ const Login = () => {
                 name="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                style={{ paddingRight: "40px" }} 
+                style={{ paddingRight: "40px" }}
               />
-
-
               <span
                 onClick={() => setShowPassword(!showPassword)}
                 style={{
@@ -160,12 +140,10 @@ const Login = () => {
                 />
               </span>
             </div>
-
             <div className="text-right mt-2">
               <a href="/forgot">Bạn quên mật khẩu?</a>
             </div>
           </div>
-
 
           <div className="form-group">
             <button className="btn btn-block btn-gradient-red" disabled={loading}>
@@ -186,10 +164,11 @@ const Login = () => {
               </div>
             </div>
           )}
+
           <CheckButton style={{ display: "none" }} ref={checkBtn} />
         </Form>
-      </div >
-    </div >
+      </div>
+    </div>
   );
 };
 
