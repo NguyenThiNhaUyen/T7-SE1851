@@ -3,14 +3,11 @@ import { Link, useNavigate } from "react-router-dom";
 import UserService from "../services/user.service";
 import "../styles/Home.css";
 
-<<<<<<< HEAD
 const images = [
   "/banner1.jpg",
   "/banner2.jpg",
 ];
 
-=======
->>>>>>> 70d00663ad4221e36b34b59810540de516f56885
 const Home = () => {
   const [content, setContent] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);

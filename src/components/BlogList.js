@@ -2,11 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import "../styles/BlogList.css";
 
-<<<<<<< HEAD
-// Danh sách bài viết mẫu
-=======
 // Danh sách các bài viết blog
->>>>>>> 70d00663ad4221e36b34b59810540de516f56885
 const blogs = [
   {
     id: "1",

@@ -23,13 +23,7 @@ const Login = () => {
 
   const validatePassword = (value) => {
     if (!value) return "Mật khẩu không được để trống";
-
-<<<<<<< HEAD
     if (value.length < 5) return "Mật khẩu phải từ 6 ký tự trở lên";
-=======
-    if (value.length < 6) return "Mật khẩu phải từ 6 ký tự trở lên";
->>>>>>> 70d00663ad4221e36b34b59810540de516f56885
-
     return null;
   };
 
