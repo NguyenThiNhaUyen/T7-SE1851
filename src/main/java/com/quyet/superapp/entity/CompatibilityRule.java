@@ -6,18 +6,26 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Data
 @Table(name = "CompatibilityRule")
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class CompatibilityRule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private int compatibilityRuleId;
 
+    @Column(name = "Component", columnDefinition = "NVARCHAR(15)", nullable = false)
     private String component;
+
+    @Column(name = "DonorType", columnDefinition = "VARCHAR(5)", nullable = false)
     private String donorType;
+
+    @Column(name = "RecipientType", columnDefinition = "VARCHAR(5)", nullable = false)
     private String recipientType;
+
+    @Column(name = "IsCompatible", nullable = false)
     private boolean isCompatible;
 }
+

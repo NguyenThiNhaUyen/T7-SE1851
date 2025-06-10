@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "TransfusionConfirm") // đúng tên trong SQL Server
+@Table(name = "TransfusionConfirm")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,25 +20,24 @@ public class TransfusionConfirm {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id") // đúng tên trong DB
-    private Long id;
+    @Column(name = "TransfusionConfirmId")
+    private Long transfusionConfirmId;
 
     @NotBlank
-    @Size(max = 100)
-
-    @Column(name = "recipientName", columnDefinition = "NVARCHAR(50)", nullable = false) // đúng tên trong DB
+    @Size(max = 50)
+    @Column(name = "RecipientName", columnDefinition = "NVARCHAR(50)", nullable = false)
     private String recipientName;
 
-    @Column(name = "bloodType", columnDefinition = "VARCHAR(5)", nullable = false)
+    @Column(name = "BloodType", columnDefinition = "VARCHAR(5)", nullable = false)
     private String bloodType;
 
     @Min(1)
-    @Column(name = "units", columnDefinition = "VARCHAR(20)", nullable = false)
+    @Column(name = "Units", nullable = false)
     private int units;
 
-    @Column(name = "confirmedAt")
+    @Column(name = "ConfirmedAt", columnDefinition = "DATETIME")
     private LocalDateTime confirmedAt;
 
-    @Column(name = "status")
+    @Column(name = "Status", columnDefinition = "NVARCHAR(20)")
     private String status;
 }

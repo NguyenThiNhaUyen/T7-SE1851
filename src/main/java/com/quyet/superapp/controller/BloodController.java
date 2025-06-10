@@ -71,10 +71,19 @@ public class BloodController {
     }
 
 
-    @GetMapping("/compatibility-rules")
+    @GetMapping("/blood/compatibility-rules")
     public List<CompatibilityRule> getCompatibilityRules() {
         return bloodService.getCompatibilityRule();
     }
+
+    @GetMapping("/compatibility/check")
+    public List<String> getCompatibleDonors(
+            @RequestParam String recipientType,
+            @RequestParam String component
+    ) {
+        return bloodService.getCompatibleDonors(recipientType, component);
+    }
+
 
 
 }

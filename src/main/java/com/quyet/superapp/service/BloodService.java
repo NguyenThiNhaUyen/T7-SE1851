@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -84,6 +85,14 @@ public class BloodService {
 
     public List<BloodInventory> searchBloodByType(String bloodType){
         return bloodRepo.findByBloodType(bloodType);
+    }
+
+    public List<String> getCompatibleDonors(String recipientType, String component) {
+        return ruleRepo.findByRecipientTypeAndComponentAndIsCompatibleTrue(recipientType, component)
+                .stream()
+                .map(CompatibilityRule::getDonorType)
+                .distinct()
+                .toList(); // hoặc collect(Collectors.toList()) nếu dùng Java <17
     }
 
 
