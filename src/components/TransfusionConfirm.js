@@ -1,16 +1,14 @@
-
 import React, { useEffect, useState } from "react";
 import { getUserTransfusions, confirmTransfusion } from "../services/transfusion.service";
 import "../styles/user.css";
 import { toast } from "react-toastify";
 
-
 const TransfusionConfirm = () => {
-  const [requests, setRequests] = useState([]);
+  const [user, setUser] = useState(null);
+  const [transfusions, setTransfusions] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-
     const currentUser = JSON.parse(localStorage.getItem("user"));
     if (!currentUser) {
       toast.error("❌ Người dùng chưa đăng nhập.");
@@ -29,7 +27,8 @@ const TransfusionConfirm = () => {
       .catch((err) => {
         console.error("Lỗi khi tải lịch sử truyền máu:", err);
         toast.error("❌ Không thể tải dữ liệu. Vui lòng thử lại sau.");
-      });
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   const handleSubmit = async () => {
@@ -57,7 +56,9 @@ const TransfusionConfirm = () => {
         ➕ Xác nhận truyền máu (test)
       </button>
 
-      {!user ? (
+      {loading ? (
+        <div>Đang tải dữ liệu...</div>
+      ) : !user ? (
         <div className="alert alert-danger">Người dùng chưa đăng nhập.</div>
       ) : transfusions.length === 0 ? (
         <p>Chưa có lần truyền máu nào.</p>
@@ -69,20 +70,19 @@ const TransfusionConfirm = () => {
               <th>Nhóm máu</th>
               <th>Thành phần</th>
               <th>Số lượng (ml)</th>
-              <th>Mức độ khẩn cấp</th>
-              <th>Hành động</th>
+              <th>Ngày xác nhận</th>
+              <th>Trạng thái</th>
             </tr>
           </thead>
           <tbody>
-
             {transfusions.map((item) => (
               <tr key={item.id}>
-                <td>{item.component_name || "Chưa rõ"}</td>
+                <td>{item.recipientName || "Chưa rõ"}</td>
                 <td>{item.bloodType}</td>
+                <td>{item.component_name}</td>
                 <td>{item.units}</td>
                 <td>{new Date(item.confirmedAt).toLocaleDateString()}</td>
                 <td>{item.status}</td>
-
               </tr>
             ))}
           </tbody>
@@ -92,6 +92,4 @@ const TransfusionConfirm = () => {
   );
 };
 
-
-export default TransfusionHistory;
-
+export default TransfusionConfirm;
