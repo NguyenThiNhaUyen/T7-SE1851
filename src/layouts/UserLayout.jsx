@@ -12,7 +12,7 @@ const UserLayout = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    axios.get(`/api/test/user/${id}`)
+    axios.get(`http://localhost:5000/api/test/user/${id}`)
       .then((res) => {
         setUserInfo(res.data);
         setLoading(false);

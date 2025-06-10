@@ -1,10 +1,7 @@
+// ✅ auth.service.js
 import axios from "axios";
 
-// Cách 1: dùng URL tuyệt đối (không cần proxy)
-const API_URL = "http://localhost:5000/api/auth/";
-
-// Cách 2: dùng URL tương đối + cấu hình proxy (xem bên dưới)
-// const API_URL = "/api/auth/";
+const API_URL = "http://localhost:5000/api/auth/"; // dùng URL tuyệt đối
 
 const login = (username, password) => {
   return axios

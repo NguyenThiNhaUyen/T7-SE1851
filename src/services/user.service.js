@@ -1,13 +1,11 @@
 import axios from "axios";
 
-const API_URL = "/api/test/";
+const API_URL = "http://localhost:5000/api/test/"; // dùng URL tuyệt đối
 
-// 👥 Nội dung công khai
 const getPublicContent = () => {
   return axios.get(API_URL + "all");
 };
 
-// 📋 Dữ liệu theo vai trò không cần ID
 const getUserBoard = () => {
   return axios.get(API_URL + "user");
 };
@@ -20,7 +18,6 @@ const getAdminBoard = () => {
   return axios.get(API_URL + "admin");
 };
 
-// 🔍 Lấy chi tiết người dùng theo ID
 const getUserById = (id) => {
   return axios.get(`${API_URL}user/${id}`);
 };
@@ -33,7 +30,7 @@ const getAdminById = (id) => {
   return axios.get(`${API_URL}admin/${id}`);
 };
 
-const UserService = {
+export default {
   getPublicContent,
   getUserBoard,
   getBoardStaff,
@@ -42,5 +39,3 @@ const UserService = {
   getStaffById,
   getAdminById,
 };
-
-export default UserService;

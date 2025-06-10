@@ -8,11 +8,16 @@ const BoardUser = () => {
 
   useEffect(() => {
     const currentUser = AuthService.getCurrentUser();
+    console.log("👤 currentUser:", currentUser);
+
     if (currentUser && currentUser.id) {
       UserService.getUserById(currentUser.id)
-        .then((res) => setUserDetail(res.data))
+        .then((res) => {
+          console.log("✅ userDetail:", res.data);
+          setUserDetail(res.data);
+        })
         .catch((err) => {
-          console.error(err);
+          console.error("❌ Lỗi API:", err.response?.data || err.message);
           setError("Không thể tải thông tin người dùng.");
         });
     } else {
