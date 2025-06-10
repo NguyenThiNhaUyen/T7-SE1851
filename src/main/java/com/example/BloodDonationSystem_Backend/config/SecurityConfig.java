@@ -2,9 +2,12 @@ package com.example.BloodDonationSystem_Backend.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
@@ -24,7 +27,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000")); // ⚠️ Đổi đúng port FE của bạn
+        configuration.setAllowedOrigins(List.of("http://localhost:5173")); // ⚠️ Đổi đúng port FE của bạn
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
@@ -33,12 +36,16 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception{
         httpSecurity
-                .csrf(csrf -> csrf.disable())
-                .cors(withDefaults())
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
 
                         .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
@@ -66,25 +73,16 @@ public class SecurityConfig {
     private static final String[] MEMBER_ENDPOINTS = {
             "/api/user/**",
             "/api/profile",
-            "/api/donation/register",
-            "/api/donation/history",
-            "/api/donation/aftercare",
-            "/api/request/new",
-            "/api/request/history",
+            "/api/donation/**",
+            "/api/request/**",
             "/api/transfusion/history",
-            "/api/blood/types",
-            "/api/blood/receive",
-            "/api/blood/roles",
+            "/api/blood/**",
             "/api/vnpay/**"
     };
 
     private static final String[] STAFF_ENDPOINTS = {
-            "/api/staff",
-            "/api/staff/requests",
-            "/api/staff/transfusions",
-            "/api/staff/inventory",
-            "/api/staff/statistics",
-            "/api/staff/urgent-requests"
+            "/api/staff/**"
+
     };
 
     private static final String[] ADMIN_ENDPOINTS = {
