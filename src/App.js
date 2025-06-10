@@ -54,7 +54,6 @@ import NotificationForm from "./components/NotificationForm";
 import VnPayForm from "./components/VnPayForm";
 import Activities from "./components/Activities";
 
-
 const App = () => {
   const [showStaffBoard, setShowStaffBoard] = useState(false);
   const [showAdminBoard, setShowAdminBoard] = useState(false);
@@ -72,7 +71,6 @@ const App = () => {
       setShowAdminBoard(isAdmin);
       setShowStaffBoard(isStaff);
 
-      // Chuyển hướng nếu là staff
       if (isStaff && (location.pathname === "/login" || location.pathname === "/home" || location.pathname === "/")) {
         navigate("/staff");
       }
@@ -98,7 +96,8 @@ const App = () => {
         logOut={logOut}
       />
 
-      <div className="container mt-3">
+      {/* ✅ Đã thêm class page-content vào đây */}
+      <div className="page-content width-full">
         <Routes>
           {/* Chung */}
           <Route path="/" element={<Home />} />
