@@ -1,4 +1,4 @@
-console.log("🚀 Server đang khởi động...");
+console.log("\u{1F680} Server đang khởi động...");
 
 const express = require("express");
 const cors = require("cors");
@@ -8,9 +8,9 @@ const dbConfig = require("./config/db.config");
 
 const app = express();
 
-// ✅ Cấu hình CORS chính xác
+// ✅ CORS config
 const corsOptions = {
-  origin: "http://localhost:3000", // FE React
+  origin: "http://localhost:5173", // cập nhật cho Vite
   methods: "GET,POST,PUT,DELETE,OPTIONS",
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
@@ -18,9 +18,11 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// ✅ API: Đăng nhập
+/** ----------------------- LOGIN ----------------------- */
 app.post("/api/auth/login", async (req, res) => {
   const { username, password } = req.body;
+  console.log(">>> [Login] Username:", username);
+
   try {
     const pool = await sql.connect(dbConfig);
     const result = await pool
@@ -33,50 +35,47 @@ app.post("/api/auth/login", async (req, res) => {
         WHERE u.username = @username
       `);
 
-    if (result.recordset.length > 0) {
-      const user = result.recordset[0];
-      const isValid = await bcrypt.compare(password, user.password);
-      if (!isValid) {
-        return res.status(401).json({ message: "Sai mật khẩu" });
-      }
-      res.json({
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        roles: [`ROLE_${user.role.toUpperCase()}`],
-        accessToken: "fake-jwt-token",
-      });
-    } else {
-      res.status(401).json({ message: "Sai tài khoản hoặc mật khẩu" });
+    if (result.recordset.length === 0) {
+      return res.status(401).json({ message: "Sai tài khoản hoặc mật khẩu" });
     }
+
+    const user = result.recordset[0];
+    const isValid = await bcrypt.compare(password, user.password);
+
+    if (!isValid) {
+      return res.status(401).json({ message: "Sai mật khẩu" });
+    }
+
+    res.json({
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      roles: [`ROLE_${user.role.toUpperCase()}`],
+      accessToken: "fake-jwt-token",
+    });
   } catch (err) {
     console.error("❌ Lỗi đăng nhập:", err);
     res.status(500).json({ message: "Lỗi server" });
   }
 });
 
-// ✅ API: Đăng ký
+/** ----------------------- REGISTER ----------------------- */
 app.post("/api/auth/register", async (req, res) => {
   const { username, email, password, first_name, last_name, dob, gender } = req.body;
   try {
     const pool = await sql.connect(dbConfig);
 
-    // Kiểm tra username hoặc email đã tồn tại
     const check = await pool.request()
       .input("username", sql.VarChar, username)
       .input("email", sql.VarChar, email)
-      .query(`
-        SELECT * FROM Users WHERE username = @username OR email = @email
-      `);
+      .query(`SELECT * FROM Users WHERE username = @username OR email = @email`);
 
     if (check.recordset.length > 0) {
       return res.status(400).json({ message: "Username hoặc email đã được sử dụng" });
     }
 
-    // Băm mật khẩu
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Thêm người dùng
     const userResult = await pool
       .request()
       .input("username", sql.VarChar, username)
@@ -90,7 +89,6 @@ app.post("/api/auth/register", async (req, res) => {
 
     const userId = userResult.recordset[0].id;
 
-    // Thêm vào UserProfile
     await pool
       .request()
       .input("user_id", sql.Int, userId)
@@ -110,7 +108,7 @@ app.post("/api/auth/register", async (req, res) => {
   }
 });
 
-// ✅ API: Lấy thông tin người dùng (User)
+/** ----------------------- GET USER BY ROLE ----------------------- */
 app.get("/api/test/user/:id", async (req, res) => {
   const { id } = req.params;
   try {
@@ -137,7 +135,6 @@ app.get("/api/test/user/:id", async (req, res) => {
   }
 });
 
-// ✅ API: Lấy thông tin nhân viên (Staff)
 app.get("/api/test/staff/:id", async (req, res) => {
   const { id } = req.params;
   try {
@@ -162,7 +159,6 @@ app.get("/api/test/staff/:id", async (req, res) => {
   }
 });
 
-// ✅ API: Lấy thông tin quản trị viên (Admin)
 app.get("/api/test/admin/:id", async (req, res) => {
   const { id } = req.params;
   try {
@@ -187,7 +183,7 @@ app.get("/api/test/admin/:id", async (req, res) => {
   }
 });
 
-// ✅ Khởi động server
+/** ----------------------- START SERVER ----------------------- */
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () =>
   console.log(`✅ Backend đang chạy tại http://localhost:${PORT}`)

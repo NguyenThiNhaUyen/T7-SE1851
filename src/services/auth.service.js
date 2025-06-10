@@ -1,6 +1,10 @@
 import axios from "axios";
 
-const API_URL = "/api/auth/"; // Proxy đến http://localhost:5000
+// Cách 1: dùng URL tuyệt đối (không cần proxy)
+const API_URL = "http://localhost:5000/api/auth/";
+
+// Cách 2: dùng URL tương đối + cấu hình proxy (xem bên dưới)
+// const API_URL = "/api/auth/";
 
 const login = (username, password) => {
   return axios
@@ -30,11 +34,9 @@ const getCurrentUser = () => {
   return JSON.parse(localStorage.getItem("user"));
 };
 
-const AuthService = {
+export default {
   login,
   register,
   logout,
   getCurrentUser,
 };
-
-export default AuthService;
