@@ -1,41 +1,74 @@
-import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/test/"; // dùng URL tuyệt đối
+import axios from 'axios';
+
+const API_URL = '/api/'; // Dùng URL tương đối để qua proxy
+
+// Hàm lấy thông tin xác thực từ localStorage
+const getAuthHeader = () => {
+  const user = JSON.parse(localStorage.getItem('user'));
+  if (user && user.username) {
+    // Tạm thời giả định mật khẩu được lưu (thực tế nên dùng session hoặc token)
+    // Đây là cách dùng HTTP Basic, cần username:password
+    const credentials = btoa(`${user.username}:${user.password || ''}`);
+    return { Authorization: `Basic ${credentials}` };
+  }
+  return {};
+};
 
 const getPublicContent = () => {
-  return axios.get(API_URL + "all");
+  return axios.get(API_URL + 'public/content');
 };
 
-const getUserBoard = () => {
-  return axios.get(API_URL + "user");
+const getUserProfile = () => {
+  return axios.get(API_URL + 'profile', { headers: getAuthHeader() });
 };
 
-const getBoardStaff = () => {
-  return axios.get(API_URL + "staff");
+const getUserDetails = (id) => {
+  return axios.get(API_URL + `user/${id}`, { headers: getAuthHeader() });
 };
 
-const getAdminBoard = () => {
-  return axios.get(API_URL + "admin");
+const getDonationHistory = () => {
+  return axios.get(API_URL + 'donation/history', { headers: getAuthHeader() });
 };
 
-const getUserById = (id) => {
-  return axios.get(`${API_URL}user/${id}`);
+const getBloodRequest = () => {
+  return axios.get(API_URL + 'request/list', { headers: getAuthHeader() });
 };
 
-const getStaffById = (id) => {
-  return axios.get(`${API_URL}staff/${id}`);
+const getTransfusionHistory = () => {
+  return axios.get(API_URL + 'transfusion/history', { headers: getAuthHeader() });
 };
 
-const getAdminById = (id) => {
-  return axios.get(`${API_URL}admin/${id}`);
+const getStaffDashboard = () => {
+  return axios.get(API_URL + 'staff/dashboard', { headers: getAuthHeader() });
+};
+
+const getAdminDashboard = () => {
+  return axios.get(API_URL + 'admin', { headers: getAuthHeader() });
+};
+
+const getAllUsers = () => {
+  return axios.get(API_URL + 'users/list', { headers: getAuthHeader() });
+};
+
+const getAllRoles = () => {
+  return axios.get(API_URL + 'roles/list', { headers: getAuthHeader() });
+};
+
+const getNotifications = () => {
+  return axios.get(API_URL + 'notifications/list', { headers: getAuthHeader() });
 };
 
 export default {
   getPublicContent,
-  getUserBoard,
-  getBoardStaff,
-  getAdminBoard,
-  getUserById,
-  getStaffById,
-  getAdminById,
+  getUserProfile,
+  getUserDetails,
+  getDonationHistory,
+  getBloodRequest,
+  getTransfusionHistory,
+  getStaffDashboard,
+  getAdminDashboard,
+  getAllUsers,
+  getAllRoles,
+  getNotifications,
 };
