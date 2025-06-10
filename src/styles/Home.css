@@ -4,8 +4,7 @@
   background-color: #fafafa;
   color: #2e2e2e;
   line-height: 1.6;
-  padding-top: 100px; /* để không bị navbar che */
-  padding-bottom: 40px;
+  padding-top: 50px; /* để không bị navbar che */
 }
 
 

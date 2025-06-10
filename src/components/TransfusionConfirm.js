@@ -1,16 +1,14 @@
-
 import React, { useEffect, useState } from "react";
 import { getUserTransfusions, confirmTransfusion } from "../services/transfusion.service";
 import "../styles/user.css";
 import { toast } from "react-toastify";
 
-
 const TransfusionConfirm = () => {
-  const [requests, setRequests] = useState([]);
+  const [user, setUser] = useState(null); // 🔧 Thêm dòng này
+  const [transfusions, setTransfusions] = useState([]); // 🔧 Thêm dòng này
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-
     const currentUser = JSON.parse(localStorage.getItem("user"));
     if (!currentUser) {
       toast.error("❌ Người dùng chưa đăng nhập.");
@@ -70,11 +68,9 @@ const TransfusionConfirm = () => {
               <th>Thành phần</th>
               <th>Số lượng (ml)</th>
               <th>Mức độ khẩn cấp</th>
-              <th>Hành động</th>
             </tr>
           </thead>
           <tbody>
-
             {transfusions.map((item) => (
               <tr key={item.id}>
                 <td>{item.component_name || "Chưa rõ"}</td>
@@ -82,7 +78,6 @@ const TransfusionConfirm = () => {
                 <td>{item.units}</td>
                 <td>{new Date(item.confirmedAt).toLocaleDateString()}</td>
                 <td>{item.status}</td>
-
               </tr>
             ))}
           </tbody>
@@ -92,6 +87,4 @@ const TransfusionConfirm = () => {
   );
 };
 
-
-export default TransfusionHistory;
-
+export default TransfusionConfirm; // ✅ Đúng tên
