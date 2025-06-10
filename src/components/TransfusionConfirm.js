@@ -1,13 +1,16 @@
+
 import React, { useEffect, useState } from "react";
 import { getUserTransfusions, confirmTransfusion } from "../services/transfusion.service";
 import "../styles/user.css";
 import { toast } from "react-toastify";
 
-const TransfusionHistory = () => {
-  const [transfusions, setTransfusions] = useState([]);
-  const [user, setUser] = useState(null);
+
+const TransfusionConfirm = () => {
+  const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+
     const currentUser = JSON.parse(localStorage.getItem("user"));
     if (!currentUser) {
       toast.error("❌ Người dùng chưa đăng nhập.");
@@ -59,17 +62,19 @@ const TransfusionHistory = () => {
       ) : transfusions.length === 0 ? (
         <p>Chưa có lần truyền máu nào.</p>
       ) : (
-        <table className="styled-table">
+        <table className="table table-bordered">
           <thead>
             <tr>
-              <th>Thành phần</th>
+              <th>Người yêu cầu</th>
               <th>Nhóm máu</th>
+              <th>Thành phần</th>
               <th>Số lượng (ml)</th>
-              <th>Ngày truyền</th>
-              <th>Trạng thái</th>
+              <th>Mức độ khẩn cấp</th>
+              <th>Hành động</th>
             </tr>
           </thead>
           <tbody>
+
             {transfusions.map((item) => (
               <tr key={item.id}>
                 <td>{item.component_name || "Chưa rõ"}</td>
@@ -77,6 +82,7 @@ const TransfusionHistory = () => {
                 <td>{item.units}</td>
                 <td>{new Date(item.confirmedAt).toLocaleDateString()}</td>
                 <td>{item.status}</td>
+
               </tr>
             ))}
           </tbody>
@@ -86,4 +92,6 @@ const TransfusionHistory = () => {
   );
 };
 
+
 export default TransfusionHistory;
+

@@ -1,6 +1,7 @@
 // src/components/StaffStatistics.js
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import "../styles/staff.css";
 
 const StaffStatistics = () => {
   const [stats, setStats] = useState([]);
