@@ -70,6 +70,7 @@ const TransfusionConfirm = () => {
               <th>Nhóm máu</th>
               <th>Thành phần</th>
               <th>Số lượng (ml)</th>
+              <th>Mức độ khẩn cấp</th>
               <th>Ngày xác nhận</th>
               <th>Trạng thái</th>
             </tr>
@@ -81,8 +82,9 @@ const TransfusionConfirm = () => {
                 <td>{item.bloodType}</td>
                 <td>{item.component_name}</td>
                 <td>{item.units}</td>
-                <td>{new Date(item.confirmedAt).toLocaleDateString()}</td>
-                <td>{item.status}</td>
+                <td>{item.urgencyLevel || "Không rõ"}</td>
+                <td>{item.confirmedAt ? new Date(item.confirmedAt).toLocaleDateString() : "Chưa xác nhận"}</td>
+                <td>{item.status || "Đang xử lý"}</td>
               </tr>
             ))}
           </tbody>
