@@ -6,12 +6,6 @@ import CheckButton from "react-validation/build/button";
 
 import AuthService from "../services/auth.service";
 
-const required = (value) => {
-  if (!value) {
-    return <div className="invalid-feedback d-block">This field is required!</div>;
-  }
-};
-
 const Login = () => {
   const form = useRef();
   const checkBtn = useRef();
@@ -27,12 +21,32 @@ const Login = () => {
     setUsername(e.target.value);
   };
 
-  const onChangePassword = (e) => {
-    setPassword(e.target.value);
+  const validatePassword = (value) => {
+    if (!value) return "Mật khẩu không được để trống";
+
+    if (value.length < 6) return "Mật khẩu phải từ 6 ký tự trở lên";
+
+    return null;
   };
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = (e) => {
     e.preventDefault();
+
+    if (!username) {
+      setMessage("Username không được để trống");
+      setLoading(false);
+      return;
+    }
+
+    const error = validatePassword(password);
+    if (error) {
+      setMessage(error);
+      setLoading(false);
+      return;
+    }
+
 
     setMessage("");
     setLoading(true);
@@ -47,7 +61,7 @@ const Login = () => {
             if (roles.includes("ROLE_ADMIN")) {
               navigate("/admin");
             } else if (roles.includes("ROLE_STAFF")) {
-              navigate("/mod");
+              navigate("/staff");
             } else {
               navigate("/user");
             }
@@ -73,44 +87,96 @@ const Login = () => {
   };
 
   return (
-    <div className="col-md-12">
-      <div className="card card-container">
+
+    <div className="login-fullpage">
+      <div className="login-left">
+  <div className="login-left-content">
+    <h2>Hiến máu - Hành động nhỏ, ý nghĩa lớn</h2>
+    <p style={{ lineHeight: 1.6 }}>
+      Ở Việt Nam, cứ mỗi <strong>2 giây</strong> lại có một người cần truyền máu.  
+      <br />
+      Sự đóng góp của bạn thật sự quan trọng!  
+      <br />
+      Hãy tiếp tục đồng hành cùng mạng lưới hiến máu toàn quốc – nơi trái tim chung một nhịp yêu thương.
+    </p>
+  </div>
+</div>
+
+      <div className="login-box">
+
+
         <img
-          src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
+          src="/donor.png"
           alt="profile-img"
           className="profile-img-card"
         />
 
         <Form onSubmit={handleLogin} ref={form}>
           <div className="form-group">
-            <label htmlFor="username">Username</label>
+            <h4 className="text-center mb-3">Đăng nhập</h4>
+            <label htmlFor="username">
+              Username<span style={{ color: "red" }}>*</span>
+            </label>
             <Input
               type="text"
               className="form-control"
               name="username"
               value={username}
               onChange={onChangeUsername}
-              validations={[required]}
             />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <Input
-              type="password"
-              className="form-control"
-              name="password"
-              value={password}
-              onChange={onChangePassword}
-              validations={[required]}
-            />
+
+          <div className="form-group position-relative">
+            <label htmlFor="password">
+              Password<span style={{ color: "red" }}>*</span>
+            </label>
+
+            <div style={{ position: "relative" }}>
+              <Input
+                type={showPassword ? "text" : "password"}
+                className="form-control"
+                name="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                style={{ paddingRight: "40px" }} 
+              />
+
+
+              <span
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  right: "10px",
+                  transform: "translateY(-50%)",
+                  cursor: "pointer"
+                }}
+              >
+                <img
+                  src={showPassword ? "/eye-open.png" : "/eye-close.png"}
+                  alt="toggle"
+                  width={20}
+                />
+              </span>
+            </div>
+
+            <div className="text-right mt-2">
+              <a href="/forgot">Bạn quên mật khẩu?</a>
+            </div>
           </div>
 
+
           <div className="form-group">
-            <button className="btn btn-primary btn-block" disabled={loading}>
+            <button className="btn btn-block btn-gradient-red" disabled={loading}>
               {loading && <span className="spinner-border spinner-border-sm"></span>}
-              <span>Login</span>
+              <span>Đăng nhập</span>
             </button>
+          </div>
+
+          <div className="text-center mt-3">
+            <span>Chưa có tài khoản? </span>
+            <a href="/register">Đăng ký</a>
           </div>
 
           {message && (
@@ -122,8 +188,8 @@ const Login = () => {
           )}
           <CheckButton style={{ display: "none" }} ref={checkBtn} />
         </Form>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 };
 

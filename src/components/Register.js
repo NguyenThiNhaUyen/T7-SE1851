@@ -8,7 +8,7 @@ import AuthService from "../services/auth.service";
 
 const required = (value) => {
   if (!value) {
-    return <div className="invalid-feedback d-block">This field is required!</div>;
+    return <div className="invalid-feedback d-block">*Bat buoc</div>;
   }
 };
 
@@ -45,6 +45,8 @@ const Register = () => {
   const [successful, setSuccessful] = useState(false);
   const [message, setMessage] = useState("");
 
+  const today = new Date().toISOString().split("T")[0];
+
   const handleRegister = (e) => {
     e.preventDefault();
 
@@ -78,10 +80,10 @@ const Register = () => {
   };
 
   return (
-    <div className="col-md-12">
-      <div className="card card-container">
+    <div className="regis-fullpage">
+  <div className="change-box">
         <img
-          src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
+          src="/donor.png"
           alt="profile-img"
           className="profile-img-card"
         />
@@ -89,6 +91,7 @@ const Register = () => {
         <Form onSubmit={handleRegister} ref={form}>
           {!successful && (
             <div>
+              <h4 className="text-center mb-3">Đăng ký tài khoản</h4>
               <div className="form-group">
                 <label htmlFor="username">Username</label>
                 <Input
@@ -157,7 +160,10 @@ const Register = () => {
                   name="dob"
                   value={dob}
                   onChange={(e) => setDob(e.target.value)}
+                  min="1900-01-01"
+                  max={today}
                 />
+
               </div>
 
               <div className="form-group">
@@ -171,23 +177,29 @@ const Register = () => {
                   <option value="">Select</option>
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
-                  <option value="Other">Other</option>
                 </select>
               </div>
 
               <div className="form-group">
-                <button className="btn btn-primary btn-block">Sign Up</button>
+                <button className="btn btn-block btn-gradient-red">Đăng ký</button>
               </div>
+
+              <div className="text-center mt-3">
+                <span>Đã có tài khoản? </span>
+                <a href="/login">Đăng nhập</a>
+              </div>
+
             </div>
           )}
 
           {message && (
             <div className="form-group">
-              <div className={successful ? "alert alert-success" : "alert alert-danger"} role="alert">
+              <div className={`alert ${successful ? "alert-success" : "alert-custom-red"}`} role="alert">
                 {message}
               </div>
             </div>
           )}
+
           <CheckButton style={{ display: "none" }} ref={checkBtn} />
         </Form>
       </div>
