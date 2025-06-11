@@ -88,7 +88,7 @@ const App = () => {
           <Route path="/admin" element={<BoardAdmin />} />
 
           {/* Staff */}
-          <Route path="/staff" element={<StaffLayout />}>
+          <Route path="/staff" element={<StaffLayout />}> 
             <Route index element={<BoardStaff />} />
             <Route path="requests" element={<StaffRequests />} />
             <Route path="transfusions" element={<TransfusionConfirm />} />
@@ -98,8 +98,8 @@ const App = () => {
           </Route>
 
           {/* User */}
-          <Route path="/user" element={<BoardUser />} />
-          <Route path="/user/:id" element={<UserLayout />}>
+          <Route path="/user" element={<UserLayout />}>
+
             <Route index element={<BoardUser />} />
             <Route path="register" element={<DonationRegister />} />
             <Route path="donation-history" element={<DonationHistory />} />
