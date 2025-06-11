@@ -52,18 +52,13 @@ import VnPayForm from "./components/VnPayForm";
 import Activities from "./components/Activities";
 
 const App = () => {
-<<<<<<< HEAD
-  const [showStaffBoard, setShowStaffBoard] = useState(false);
-  const [showAdminBoard, setShowAdminBoard] = useState(false);
-  const [currentUser, setCurrentUser] = useState(undefined);
-  const [loading, setLoading] = useState(true); // Thêm khai báo loading
-=======
->>>>>>> e597eab112c410ff26201f7695364f381bd9d6b3
+
+
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
-<<<<<<< HEAD
+
     const user = AuthService.getCurrentUser();
 
     if (user) {
@@ -80,9 +75,9 @@ const App = () => {
     setLoading(false);
     EventBus.on("logout", logOut);
     return () => EventBus.remove("logout");
-=======
+
     // Tạm thời không kiểm tra quyền truy cập
->>>>>>> e597eab112c410ff26201f7695364f381bd9d6b3
+
   }, [location]);
 
   const logOut = () => {
