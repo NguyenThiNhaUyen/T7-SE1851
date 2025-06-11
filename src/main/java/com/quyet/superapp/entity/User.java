@@ -2,6 +2,8 @@ package com.quyet.superapp.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import javax.management.relation.Role;
 import java.util.List;
 
 @Entity
@@ -34,5 +36,5 @@ public class User {
     private String email;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private UserDetail userDetail;
+    private UserProfile userProfile;
 }

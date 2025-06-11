@@ -1,7 +1,7 @@
 package com.quyet.superapp.service;
 
-import com.quyet.superapp.entity.BloodUnit;
-import com.quyet.superapp.repository.BloodUnitRepository;
+import com.quyet.superapp.entity.VnPayment;
+import com.quyet.superapp.repository.VnPaymentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -10,19 +10,20 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class BloodUnitService {
-    private final BloodUnitRepository repository;
+public class VnPayMentService {
 
-    public List<BloodUnit> getAll() {
+    private final VnPaymentRepository repository;
+
+    public List<VnPayment> getAll() {
         return repository.findAll();
     }
 
-    public Optional<BloodUnit> getById(Integer id) {
+    public Optional<VnPayment> getById(Integer id) {
         return repository.findById(id);
     }
 
-    public BloodUnit save(BloodUnit unit) {
-        return repository.save(unit);
+    public VnPayment save(VnPayment payment) {
+        return repository.save(payment);
     }
 
     public void deleteById(Integer id) {

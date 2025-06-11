@@ -1,9 +1,6 @@
 package com.quyet.superapp.controller;
 
-
-import com.quyet.superapp.entity.Donation;
 import com.quyet.superapp.entity.UserProfile;
-import com.quyet.superapp.service.DonationService;
 import com.quyet.superapp.service.UserProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-
 
 @RestController
 @RequestMapping("/api/userprofiles")
@@ -32,7 +28,7 @@ public class UserProfileController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public UserProfile create(@RequestBody UserProfile obj) {
         return userProfileService.save(obj);
     }

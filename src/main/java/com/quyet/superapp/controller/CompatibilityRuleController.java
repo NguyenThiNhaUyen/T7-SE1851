@@ -27,7 +27,7 @@ public class CompatibilityRuleController {
         return service.getCompatibleRules(recipientType, component);
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public CompatibilityRule create(@RequestBody CompatibilityRule rule) {
         return service.addRule(rule);
     }

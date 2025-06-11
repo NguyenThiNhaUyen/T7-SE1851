@@ -27,7 +27,7 @@ public class NotificationController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public Notification create(@RequestBody Notification notification) {
         return service.create(notification);
     }

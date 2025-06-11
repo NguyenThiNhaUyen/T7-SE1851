@@ -1,7 +1,7 @@
 package com.quyet.superapp.controller;
 
-
 import com.quyet.superapp.entity.Blog;
+import com.quyet.superapp.service.BlogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,33 +13,27 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BlogController {
 
-    private final BlogService service;
+    private final BlogService blogService;
 
     @GetMapping
-    public List<Blog> getAll() {
-        return service.getAll();
+    public ResponseEntity<List<Blog>> getAllBlogs() {
+        return ResponseEntity.ok(blogService.getAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Blog> getById(@PathVariable Integer id) {
-        return service.getById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Blog> getBlogById(@PathVariable Long id) {
+        return ResponseEntity.ok(blogService.getById(id));
     }
 
-    @PostMapping
-    public Blog create(@RequestBody Blog blog) {
-        return service.create(blog);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Blog> update(@PathVariable Integer id, @RequestBody Blog blog) {
-        Blog updated = service.update(id, blog);
-        return updated != null ? ResponseEntity.ok(updated) : ResponseEntity.notFound().build();
+    @PostMapping("/create")
+    public ResponseEntity<Blog> createBlog(@RequestBody Blog blog,
+                                           @RequestParam(name = "authorId") Long authorId) {
+        return ResponseEntity.ok(blogService.save(blog, authorId));
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Integer id) {
-        service.delete(id);
+    public ResponseEntity<Void> deleteBlog(@PathVariable Long id) {
+        blogService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

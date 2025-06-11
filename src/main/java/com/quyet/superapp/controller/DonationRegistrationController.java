@@ -1,10 +1,7 @@
 package com.quyet.superapp.controller;
 
-
-import com.quyet.superapp.entity.Donation;
 import com.quyet.superapp.entity.DonationRegistration;
 import com.quyet.superapp.service.DonationRegistrationService;
-import com.quyet.superapp.service.DonationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +28,7 @@ public class DonationRegistrationController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public DonationRegistration create(@RequestBody DonationRegistration obj) {
         return donationRegistrationService.save(obj);
     }

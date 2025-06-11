@@ -26,7 +26,7 @@ public class ReportController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public Report create(@RequestBody Report report) {
         return service.create(report);
     }
@@ -42,4 +42,3 @@ public class ReportController {
         service.delete(id);
     }
 }
-

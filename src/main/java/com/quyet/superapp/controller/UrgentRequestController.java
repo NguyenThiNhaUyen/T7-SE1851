@@ -1,11 +1,13 @@
 package com.quyet.superapp.controller;
 
 import com.quyet.superapp.entity.UrgentRequest;
+import com.quyet.superapp.service.UrgentRequestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 @RestController
 @RequestMapping("/api/urgent-requests")
 @RequiredArgsConstructor
@@ -25,7 +27,7 @@ public class UrgentRequestController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public UrgentRequest create(@RequestBody UrgentRequest urgentRequest) {
         return service.create(urgentRequest);
     }

@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 @RestController
 @RequestMapping("/api/chat-logs")
 @RequiredArgsConstructor
@@ -22,7 +23,7 @@ public class ChatLogController {
         return service.getByUser(userId);
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ChatLog create(@RequestBody ChatLog chatLog) {
         return service.create(chatLog);
     }

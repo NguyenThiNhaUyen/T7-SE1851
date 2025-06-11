@@ -1,33 +1,38 @@
-package com.quyet.superapp.entity;
+    package com.quyet.superapp.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
-import java.time.LocalDateTime;
+    import jakarta.persistence.*;
+    import lombok.*;
+    import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "Blog")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class Blog {
+    @Entity
+    @Table(name = "Blog")
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public class Blog {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
 
-    @Column(name = "Title", columnDefinition = "VARCHAR")
-    private String title;
+        @Column(name = "Title", columnDefinition = "VARCHAR")
+        private String title;
 
-    @ManyToOne
-    @JoinColumn(name = "AuthorId")
-    private User author;
+        @ManyToOne
+        @JoinColumn(name = "AuthorId")
+        private User author;
 
-    @Column(name = "Content", columnDefinition = "TEXT")
-    private String content;
+        @Column(name = "Content", columnDefinition = "TEXT")
+        private String content;
 
-    @Column(name = "Created_at", columnDefinition = "DATETIME")
-    private LocalDateTime createdAt;
+        @Column(name = "Created_at", columnDefinition = "DATETIME")
+        private LocalDateTime createdAt;
 
-    @Column(name = "Status", columnDefinition = "VARCHAR")
-    private String status;
-}
+        @Column(name = "Status", columnDefinition = "VARCHAR")
+        private String status;
+
+        @PrePersist
+        protected void onCreate() {
+            this.createdAt = LocalDateTime.now();
+        }
+    }

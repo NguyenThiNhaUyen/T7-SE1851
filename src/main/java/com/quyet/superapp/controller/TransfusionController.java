@@ -1,5 +1,6 @@
 package com.quyet.superapp.controller;
 
+import com.quyet.superapp.entity.TransfusionConfirm;
 import com.quyet.superapp.service.TransfusionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,7 @@ public class TransfusionController {
 
     private final TransfusionService transfusionService;
 
-    @PostMapping
+    @PostMapping("/create")
     public TransfusionConfirm confirmTransfusion(@Valid @RequestBody TransfusionConfirm confirm) {
         return transfusionService.confirmTransfusion(confirm);
     }
