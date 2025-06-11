@@ -1,7 +1,7 @@
 
 import axios from 'axios';
 
-const API_URL = '/api/'; // Dùng URL tương đối để qua proxy
+const API_URL = 'http://localhost:8080/api/auth/login'; // Dùng URL tương đối để qua proxy
 
 // Hàm lấy thông tin xác thực từ localStorage
 const getAuthHeader = () => {

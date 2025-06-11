@@ -58,6 +58,7 @@ const App = () => {
   const [showStaffBoard, setShowStaffBoard] = useState(false);
   const [showAdminBoard, setShowAdminBoard] = useState(false);
   const [currentUser, setCurrentUser] = useState(undefined);
+  const [loading, setLoading] = useState(true); // Thêm khai báo loading
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -66,8 +67,8 @@ const App = () => {
 
     if (user) {
       setCurrentUser(user);
-      const isAdmin = user.roles.includes("ROLE_ADMIN");
-      const isStaff = user.roles.includes("ROLE_STAFF");
+      const isAdmin = user.roles?.includes("ROLE_ADMIN");
+      const isStaff = user.roles?.includes("ROLE_STAFF");
       setShowAdminBoard(isAdmin);
       setShowStaffBoard(isStaff);
 
@@ -75,7 +76,7 @@ const App = () => {
         navigate("/staff");
       }
     }
-
+    setLoading(false);
     EventBus.on("logout", logOut);
     return () => EventBus.remove("logout");
   }, [location]);
@@ -86,6 +87,8 @@ const App = () => {
     setShowAdminBoard(false);
     setCurrentUser(undefined);
   };
+
+  if (loading) return <div>Đang tải...</div>;
 
   return (
     <div>
