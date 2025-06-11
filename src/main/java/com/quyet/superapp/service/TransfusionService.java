@@ -1,6 +1,5 @@
 package com.quyet.superapp.service;
 
-import com.quyet.superapp.entity.TransfusionConfirm;
 import com.quyet.superapp.repository.TransfusionConfirmRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

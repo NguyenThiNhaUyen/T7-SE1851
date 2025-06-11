@@ -2,8 +2,6 @@ package com.quyet.superapp.controller;
 
 import com.quyet.superapp.SeminarApplication;
 
-import com.quyet.superapp.entity.TransfusionConfirm;
-import com.quyet.superapp.exception.GlobalExceptionHandler;
 import com.quyet.superapp.service.TransfusionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

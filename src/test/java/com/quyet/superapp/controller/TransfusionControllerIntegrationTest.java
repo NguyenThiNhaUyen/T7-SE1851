@@ -1,7 +1,6 @@
 package com.quyet.superapp.controller;
 
 
-import com.quyet.superapp.entity.TransfusionConfirm;
 import com.quyet.superapp.repository.TransfusionConfirmRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
