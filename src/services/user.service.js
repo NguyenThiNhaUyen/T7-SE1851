@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:3000/api/test/";
+const API_URL = "http://localhost:5000/api/test/"; // dùng URL tuyệt đối
 
 const getPublicContent = () => {
   return axios.get(API_URL + "all");
@@ -18,11 +18,24 @@ const getAdminBoard = () => {
   return axios.get(API_URL + "admin");
 };
 
-const UserService = {
+const getUserById = (id) => {
+  return axios.get(`${API_URL}user/${id}`);
+};
+
+const getStaffById = (id) => {
+  return axios.get(`${API_URL}staff/${id}`);
+};
+
+const getAdminById = (id) => {
+  return axios.get(`${API_URL}admin/${id}`);
+};
+
+export default {
   getPublicContent,
   getUserBoard,
   getBoardStaff,
   getAdminBoard,
-}
-
-export default UserService;
+  getUserById,
+  getStaffById,
+  getAdminById,
+};

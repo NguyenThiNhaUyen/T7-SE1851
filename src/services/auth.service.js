@@ -1,20 +1,25 @@
+// ✅ auth.service.js
 import axios from "axios";
 
-// ✅ Đảm bảo dùng đúng URL backend
-const API_URL = "http://localhost:8080/api/auth/";
+const API_URL = "http://localhost:5000/api/auth/"; // dùng URL tuyệt đối
 
 const login = (username, password) => {
-  return axios.post(API_URL + "login", {
+  return axios
+    .post(API_URL + "login", { username, password }, { withCredentials: true })
+    .then((response) => {
+      if (response.data.username) {
+        localStorage.setItem("user", JSON.stringify(response.data));
+      }
+      return response.data;
+    });
+};
+
+const register = (username, email, password, profile) => {
+  return axios.post(API_URL + "register", {
     username,
-    password
-  }, {
-    withCredentials: true   // ✅ Thêm dòng này để gửi kèm cookie (JSESSIONID)
-  })
-  .then((response) => {
-    if (response.data.username) {
-      localStorage.setItem("user", JSON.stringify(response.data));
-    }
-    return response.data;
+    email,
+    password,
+    ...profile,
   });
 };
 
@@ -26,10 +31,9 @@ const getCurrentUser = () => {
   return JSON.parse(localStorage.getItem("user"));
 };
 
-const AuthService = {
+export default {
   login,
+  register,
   logout,
   getCurrentUser,
 };
-
-export default AuthService;

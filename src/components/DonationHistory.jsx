@@ -16,7 +16,8 @@ const DonationHistory = () => {
 
     axios.get(`/users/donations/history/${currentUser.id}`)
       .then((res) => {
-        setHistory(res.data);
+        const data = Array.isArray(res.data) ? res.data : [];
+        setHistory(data);
       })
       .catch(() => {
         setError("Không thể tải lịch sử hiến máu.");
