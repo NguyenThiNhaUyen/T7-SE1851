@@ -1,5 +1,6 @@
 package com.quyet.superapp.service;
 
+
 import com.quyet.superapp.dto.LoginRequest;
 import com.quyet.superapp.dto.LoginResponse;
 import com.quyet.superapp.dto.RegisterRequest;
@@ -10,7 +11,6 @@ import com.quyet.superapp.repository.RoleRepository;
 import com.quyet.superapp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

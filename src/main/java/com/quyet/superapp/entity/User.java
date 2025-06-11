@@ -1,9 +1,8 @@
 package com.quyet.superapp.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import java.util.List;
 
 @Entity
 @Table(name = "Users")
@@ -34,6 +33,17 @@ public class User {
     @Column(name = "Email", columnDefinition = "VARCHAR(50)", nullable = false, unique = true)
     private String email;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user", cascade = {
+            CascadeType.PERSIST, CascadeType.MERGE,
+            CascadeType.DETACH, CascadeType.REFRESH
+    }, fetch = FetchType.LAZY, orphanRemoval = true)
     private UserDetail userDetail;
+
+    @OneToOne(mappedBy = "user", cascade = {
+            CascadeType.PERSIST, CascadeType.MERGE,
+            CascadeType.DETACH, CascadeType.REFRESH
+    }, fetch = FetchType.LAZY, orphanRemoval = true)
+    private UserProfile userProfile;
+
 }
+

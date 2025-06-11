@@ -16,7 +16,7 @@ public class CompatibilityRule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int compatibilityRuleId;
 
-    @Column(name = "Component", columnDefinition = "NVARCHAR(15)", nullable = false)
+    @Column(name = "Component", columnDefinition = "NVARCHAR(50)", nullable = false)
     private String component;
 
     @Column(name = "DonorType", columnDefinition = "VARCHAR(5)", nullable = false)
@@ -28,4 +28,3 @@ public class CompatibilityRule {
     @Column(name = "IsCompatible", nullable = false)
     private boolean isCompatible;
 }
-

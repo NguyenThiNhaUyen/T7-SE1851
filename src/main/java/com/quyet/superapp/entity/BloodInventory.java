@@ -16,21 +16,21 @@ public class BloodInventory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "BloodInventoryId")
-    private Long bloodInventoryId;
+    @Column(name = "BloodInventoryID")
+    private Integer id;
 
-    @Column(name = "BloodType", columnDefinition = "VARCHAR(5)", nullable = false)
-    private String bloodType;
+    @ManyToOne
+    @JoinColumn(name = "BloodType", referencedColumnName = "type")
+    private BloodType bloodType;
 
-    @Column(name = "Quantity", nullable = false)
-    private int quantity;
+    @ManyToOne
+    @JoinColumn(name = "ComponentID")
+    private BloodComponent component;
+
+    @Column(name = "TotalQuantityML")
+    private Integer totalQuantityMl;
 
     @Column(name = "LastUpdated", columnDefinition = "DATETIME")
     private LocalDateTime lastUpdated;
-
-    @PrePersist
-    @PreUpdate
-    public void updateTimestamp() {
-        lastUpdated = LocalDateTime.now();
-    }
 }
+

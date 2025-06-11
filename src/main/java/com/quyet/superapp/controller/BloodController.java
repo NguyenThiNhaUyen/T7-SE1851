@@ -11,56 +11,56 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/blood")
 @RequiredArgsConstructor
 public class BloodController {
 
     private final BloodService bloodService;
 
-    @GetMapping("/blood-inventory")
-    public List<BloodInventory> getBloodInventory(@RequestParam(required = false) String type) {
-        if (type != null) return bloodService.searchBloodByType(type);
-        return bloodService.getInventory();
+    // --- BLOOD INVENTORY ---
+
+    @GetMapping("/inventory")
+    public List<BloodInventory> getAllInventory(@RequestParam(required = false) String type) {
+        return type != null ? bloodService.searchBloodByType(type) : bloodService.getInventory();
     }
 
-    @GetMapping("/blood-inventory/{id}")
-    public ResponseEntity<BloodInventory> getBloodInventoryById(@PathVariable Long id) {
+    @GetMapping("/inventory/{id}")
+    public ResponseEntity<BloodInventory> getInventoryById(@PathVariable Long id) {
         return bloodService.getInventoryById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/blood-inventory")
-    public BloodInventory createBloodInventory(@RequestBody BloodInventory inventory) {
+    @PostMapping("/inventory")
+    public BloodInventory createInventory(@RequestBody BloodInventory inventory) {
         return bloodService.addBlood(inventory);
     }
 
-    @PutMapping("/blood-inventory/{id}")
-    public ResponseEntity<BloodInventory> updateBloodInventory(@PathVariable Long id, @RequestBody BloodInventory updated) {
+    @PutMapping("/inventory/{id}")
+    public ResponseEntity<BloodInventory> updateInventory(@PathVariable Long id, @RequestBody BloodInventory updated) {
         BloodInventory result = bloodService.updateBlood(id, updated);
         return result != null ? ResponseEntity.ok(result) : ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/blood-inventory/{id}")
-    public void deleteBloodInventory(@PathVariable Long id) {
+    @DeleteMapping("/inventory/{id}")
+    public void deleteInventory(@PathVariable Long id) {
         bloodService.deleteInventory(id);
     }
 
-
+    // --- URGENT REQUEST ---
 
     @GetMapping("/urgent-requests")
-    public List<UrgentRequest> getUrgentRequest(@RequestParam(required = false) String status) {
-        if (status != null) return bloodService.searchUrgentByStatus(status);
-        return bloodService.getUrgentRequest();
+    public List<UrgentRequest> getAllUrgentRequests(@RequestParam(required = false) String status) {
+        return status != null ? bloodService.searchUrgentByStatus(status) : bloodService.getUrgentRequest();
     }
 
     @PostMapping("/urgent-requests")
-    public UrgentRequest createUrgentRequest(@RequestBody UrgentRequest request){
+    public UrgentRequest createUrgentRequest(@RequestBody UrgentRequest request) {
         return bloodService.addRequest(request);
     }
 
     @PutMapping("/urgent-requests/{id}")
-    public ResponseEntity<UrgentRequest> updateUrgentRequest(@PathVariable Long id, @RequestBody UrgentRequest updated){
+    public ResponseEntity<UrgentRequest> updateUrgentRequest(@PathVariable Long id, @RequestBody UrgentRequest updated) {
         UrgentRequest result = bloodService.updateRequest(id, updated);
         return result != null ? ResponseEntity.ok(result) : ResponseEntity.notFound().build();
     }
@@ -70,9 +70,10 @@ public class BloodController {
         bloodService.deleteUrgentRequest(id);
     }
 
+    // --- COMPATIBILITY RULES ---
 
-    @GetMapping("/blood/compatibility-rules")
-    public List<CompatibilityRule> getCompatibilityRules() {
+    @GetMapping("/compatibility-rules")
+    public List<CompatibilityRule> getAllCompatibilityRules() {
         return bloodService.getCompatibilityRule();
     }
 
@@ -83,7 +84,4 @@ public class BloodController {
     ) {
         return bloodService.getCompatibleDonors(recipientType, component);
     }
-
-
-
 }
