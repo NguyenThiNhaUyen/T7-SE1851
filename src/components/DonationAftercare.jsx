@@ -5,18 +5,30 @@ import AuthService from "../services/auth.service";
 const DonationAftercare = () => {
   const [notifications, setNotifications] = useState([]);
   const [error, setError] = useState("");
-
   const currentUser = AuthService.getCurrentUser();
 
   useEffect(() => {
+    let isMounted = true;
+
     if (!currentUser) {
       setError("Người dùng chưa đăng nhập.");
       return;
     }
 
-    axios.get(`/users/notifications/aftercare/${currentUser.id}`)
-      .then((res) => setNotifications(res.data))
-      .catch(() => setError("Không thể tải thông báo."));
+    axios.get(`/api/users/notifications/aftercare/${currentUser.id}`)
+      .then((res) => {
+        if (isMounted) {
+          const data = Array.isArray(res.data) ? res.data : [];
+          setNotifications(data);
+        }
+      })
+      .catch(() => {
+        if (isMounted) setError("Không thể tải thông báo.");
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, [currentUser]);
 
   return (
