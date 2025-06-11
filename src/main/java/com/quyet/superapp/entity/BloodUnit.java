@@ -15,10 +15,10 @@ public class BloodUnit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "unit_id")
-    private Integer id;
+    private Long bloodUnitId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "blood_type", referencedColumnName = "type")
+    @JoinColumn(name = "blood_type")
     private BloodType bloodType;
 
     @ManyToOne(fetch = FetchType.LAZY)

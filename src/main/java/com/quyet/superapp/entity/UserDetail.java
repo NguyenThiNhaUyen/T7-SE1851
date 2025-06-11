@@ -17,7 +17,7 @@ public class UserDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "User_Detail_Id")
-    private Long user_detail_id;
+    private Long userDetailId;
 
     @Column(name = "FirstName", columnDefinition = "NVARCHAR(10)", nullable = false)
     private String firstname;

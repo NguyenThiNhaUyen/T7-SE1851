@@ -1,4 +1,5 @@
 package com.quyet.superapp.entity;
+
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -12,12 +13,13 @@ public class Report {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @Column(name = "Report_Id")
+    private Long reportId;
 
-    @Column(name = "report_type", columnDefinition = "VARCHAR")
+    @Column(name = "report_type", columnDefinition = "VARCHAR", nullable = false)
     private String reportType;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "generated_by")
     private User generatedBy;
 

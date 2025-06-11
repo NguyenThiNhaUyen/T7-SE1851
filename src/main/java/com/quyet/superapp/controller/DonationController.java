@@ -1,6 +1,5 @@
 package com.quyet.superapp.controller;
 
-
 import com.quyet.superapp.entity.Donation;
 import com.quyet.superapp.service.DonationService;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +28,7 @@ public class DonationController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public Donation create(@RequestBody Donation obj) {
         return donationService.save(obj);
     }

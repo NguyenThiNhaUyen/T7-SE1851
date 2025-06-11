@@ -17,13 +17,13 @@ public class BloodInventory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "BloodInventoryID")
-    private Integer id;
+    private Long bloodInventoryId;
 
-    @ManyToOne
-    @JoinColumn(name = "BloodType", referencedColumnName = "type")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "BloodType")
     private BloodType bloodType;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ComponentID")
     private BloodComponent component;
 

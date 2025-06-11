@@ -1,6 +1,7 @@
 package com.quyet.superapp.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,13 +15,14 @@ import java.util.List;
 public class BloodType {
 
     @Id
-    @Column(name = "BloodTypeID", columnDefinition = "VARCHAR")
-    private String type;
+    @Column(name = "BloodTypeID")
+    private String bloodTypeId;
 
     @Column(name = "Description", columnDefinition = "VARCHAR")
     private String description;
 
     @OneToMany(mappedBy = "bloodType")
+    @JsonIgnore
     private List<Donation> donations;
 
     @OneToMany(mappedBy = "bloodType")

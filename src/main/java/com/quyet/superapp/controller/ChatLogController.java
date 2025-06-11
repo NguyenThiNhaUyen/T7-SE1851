@@ -1,10 +1,12 @@
 package com.quyet.superapp.controller;
 
 import com.quyet.superapp.entity.ChatLog;
+import com.quyet.superapp.service.ChatLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 @RestController
 @RequestMapping("/api/chat-logs")
 @RequiredArgsConstructor
@@ -18,17 +20,17 @@ public class ChatLogController {
     }
 
     @GetMapping("/user/{userId}")
-    public List<ChatLog> getByUser(@PathVariable Integer userId) {
+    public List<ChatLog> getByUser(@PathVariable long userId) {
         return service.getByUser(userId);
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ChatLog create(@RequestBody ChatLog chatLog) {
         return service.create(chatLog);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Integer id) {
+    public void delete(@PathVariable int id) {
         service.delete(id);
     }
 }

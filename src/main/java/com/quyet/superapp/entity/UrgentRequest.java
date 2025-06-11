@@ -16,8 +16,12 @@ public class UrgentRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "UrgentRequestId")
+    @Column(name = "UrgentRequest_Id")
     private Long urgentRequestId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "User_Id")
+    private User user;
 
     @Column(name = "HospitalName", columnDefinition = "NVARCHAR(100)", nullable = false)
     private String hospitalName;

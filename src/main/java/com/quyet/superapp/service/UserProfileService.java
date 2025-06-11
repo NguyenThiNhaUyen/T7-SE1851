@@ -1,6 +1,7 @@
 package com.quyet.superapp.service;
 
 import com.quyet.superapp.entity.UserProfile;
+import com.quyet.superapp.repository.UserProfileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

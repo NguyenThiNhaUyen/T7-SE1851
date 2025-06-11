@@ -1,30 +1,32 @@
 package com.quyet.superapp.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
-@Table(name = "CompatibilityRule")
+@Table(name = "CompatibilityRules")
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class CompatibilityRule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int compatibilityRuleId;
+    @Column(name = "Rule_Id")
+    private Long compatibilityRuleId;
 
-    @Column(name = "Component", columnDefinition = "NVARCHAR(50)", nullable = false)
-    private String component;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "donor_type")
+    private BloodType donorType;
 
-    @Column(name = "DonorType", columnDefinition = "VARCHAR(5)", nullable = false)
-    private String donorType;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "recipient_type")
+    private BloodType recipientType;
 
-    @Column(name = "RecipientType", columnDefinition = "VARCHAR(5)", nullable = false)
-    private String recipientType;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "component_id")
+    private BloodComponent component;
 
-    @Column(name = "IsCompatible", nullable = false)
-    private boolean isCompatible;
+    @Column(name = "is_compatible")
+    private Boolean isCompatible;
 }

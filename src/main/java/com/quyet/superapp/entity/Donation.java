@@ -13,20 +13,20 @@ public class Donation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "donation_id")
-    private Integer id;
+    @Column(name = "Donation_Id")
+    private Long donation_id;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "User_Id")
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "registration_id")
     private DonationRegistration registration;
 
-    @ManyToOne
-    @JoinColumn(name = "blood_type", referencedColumnName = "type")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "blood_type")
     private BloodType bloodType;
 
     @ManyToOne(fetch = FetchType.LAZY)

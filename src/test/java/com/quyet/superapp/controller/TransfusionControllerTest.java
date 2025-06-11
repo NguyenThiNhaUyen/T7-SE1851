@@ -2,7 +2,6 @@ package com.quyet.superapp.controller;
 
 import com.quyet.superapp.SeminarApplication;
 
-import com.quyet.superapp.service.TransfusionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.Test;

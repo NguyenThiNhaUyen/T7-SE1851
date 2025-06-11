@@ -2,6 +2,7 @@ package com.quyet.superapp.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.util.List;
 
 @Entity
@@ -29,11 +30,11 @@ public class User {
     @JoinColumn(name = "Role_Id") //Khóa ngoại của bảng Users
     private Role role;
 
-
     @Column(name = "Email", columnDefinition = "VARCHAR(50)", nullable = false, unique = true)
     private String email;
 
-    @OneToOne(mappedBy = "user", cascade = {
+
+    @OneToOne(mappedBy = "user",     cascade = {
             CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.DETACH, CascadeType.REFRESH
     }, fetch = FetchType.LAZY, orphanRemoval = true)
@@ -46,4 +47,5 @@ public class User {
     private UserProfile userProfile;
 
 }
+
 

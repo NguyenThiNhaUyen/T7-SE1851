@@ -13,11 +13,11 @@ public class DonationRegistration {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "registration_id")
-    private Integer id;
+    @Column(name = "Registration_Id")
+    private Long registrationId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "User_Id")
     private User user;
 
     @Column(name = "ready_date", columnDefinition = "DATE")

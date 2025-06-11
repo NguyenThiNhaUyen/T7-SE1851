@@ -3,6 +3,7 @@ package com.quyet.superapp.controller;
 import com.quyet.superapp.entity.CompatibilityRule;
 import com.quyet.superapp.service.CompatibilityRuleService;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,7 +13,8 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:5713")
 public class CompatibilityRuleController {
 
-    private final CompatibilityRuleService service;
+    @Autowired
+    private CompatibilityRuleService service;
 
     @GetMapping
     public List<CompatibilityRule> getAll() {
@@ -27,7 +29,7 @@ public class CompatibilityRuleController {
         return service.getCompatibleRules(recipientType, component);
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public CompatibilityRule create(@RequestBody CompatibilityRule rule) {
         return service.addRule(rule);
     }

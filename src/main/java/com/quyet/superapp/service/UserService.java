@@ -55,6 +55,7 @@ public class UserService {
         }
     }
 
+
     public ResponseEntity<?> register(RegisterRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
             return ResponseEntity.badRequest().body("Username đã tồn tại");

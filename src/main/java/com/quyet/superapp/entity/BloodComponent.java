@@ -1,5 +1,6 @@
 package com.quyet.superapp.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.List;
@@ -13,13 +14,14 @@ public class BloodComponent {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "BloodComponentID")
-    private Integer id;
+    @Column(name = "Blood_Component_ID")
+    private Long bloodComponentId;
 
     @Column(name = "NameBloodComponent", columnDefinition = "VARCHAR")
     private String name;
 
     @OneToMany(mappedBy = "component")
+    @JsonIgnore
     private List<CompatibilityRule> compatibilityRules;
 
     @OneToMany(mappedBy = "component")

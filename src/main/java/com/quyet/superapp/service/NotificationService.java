@@ -2,6 +2,10 @@ package com.quyet.superapp.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import com.quyet.superapp.entity.Notification;
+import com.quyet.superapp.repository.NotificationRepository;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
