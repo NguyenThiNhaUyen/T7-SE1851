@@ -13,7 +13,7 @@ public class DashboardService {
 
     public StatResponse getStatistics() {
         // Thực tế bạn nên lấy từ repository
-        int donorsToday = (int) userRepository.countByActiveTrue(); //giả định active là người đã hiến hôm nay
+        int donorsToday = (int) userRepository.countByIsEnableTrue(); //giả định active là người đã hiến hôm nay
         int bloodUnits = 450;   //TODO: lấy từ kho máu
         int urgentRequest = 3;  //TODO: lấy từ bảng yêu cầu
         return new StatResponse(donorsToday, bloodUnits, urgentRequest);

@@ -6,18 +6,34 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "User")
-@Data
+@Table(name = "Users")
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "User_Id")
+    private Long user_id;
 
+    @Column(name = "UserName", columnDefinition = "NVARCHAR(100)", nullable = false)
     private String username;
+
+    @Column(name = "Password", columnDefinition = "VARCHAR(255)", nullable = false)
+    private String password; // đủ dài cho BCrypt nếu sau này dùng
+
+    @Column(name = "IsEnable")
+    private boolean isEnable;
+
+    @ManyToOne(fetch = FetchType.LAZY) // mặc định sẽ load role luôn khi truy vấn user
+    @JoinColumn(name = "Role_Id") //Khóa ngoại của bảng Users
+    private Role role;
+
+
+    @Column(name = "Email", columnDefinition = "VARCHAR(50)", nullable = false, unique = true)
     private String email;
-    private String role;
-    private Boolean active;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private UserDetail userDetail;
 }
