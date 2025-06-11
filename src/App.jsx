@@ -1,12 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
-
-import AuthService from "./services/auth.service";
-import EventBus from "./common/EventBus";
 
 // Giao diện chung
 import Navbar from "./components/Navbar";
@@ -55,48 +52,26 @@ import VnPayForm from "./components/VnPayForm";
 import Activities from "./components/Activities";
 
 const App = () => {
-  const [showStaffBoard, setShowStaffBoard] = useState(false);
-  const [showAdminBoard, setShowAdminBoard] = useState(false);
-  const [currentUser, setCurrentUser] = useState(undefined);
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const user = AuthService.getCurrentUser();
-
-    if (user) {
-      setCurrentUser(user);
-      const isAdmin = user.roles.includes("ROLE_ADMIN");
-      const isStaff = user.roles.includes("ROLE_STAFF");
-      setShowAdminBoard(isAdmin);
-      setShowStaffBoard(isStaff);
-
-      if (isStaff && (location.pathname === "/login" || location.pathname === "/home" || location.pathname === "/")) {
-        navigate("/staff");
-      }
-    }
-
-    EventBus.on("logout", logOut);
-    return () => EventBus.remove("logout");
+    // Tạm thời không kiểm tra quyền truy cập
   }, [location]);
 
   const logOut = () => {
-    AuthService.logout();
-    setShowStaffBoard(false);
-    setShowAdminBoard(false);
-    setCurrentUser(undefined);
+    // Tạm thời không xử lý logout
   };
 
   return (
     <div>
       <Navbar
-        currentUser={currentUser}
-        showAdminBoard={showAdminBoard}
-        showStaffBoard={showStaffBoard}
+        currentUser={undefined}
+        showAdminBoard={false}
+        showStaffBoard={false}
         logOut={logOut}
       />
 
-      {/* ✅ Đã thêm class page-content vào đây */}
       <div className="page-content width-full">
         <Routes>
           {/* Chung */}
@@ -113,7 +88,7 @@ const App = () => {
           <Route path="/admin" element={<BoardAdmin />} />
 
           {/* Staff */}
-          <Route path="/staff" element={showStaffBoard ? <StaffLayout /> : <Navigate to="/home" />}>
+          <Route path="/staff" element={<StaffLayout />}>
             <Route index element={<BoardStaff />} />
             <Route path="requests" element={<StaffRequests />} />
             <Route path="transfusions" element={<TransfusionConfirm />} />
@@ -123,7 +98,7 @@ const App = () => {
           </Route>
 
           {/* User */}
-          <Route path="/user" element={showAdminBoard || showStaffBoard ? <Navigate to="/home" /> : <BoardUser />} />
+          <Route path="/user" element={<BoardUser />} />
           <Route path="/user/:id" element={<UserLayout />}>
             <Route index element={<BoardUser />} />
             <Route path="register" element={<DonationRegister />} />
