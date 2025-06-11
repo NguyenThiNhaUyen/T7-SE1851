@@ -21,7 +21,7 @@ public class ChatLogService {
         return chatLogRepository.save(chatLog);
     }
 
-    public void delete(Integer id) {
+    public void delete(Long id) {
         chatLogRepository.deleteById(id);
     }
 }

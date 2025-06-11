@@ -20,7 +20,7 @@ public class ChatLogController {
     }
 
     @GetMapping("/user/{userId}")
-    public List<ChatLog> getByUser(@PathVariable long userId) {
+    public List<ChatLog> getByUser(@PathVariable Long userId) {
         return service.getByUser(userId);
     }
 
@@ -30,7 +30,7 @@ public class ChatLogController {
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable int id) {
+    public void delete(@PathVariable Long id) {
         service.delete(id);
     }
 }
