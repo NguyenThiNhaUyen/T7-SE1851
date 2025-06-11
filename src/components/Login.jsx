@@ -49,7 +49,8 @@ const Login = () => {
     if (checkBtn.current.context._errors.length === 0) {
       AuthService.login(username, password).then(
         (data) => {
-          if (data && data.accessToken && data.id) {
+          if (data && data.accessToken && data.id) 
+            {
             const roles = data.roles || [];
             if (roles.includes("ROLE_ADMIN")) {
               navigate("/admin");
@@ -58,6 +59,7 @@ const Login = () => {
             } else {
               navigate(`/user/${data.id}`);
             }
+            navigate(`/user/${data.id}`);
           } else {
             setMessage("Phản hồi đăng nhập không hợp lệ.");
             setLoading(false);

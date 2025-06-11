@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getUserTransfusions, confirmTransfusion } from "../services/transfusion.service";
+import { getUserTransfusions, getAllTransfusions, confirmTransfusion } from "../services/transfusion.service";
 import "../styles/user.css";
 import { toast } from "react-toastify";
 
@@ -17,11 +17,15 @@ const TransfusionConfirm = () => {
 
     setUser(currentUser);
 
-    getUserTransfusions(currentUser.id)
+    const isStaff = currentUser.roles.includes("ROLE_STAFF") || currentUser.roles.includes("ROLE_ADMIN");
+    const fetchData = isStaff ? getAllTransfusions : () => getUserTransfusions(currentUser.id);
+
+    fetchData()
       .then((res) => {
-        setTransfusions(res.data);
-        if (res.data.length === 0) {
-          toast.info("📭 Bạn chưa có lịch sử truyền máu nào.");
+        const data = Array.isArray(res.data) ? res.data : [];
+        setTransfusions(data);
+        if (data.length === 0) {
+          toast.info("📭 Không có dữ liệu truyền máu.");
         }
       })
       .catch((err) => {
