@@ -1,10 +1,7 @@
 package com.quyet.superapp.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
+import lombok.*;
 import java.time.LocalDate;
 
 @Entity
@@ -34,6 +31,11 @@ public class UrgentRequest {
     @Column(name = "Status", columnDefinition = "NVARCHAR(20)")
     private String status;
 
+    // ✅ Gắn với người gửi (User)
+    @ManyToOne
+    @JoinColumn(name = "User_Id")
+    private User requester;
+
     @PrePersist
     public void setDefaultStatus() {
         if (status == null) {
@@ -41,4 +43,3 @@ public class UrgentRequest {
         }
     }
 }
-

@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class VnPayMentService {
+public class VnPaymentService {
 
     private final VnPaymentRepository repository;
 
@@ -18,7 +18,7 @@ public class VnPayMentService {
         return repository.findAll();
     }
 
-    public Optional<VnPayment> getById(Integer id) {
+    public Optional<VnPayment> getById(Long id) {
         return repository.findById(id);
     }
 
@@ -26,7 +26,7 @@ public class VnPayMentService {
         return repository.save(payment);
     }
 
-    public void deleteById(Integer id) {
+    public void deleteById(Long id) {
         repository.deleteById(id);
     }
 }

@@ -13,7 +13,7 @@ public class UserProfile {
 
     @Id
     @Column(name = "user_id")
-    private Integer userId;
+    private Long userId;
 
     @OneToOne
     @MapsId

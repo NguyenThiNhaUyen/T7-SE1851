@@ -17,7 +17,7 @@ public class BloodUnitService {
         return repository.findAll();
     }
 
-    public Optional<BloodUnit> getById(Integer id) {
+    public Optional<BloodUnit> getById(Long id) {
         return repository.findById(id);
     }
 
@@ -25,7 +25,7 @@ public class BloodUnitService {
         return repository.save(unit);
     }
 
-    public void deleteById(Integer id) {
+    public void deleteById(Long id) {
         repository.deleteById(id);
     }
 }

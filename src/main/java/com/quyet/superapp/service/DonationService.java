@@ -17,7 +17,7 @@ public class DonationService {
         return repository.findAll();
     }
 
-    public Optional<Donation> getById(Integer id) {
+    public Optional<Donation> getById(Long id) {
         return repository.findById(id);
     }
 
@@ -25,7 +25,7 @@ public class DonationService {
         return repository.save(donation);
     }
 
-    public void deleteById(Integer id) {
+    public void deleteById(Long id) {
         repository.deleteById(id);
     }
 }

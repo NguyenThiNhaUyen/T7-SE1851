@@ -27,9 +27,9 @@ public class UrgentRequestController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/create")
-    public UrgentRequest create(@RequestBody UrgentRequest urgentRequest) {
-        return service.create(urgentRequest);
+    @PostMapping("/create/{userId}")
+    public UrgentRequest create(@RequestBody UrgentRequest urgentRequest, @PathVariable Long userId) {
+        return service.create(urgentRequest, userId);
     }
 
     @PutMapping("/{id}")
@@ -42,4 +42,17 @@ public class UrgentRequestController {
     public void delete(@PathVariable Long id) {
         service.delete(id);
     }
+
+    // ✅ Mới thêm: lọc theo trạng thái yêu cầu
+    @GetMapping("/status/{status}")
+    public List<UrgentRequest> getByStatus(@PathVariable String status) {
+        return service.searchByStatus(status);
+    }
+
+    // ✅ Mới thêm: lọc theo người gửi yêu cầu
+    @GetMapping("/user/{userId}")
+    public List<UrgentRequest> getByUser(@PathVariable Long userId) {
+        return service.getByUser(userId);
+    }
 }
+

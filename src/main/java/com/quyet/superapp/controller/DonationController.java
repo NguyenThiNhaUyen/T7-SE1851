@@ -22,7 +22,7 @@ public class DonationController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Donation> getById(@PathVariable Integer id) {
+    public ResponseEntity<Donation> getById(@PathVariable Long id) {
         return donationService.getById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -34,7 +34,7 @@ public class DonationController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Donation> update(@PathVariable Integer id, @RequestBody Donation obj) {
+    public ResponseEntity<Donation> update(@PathVariable Long id, @RequestBody Donation obj) {
         Optional<Donation> existing = donationService.getById(id);
         return existing.isPresent()
                 ? ResponseEntity.ok(donationService.save(obj))
@@ -42,7 +42,7 @@ public class DonationController {
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Integer id) {
+    public void delete(@PathVariable Long id) {
         donationService.deleteById(id);
     }
 }

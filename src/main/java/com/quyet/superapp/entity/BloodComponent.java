@@ -14,7 +14,7 @@ public class BloodComponent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "BloodComponentID")
-    private Integer id;
+    private Long id;
 
     @Column(name = "NameBloodComponent", columnDefinition = "VARCHAR")
     private String name;

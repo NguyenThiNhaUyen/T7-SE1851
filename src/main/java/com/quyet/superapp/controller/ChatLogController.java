@@ -1,6 +1,7 @@
 package com.quyet.superapp.controller;
 
 import com.quyet.superapp.entity.ChatLog;
+import com.quyet.superapp.service.ChatLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +20,7 @@ public class ChatLogController {
     }
 
     @GetMapping("/user/{userId}")
-    public List<ChatLog> getByUser(@PathVariable Integer userId) {
+    public List<ChatLog> getByUser(@PathVariable Long userId) {
         return service.getByUser(userId);
     }
 
@@ -29,7 +30,7 @@ public class ChatLogController {
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Integer id) {
+    public void delete(@PathVariable Long id) {
         service.delete(id);
     }
 }

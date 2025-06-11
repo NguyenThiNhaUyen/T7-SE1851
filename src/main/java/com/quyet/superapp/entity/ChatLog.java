@@ -13,7 +13,7 @@ public class ChatLog {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "user_id")

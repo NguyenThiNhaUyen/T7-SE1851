@@ -17,7 +17,7 @@ public class UserProfileService {
         return repository.findAll();
     }
 
-    public Optional<UserProfile> getById(Integer id) {
+    public Optional<UserProfile> getById(Long id) {
         return repository.findById(id);
     }
 
@@ -25,7 +25,7 @@ public class UserProfileService {
         return repository.save(profile);
     }
 
-    public void deleteById(Integer id) {
+    public void deleteById(Long id) {
         repository.deleteById(id);
     }
 }

@@ -14,11 +14,13 @@ public class BloodUnit {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "blood_type", referencedColumnName = "type")
+    @JoinColumn(name = "BloodType", referencedColumnName = "BloodTypeID")
     private BloodType bloodType;
+
+
 
     @ManyToOne
     @JoinColumn(name = "component_id")

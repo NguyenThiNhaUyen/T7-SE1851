@@ -22,7 +22,7 @@ public class UserProfileController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserProfile> getById(@PathVariable Integer id) {
+    public ResponseEntity<UserProfile> getById(@PathVariable Long id) {
         return userProfileService.getById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -34,7 +34,7 @@ public class UserProfileController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserProfile> update(@PathVariable Integer id, @RequestBody UserProfile obj) {
+    public ResponseEntity<UserProfile> update(@PathVariable Long id, @RequestBody UserProfile obj) {
         Optional<UserProfile> existing = userProfileService.getById(id);
         return existing.isPresent()
                 ? ResponseEntity.ok(userProfileService.save(obj))
@@ -42,7 +42,7 @@ public class UserProfileController {
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Integer id) {
+    public void delete(@PathVariable Long id) {
         userProfileService.deleteById(id);
     }
 }
