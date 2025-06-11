@@ -4,15 +4,19 @@ import axios from 'axios';
 const API_URL = '/api/'; // Dùng URL tương đối để qua proxy
 
 // Hàm lấy thông tin xác thực từ localStorage
+// const getAuthHeader = () => {
+//   const user = JSON.parse(localStorage.getItem('user'));
+//   if (user && user.username) {
+//     // Tạm thời giả định mật khẩu được lưu (thực tế nên dùng session hoặc token)
+//     // Đây là cách dùng HTTP Basic, cần username:password
+//     const credentials = btoa(`${user.username}:${user.password || ''}`);
+//     return { Authorization: `Basic ${credentials}` };
+//   }
+//   return {};
+// };
+
 const getAuthHeader = () => {
-  const user = JSON.parse(localStorage.getItem('user'));
-  if (user && user.username) {
-    // Tạm thời giả định mật khẩu được lưu (thực tế nên dùng session hoặc token)
-    // Đây là cách dùng HTTP Basic, cần username:password
-    const credentials = btoa(`${user.username}:${user.password || ''}`);
-    return { Authorization: `Basic ${credentials}` };
-  }
-  return {};
+  return {}; // Tắt toàn bộ phần quyền
 };
 
 const getPublicContent = () => {
