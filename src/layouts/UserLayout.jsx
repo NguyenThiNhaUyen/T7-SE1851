@@ -42,12 +42,6 @@ const UserLayout = () => {
         <button className="sidebar-btn" onClick={() => navigate("register")}>Đăng ký hiến máu</button>
         <button className="sidebar-btn" onClick={() => navigate("donation-history")}>Lịch sử hiến máu</button>
         <button className="sidebar-btn" onClick={() => navigate("aftercare")}>Sau hiến máu</button>
-
-        <h3 className="sidebar-title" style={{ marginTop: "1.5rem" }}>Người nhận máu</h3>
-        <button className="sidebar-btn" onClick={() => navigate("new")}>Yêu cầu máu</button>
-        <button className="sidebar-btn" onClick={() => navigate("request-history")}>Lịch sử yêu cầu</button>
-        <button className="sidebar-btn" onClick={() => navigate("transfusion-history")}>Lịch sử truyền máu</button>
-
         <h3 className="sidebar-title" style={{ marginTop: "1.5rem" }}>Tìm hiểu thêm</h3>
         <button className="sidebar-btn" onClick={() => navigate("types")}>Các loại máu</button>
         <button className="sidebar-btn" onClick={() => navigate("receive")}>Cách nhận máu</button>

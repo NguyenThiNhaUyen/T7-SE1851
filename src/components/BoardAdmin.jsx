@@ -10,18 +10,22 @@ const AdminDashboard = () => {
   const [tab, setTab] = useState("dashboard");
   const [transfusions, setTransfusions] = useState([]);
 
- useEffect(() => {
-  getAllTransfusions()
-    .then(res => {
-      console.log("✅ Dữ liệu từ API:", res.data); // Thêm dòng này để kiểm tra
-      setTransfusions(res.data);
-    })
-    .catch(error => {
-      console.error("❌ Lỗi khi gọi API:", error);
-    });
-}, []);
-
-
+  useEffect(() => {
+    getAllTransfusions()
+      .then(res => {
+        console.log("✅ Dữ liệu từ API:", res.data);
+        if (Array.isArray(res.data)) {
+          setTransfusions(res.data);
+        } else {
+          console.error("❌ API không trả về mảng:", res.data);
+          setTransfusions([]);
+        }
+      })
+      .catch(error => {
+        console.error("❌ Lỗi khi gọi API:", error);
+        setTransfusions([]);
+      });
+  }, []);
 
   const stats = {
     donorsToday: 25,
@@ -113,15 +117,21 @@ const AdminDashboard = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {transfusions.map((t, i) => (
-                    <tr key={i}>
-                      <td>{t.recipientName}</td>
-                      <td>{t.bloodType}</td>
-                      <td>{t.units}</td>
-                      <td>{t.confirmedAt ? new Date(t.confirmedAt).toLocaleDateString() : '—'}</td>
-                      <td>{t.status}</td>
+                  {Array.isArray(transfusions) && transfusions.length > 0 ? (
+                    transfusions.map((t, i) => (
+                      <tr key={i}>
+                        <td>{t.recipientName}</td>
+                        <td>{t.bloodType}</td>
+                        <td>{t.units}</td>
+                        <td>{t.confirmedAt ? new Date(t.confirmedAt).toLocaleDateString() : '—'}</td>
+                        <td>{t.status}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="5">Không có dữ liệu truyền máu.</td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>
