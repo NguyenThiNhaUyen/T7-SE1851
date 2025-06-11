@@ -57,9 +57,6 @@ public class User {
     @OneToMany(mappedBy = "scannedBy")
     private List<ScanLog> scannedLogs;
 
-    @OneToMany(mappedBy = "user")
-    private List<Achievement> achievements;
-
     @OneToMany(mappedBy = "author")
     private List<Blog> blogs;
 
