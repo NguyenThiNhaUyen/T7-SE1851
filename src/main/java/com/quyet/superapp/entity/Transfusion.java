@@ -32,10 +32,10 @@ public class Transfusion {
     @Column(name = "transfusion_date", columnDefinition = "DATETIME")
     private LocalDateTime transfusionDate;
 
-    @Column(name = "status", columnDefinition = "VARCHAR")
+    @Column(name = "status", columnDefinition = "NVARCHAR(20)")
     private String status;
 
-    @Column(name = "notes", columnDefinition = "TEXT")
+    @Column(name = "notes", columnDefinition = "NVARCHAR(200)")
     private String notes;
 
 }

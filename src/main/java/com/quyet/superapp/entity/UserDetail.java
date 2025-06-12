@@ -25,7 +25,7 @@ public class UserDetail {
     @Column(name = "LastName", columnDefinition = "NVARCHAR(10)", nullable = false)
     private String lastname;
 
-    @Column(name = "Phone", columnDefinition = "CHAR(10)", nullable = false)
+    @Column(name = "Phone", columnDefinition = "VARCHAR(10)", nullable = false)
     private String phone;
 
     @Column(name = "Address", columnDefinition = "NVARCHAR(50)", nullable = false)

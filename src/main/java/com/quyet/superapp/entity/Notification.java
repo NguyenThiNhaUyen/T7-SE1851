@@ -20,7 +20,7 @@ public class Notification {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name = "content", columnDefinition = "TEXT")
+    @Column(name = "content", columnDefinition = "NVARCHAR(200)")
     private String content;
 
     @Column(name = "sent_at", columnDefinition = "DATETIME")

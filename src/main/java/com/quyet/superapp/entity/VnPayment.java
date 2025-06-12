@@ -29,9 +29,9 @@ public class VnPayment {
     @Column(name = "Payment_Time", columnDefinition = "DATETIME")
     private LocalDateTime paymentTime;
 
-    @Column(name = "Transaction_Code", columnDefinition = "VARCHAR(100)")
+    @Column(name = "Transaction_Code", columnDefinition = "NVARCHAR(100)")
     private String transactionCode;
 
-    @Column(name = "Status", columnDefinition = "VARCHAR(20)")
+    @Column(name = "Status", columnDefinition = "NVARCHAR(20)")
     private String status;
 }

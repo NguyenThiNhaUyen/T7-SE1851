@@ -24,6 +24,6 @@ public class DonationRegistration {
     @Column(name = "ready_date", columnDefinition = "DATE")
     private LocalDate readyDate;
 
-    @Column(name = "status", columnDefinition = "VARCHAR")
+    @Column(name = "status", columnDefinition = "NVARCHAR(20)")
     private String status;
 }
