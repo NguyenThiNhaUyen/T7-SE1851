@@ -1,6 +1,6 @@
 package com.quyet.superapp.service;
 
-import com.quyet.superapp.dto.StatResponse;
+import com.quyet.superapp.dto.StatResponseDTO;
 import com.quyet.superapp.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ public class DashboardService {
     private final BlogRepository blogRepository;
     private final VnPaymentRepository vnPayPaymentRepository;
 
-    public StatResponse getStatistics() {
+    public StatResponseDTO getStatistics() {
 
         int totalUsers = (int) userRepository.count();
 
@@ -30,7 +30,7 @@ public class DashboardService {
         int activeBlogs = (int) blogRepository.countByStatus("Active");
         int successfulPayments = (int) vnPayPaymentRepository.countByStatus("Success");
 
-        return new StatResponse(
+        return new StatResponseDTO(
                 totalUsers,
                 totalBloodUnits,
                 pendingUrgentRequests,

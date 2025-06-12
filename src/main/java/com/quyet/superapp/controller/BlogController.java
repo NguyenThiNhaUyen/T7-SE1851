@@ -1,6 +1,6 @@
 package com.quyet.superapp.controller;
 
-import com.quyet.superapp.entity.Blog;
+import com.quyet.superapp.dto.BlogDTO;
 import com.quyet.superapp.service.BlogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,19 +16,18 @@ public class BlogController {
     private final BlogService blogService;
 
     @GetMapping
-    public ResponseEntity<List<Blog>> getAllBlogs() {
+    public ResponseEntity<List<BlogDTO>> getAllBlogs() {
         return ResponseEntity.ok(blogService.getAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Blog> getBlogById(@PathVariable Long id) {
+    public ResponseEntity<BlogDTO> getBlogById(@PathVariable Long id) {
         return ResponseEntity.ok(blogService.getById(id));
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Blog> createBlog(@RequestBody Blog blog,
-                                           @RequestParam(name = "authorId") Long authorId) {
-        return ResponseEntity.ok(blogService.save(blog, authorId));
+    public ResponseEntity<BlogDTO> createBlog(@RequestBody BlogDTO blogDto) {
+        return ResponseEntity.ok(blogService.save(blogDto));
     }
 
     @DeleteMapping("/{id}")
@@ -37,3 +36,4 @@ public class BlogController {
         return ResponseEntity.noContent().build();
     }
 }
+

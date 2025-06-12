@@ -21,7 +21,7 @@ public class NotificationController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Notification> getById(@PathVariable Integer id) {
+    public ResponseEntity<Notification> getById(@PathVariable Long id) {
         return service.getById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -33,13 +33,13 @@ public class NotificationController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Notification> update(@PathVariable Integer id, @RequestBody Notification notification) {
+    public ResponseEntity<Notification> update(@PathVariable Long id, @RequestBody Notification notification) {
         Notification updated = service.update(id, notification);
         return updated != null ? ResponseEntity.ok(updated) : ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Integer id) {
+    public void delete(@PathVariable Long id) {
         service.delete(id);
     }
 }

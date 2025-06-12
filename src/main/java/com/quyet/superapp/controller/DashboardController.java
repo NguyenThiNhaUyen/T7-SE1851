@@ -1,6 +1,6 @@
 package com.quyet.superapp.controller;
 
-import com.quyet.superapp.dto.StatResponse;
+import com.quyet.superapp.dto.StatResponseDTO;
 import com.quyet.superapp.service.DashboardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +13,7 @@ public class DashboardController {
     private final DashboardService dashboardService;
 
     @GetMapping("/stats")
-    public StatResponse getStatistics() {
+    public StatResponseDTO getStatistics() {
         return dashboardService.getStatistics();
     }
 }

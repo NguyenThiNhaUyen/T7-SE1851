@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 @Repository
 public interface CompatibilityRuleRepository extends JpaRepository<CompatibilityRule, Long> {
-    List<CompatibilityRule> findByRecipientType_DescriptionAndComponent_NameAndIsCompatibleTrue(String recipientTypeDescription, String componentName);
+    List<CompatibilityRule> findByRecipientType_DescriptionAndComponent_NameAndIsCompatibleTrue(String recipientTypeDesc, String componentName);
+
 
 }

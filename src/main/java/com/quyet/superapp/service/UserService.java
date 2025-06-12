@@ -1,9 +1,9 @@
 package com.quyet.superapp.service;
 
 
-import com.quyet.superapp.dto.LoginRequest;
-import com.quyet.superapp.dto.LoginResponse;
-import com.quyet.superapp.dto.RegisterRequest;
+import com.quyet.superapp.dto.LoginRequestDTO;
+import com.quyet.superapp.dto.LoginResponseDTO;
+import com.quyet.superapp.dto.RegisterRequestDTO;
 import com.quyet.superapp.entity.Role;
 import com.quyet.superapp.entity.User;
 import com.quyet.superapp.entity.UserDetail;
@@ -29,7 +29,7 @@ public class UserService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
 
-    public ResponseEntity<?> login(LoginRequest loginRequest) {
+    public ResponseEntity<?> login(LoginRequestDTO loginRequest) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -42,7 +42,9 @@ public class UserService {
             User user = userRepository.findByUsername(loginRequest.getUsername())
                     .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
 
-            LoginResponse loginResponse = new LoginResponse(
+
+            LoginResponseDTO loginResponse = new LoginResponseDTO(
+
                     user.getUserId(),
                     user.getUsername(),
                     user.getEmail(),
@@ -56,7 +58,7 @@ public class UserService {
     }
 
 
-    public ResponseEntity<?> register(RegisterRequest request) {
+    public ResponseEntity<?> register(RegisterRequestDTO request) {
         if (userRepository.existsByUsername(request.getUsername())) {
             return ResponseEntity.badRequest().body("Username đã tồn tại");
         }

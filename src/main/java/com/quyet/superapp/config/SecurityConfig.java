@@ -48,10 +48,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowCredentials(true);
         configuration.setAllowedOrigins(List.of("http://localhost:5173")); // ⚠️ Đổi đúng port FE của bạn
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true);
+
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
@@ -59,32 +60,27 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception{
+    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-
-                        .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
-                        //QUYỀN MEMBER
+                        .requestMatchers(PUBLIC_ENDPOINTS).permitAll()   // ✅ Cho phép
                         .requestMatchers(MEMBER_ENDPOINTS).hasAnyRole("MEMBER", "ADMIN")
-                        //QUYỀN STAFF
                         .requestMatchers(STAFF_ENDPOINTS).hasAnyRole("STAFF", "ADMIN")
-                        //QUYỂN ADMIN
                         .requestMatchers(ADMIN_ENDPOINTS).hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterAfter((request, response, chain) -> {
                     HttpServletRequest httpRequest = (HttpServletRequest) request;
                     System.out.println("Authorization header: " + httpRequest.getHeader("Authorization"));
-                    System.out.println("➡️ URI: " + httpRequest.getRequestURI());  // Thêm dòng này
-                    System.out.println("➡️ Method: " + httpRequest.getMethod());   // Và dòng này
+                    System.out.println("➡️ URI: " + httpRequest.getRequestURI());
+                    System.out.println("➡️ Method: " + httpRequest.getMethod());
                     chain.doFilter(request, response);
                 }, UsernamePasswordAuthenticationFilter.class);
+
         return httpSecurity.build();
-
     }
-
     private static final String[] PUBLIC_ENDPOINTS = {
             "/api/auth/**",
             "/api/verify-otp",

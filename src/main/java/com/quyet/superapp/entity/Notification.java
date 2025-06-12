@@ -26,7 +26,6 @@ public class Notification {
     @Column(name = "sent_at", columnDefinition = "DATETIME")
     private LocalDateTime sentAt;
 
-    @Column(name = "read")
-    private Boolean read;
+    @Column(name = "[read]") // vẫn để SQL nhận đúng tên cột
+    private Boolean isRead;  // Java field đổi cho rõ nghĩa
 }
-

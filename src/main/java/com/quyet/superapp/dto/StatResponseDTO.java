@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class StatResponse {
+public class StatResponseDTO {
     private int totalUsers;
     private int totalBloodUnits;
     private int pendingUrgentRequests;

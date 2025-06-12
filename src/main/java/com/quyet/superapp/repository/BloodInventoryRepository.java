@@ -8,4 +8,5 @@ import java.util.List;
 @Repository
 public interface BloodInventoryRepository extends JpaRepository<BloodInventory, Long> {
         List<BloodInventory> findByBloodType_Description(String description);
+
 }
