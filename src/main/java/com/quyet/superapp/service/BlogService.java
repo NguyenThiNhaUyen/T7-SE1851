@@ -1,7 +1,9 @@
 package com.quyet.superapp.service;
 
+import com.quyet.superapp.dto.BlogDto;
 import com.quyet.superapp.entity.Blog;
 import com.quyet.superapp.entity.User;
+import com.quyet.superapp.mapper.BlogMapper;
 import com.quyet.superapp.repository.BlogRepository;
 import com.quyet.superapp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,27 +18,29 @@ public class BlogService {
 
     private final BlogRepository blogRepository;
     private final UserRepository userRepository;
+    private final BlogMapper blogMapper;
 
-    public Blog getById(Long id) {
-        return blogRepository.findById(id)
+    public BlogDto getById(Long id) {
+        Blog blog = blogRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bài viết với ID: " + id));
+        return blogMapper.toDto(blog);
     }
 
-    public List<Blog> getAll() {
-        return blogRepository.findAll();
+    public List<BlogDto> getAll() {
+        return blogRepository.findAll().stream()
+                .map(blogMapper::toDto)
+                .toList();
     }
 
-    public Blog save(Blog blog, Long authorId) {
-        User author = userRepository.findById(authorId)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy tác giả với ID: " + authorId));
+    public BlogDto save(BlogDto dto) {
+        Blog blog = blogMapper.toEntity(dto);
+        User author = userRepository.findById(dto.getAuthorId())
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy tác giả với ID: " + dto.getAuthorId()));
         blog.setAuthor(author);
-
-        // Gán thời gian tạo nếu chưa có
         if (blog.getCreatedAt() == null) {
             blog.setCreatedAt(LocalDateTime.now());
         }
-
-        return blogRepository.save(blog);
+        return blogMapper.toDto(blogRepository.save(blog));
     }
 
     public void deleteById(Long id) {
