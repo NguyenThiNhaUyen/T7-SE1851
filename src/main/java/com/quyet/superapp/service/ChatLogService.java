@@ -17,7 +17,7 @@ public class ChatLogService {
     }
 
     public List<ChatLog> getByUser(Long userId) {
-        return chatLogRepository.findByUserId(userId);
+        return chatLogRepository.findByUser_UserId(userId);
     }
 
     public ChatLog create(ChatLog chatLog) {

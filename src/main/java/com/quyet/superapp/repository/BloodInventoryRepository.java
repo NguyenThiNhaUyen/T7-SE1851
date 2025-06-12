@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 @Repository
 public interface BloodInventoryRepository extends JpaRepository<BloodInventory, Long> {
-        List<BloodInventory> indByBloodType_Description(String description);
+        List<BloodInventory> findByBloodType_Description(String description);
 }

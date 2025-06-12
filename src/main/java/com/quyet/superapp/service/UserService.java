@@ -43,7 +43,7 @@ public class UserService {
                     .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
 
             LoginResponse loginResponse = new LoginResponse(
-                    user.getUser_id(),
+                    user.getUserId(),
                     user.getUsername(),
                     user.getEmail(),
                     user.getRole().getName(),

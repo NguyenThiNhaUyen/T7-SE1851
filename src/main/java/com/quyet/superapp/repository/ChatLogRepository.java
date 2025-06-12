@@ -9,5 +9,5 @@ import java.util.List;
 @Repository
 
 public interface ChatLogRepository extends JpaRepository<ChatLog, Long> {
-    List<ChatLog> findByUserId(Long userId);
+    List<ChatLog> findByUser_UserId(Long userId);
 }
