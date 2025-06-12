@@ -16,6 +16,7 @@ public class ChatLog {
     @Column(name = "Chat_Id")
     private Long chatId;
 
+
     @ManyToOne(optional = true)
     @JoinColumn(name = "User_Id")
     private User user;

@@ -1,10 +1,7 @@
 package com.quyet.superapp.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
+import lombok.*;
 import java.time.LocalDate;
 
 @Entity
@@ -19,9 +16,9 @@ public class UrgentRequest {
     @Column(name = "UrgentRequest_Id")
     private Long urgentRequestId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "User_Id")
-    private User user;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "User_Id")
+//    private User user;
 
     @Column(name = "HospitalName", columnDefinition = "NVARCHAR(100)", nullable = false)
     private String hospitalName;
@@ -38,6 +35,11 @@ public class UrgentRequest {
     @Column(name = "Status", columnDefinition = "NVARCHAR(20)")
     private String status;
 
+    // ✅ Gắn với người gửi (User)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "User_Id")
+    private User requester;
+
     @PrePersist
     public void setDefaultStatus() {
         if (status == null) {
@@ -45,4 +47,3 @@ public class UrgentRequest {
         }
     }
 }
-

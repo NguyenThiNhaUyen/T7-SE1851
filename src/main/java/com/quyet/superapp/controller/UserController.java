@@ -24,7 +24,9 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<User> getById(@PathVariable Long id) {
+
         return userService1.getById(id)
+
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -36,7 +38,9 @@ public class UserController {
 
     @PutMapping("/{id}")
     public ResponseEntity<User> update(@PathVariable Long id, @RequestBody User obj) {
+
         Optional<User> existing = userService1.getById(id);
+
         if (existing.isPresent()) {
             return ResponseEntity.ok(userService1.save(obj));
         } else {
@@ -46,6 +50,7 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
+
         userService1.deleteById(id);
     }
 }

@@ -1,8 +1,10 @@
 package com.quyet.superapp.controller;
 
 
+
 import com.quyet.superapp.entity.VnPayment;
-import com.quyet.superapp.service.VnPayPaymentService;
+
+import com.quyet.superapp.service.VnPaymentService;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
@@ -13,10 +15,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/vnpay")
 @RequiredArgsConstructor
-public class VnPayMentController {
+public class VnPaymentController {
 
+    private final VnPaymentService service;
 
-    private final VnPayPaymentService service;
 
     @GetMapping
     public List<VnPayment> getAll() {
@@ -30,7 +32,8 @@ public class VnPayMentController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
+
+    @PostMapping("/create")
     public VnPayment create(@RequestBody VnPayment payment) {
         return service.save(payment);
     }

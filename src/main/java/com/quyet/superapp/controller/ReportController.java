@@ -12,6 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/reports")
 @RequiredArgsConstructor
+
 public class ReportController {
 
     @Autowired
@@ -23,7 +24,7 @@ public class ReportController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Report> getById(@PathVariable Integer id) {
+    public ResponseEntity<Report> getById(@PathVariable Long id) {
         return service.getById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -35,13 +36,14 @@ public class ReportController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Report> update(@PathVariable Integer id, @RequestBody Report report) {
+    public ResponseEntity<Report> update(@PathVariable Long id, @RequestBody Report report) {
         Report updated = service.update(id, report);
         return updated != null ? ResponseEntity.ok(updated) : ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Integer id) {
-        service.delete(id);
+    public void delete(@PathVariable Long id) {
+        service.deleteById(id);
     }
 }
+

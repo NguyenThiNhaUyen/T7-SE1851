@@ -16,11 +16,11 @@ public class CompatibilityRule {
     private Long compatibilityRuleId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "donor_type")
+    @JoinColumn(name = "donor_type", referencedColumnName = "BloodTypeID")
     private BloodType donorType;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "recipient_type")
+    @JoinColumn(name = "recipient_type", referencedColumnName = "BloodTypeID")
     private BloodType recipientType;
 
     @ManyToOne(fetch = FetchType.LAZY)

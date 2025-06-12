@@ -11,22 +11,28 @@
     @AllArgsConstructor
     public class BloodRequest {
 
+
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         @Column(name = "BloodRequestID")
         private Long bloodRequestId;
 
+
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "RequesterID")
         private User requester;
 
+
+
         @ManyToOne
-        @JoinColumn(name = "BloodType")
+        @JoinColumn(name = "BloodType", referencedColumnName = "BloodTypeID")
         private BloodType bloodType;
+
 
         @ManyToOne
         @JoinColumn(name = "ComponentID")
         private BloodComponent component;
+
 
         @Column(name = "QuantityML")
         private Integer quantityMl;

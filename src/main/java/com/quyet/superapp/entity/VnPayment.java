@@ -14,8 +14,10 @@ public class VnPayment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     @Column(name = "Payment_Id")
     private Long paymentId;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "User_Id")

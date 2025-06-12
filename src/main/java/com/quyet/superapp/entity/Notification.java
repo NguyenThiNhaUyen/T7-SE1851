@@ -13,11 +13,11 @@ public class Notification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Notification_Id")
-    private Long notification_id;
+    @Column(name = "NotificationId")
+    private Long notificationId;
 
     @ManyToOne
-    @JoinColumn(name = "User_Id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Column(name = "content", columnDefinition = "TEXT")

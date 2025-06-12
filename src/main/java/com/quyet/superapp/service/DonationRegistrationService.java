@@ -18,7 +18,7 @@ public class DonationRegistrationService {
         return repository.findAll();
     }
 
-    public Optional<DonationRegistration> getById(Integer id) {
+    public Optional<DonationRegistration> getById(Long id) {
         return repository.findById(id);
     }
 
@@ -26,7 +26,7 @@ public class DonationRegistrationService {
         return repository.save(registration);
     }
 
-    public void deleteById(Integer id) {
+    public void deleteById(Long id) {
         repository.deleteById(id);
     }
 }

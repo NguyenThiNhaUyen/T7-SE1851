@@ -16,6 +16,7 @@ public class Report {
     @Column(name = "Report_Id")
     private Long reportId;
 
+
     @Column(name = "report_type", columnDefinition = "VARCHAR", nullable = false)
     private String reportType;
 

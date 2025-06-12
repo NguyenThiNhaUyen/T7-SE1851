@@ -17,9 +17,13 @@ public class BloodUnit {
     @Column(name = "unit_id")
     private Long bloodUnitId;
 
+
+
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "blood_type")
+    @JoinColumn(name = "BloodType", referencedColumnName = "BloodTypeID")
     private BloodType bloodType;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "component_id")

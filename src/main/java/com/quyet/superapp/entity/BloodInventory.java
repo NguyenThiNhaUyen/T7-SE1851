@@ -20,8 +20,9 @@ public class BloodInventory {
     private Long bloodInventoryId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "BloodType")
+    @JoinColumn(name = "BloodType",  referencedColumnName = "BloodTypeID")
     private BloodType bloodType;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ComponentID")

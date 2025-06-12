@@ -16,6 +16,7 @@ public class DonationRegistration {
     @Column(name = "Registration_Id")
     private Long registrationId;
 
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "User_Id")
     private User user;

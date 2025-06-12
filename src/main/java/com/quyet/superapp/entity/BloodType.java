@@ -1,7 +1,9 @@
 package com.quyet.superapp.entity;
 
 
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,8 +17,9 @@ import java.util.List;
 public class BloodType {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "BloodTypeID")
-    private String bloodTypeId;
+    private Long bloodTypeId;
 
     @Column(name = "Description", columnDefinition = "VARCHAR")
     private String description;

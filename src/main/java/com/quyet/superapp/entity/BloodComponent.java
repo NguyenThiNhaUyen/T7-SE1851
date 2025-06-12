@@ -17,6 +17,7 @@ public class BloodComponent {
     @Column(name = "Blood_Component_ID")
     private Long bloodComponentId;
 
+
     @Column(name = "NameBloodComponent", columnDefinition = "VARCHAR")
     private String name;
 
