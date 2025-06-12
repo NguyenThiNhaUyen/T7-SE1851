@@ -2,7 +2,6 @@
 
     import jakarta.persistence.*;
     import lombok.*;
-
     import java.util.List;
 
     @Entity
@@ -12,10 +11,11 @@
     @AllArgsConstructor
     public class User {
 
+
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         @Column(name = "User_Id")
-        private Long user_id;
+        private Long userId;
 
         @Column(name = "UserName", columnDefinition = "NVARCHAR(100)", nullable = false)
         private String username;
@@ -31,13 +31,22 @@
         private Role role;
 
 
-        @Column(name = "Email", columnDefinition = "VARCHAR(50)", nullable = false, unique = true)
-        private String email;
+    @Column(name = "Email", columnDefinition = "VARCHAR(50)", nullable = false, unique = true)
+    private String email;
 
-        @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-        private UserProfile userProfile;
 
-        @OneToMany(mappedBy = "requester")
-        private List<UrgentRequest> urgentRequests;
+    @OneToOne(mappedBy = "user",     cascade = {
+            CascadeType.PERSIST, CascadeType.MERGE,
+            CascadeType.DETACH, CascadeType.REFRESH
+    }, fetch = FetchType.LAZY, orphanRemoval = true)
+    private UserDetail userDetail;
 
-    }
+    @OneToOne(mappedBy = "user", cascade = {
+            CascadeType.PERSIST, CascadeType.MERGE,
+            CascadeType.DETACH, CascadeType.REFRESH
+    }, fetch = FetchType.LAZY, orphanRemoval = true)
+    private UserProfile userProfile;
+
+}
+
+

@@ -1,6 +1,6 @@
 package com.quyet.superapp.service;
 
-import com.quyet.superapp.dto.StatResponse;
+import com.quyet.superapp.dto.StatResponseDTO;
 import com.quyet.superapp.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,25 +16,27 @@ public class DashboardService {
     private final BlogRepository blogRepository;
     private final VnPaymentRepository vnPayPaymentRepository;
 
-    public StatResponse getStatistics() {
+    public StatResponseDTO getStatistics() {
+
         int totalUsers = (int) userRepository.count();
+
         int totalBloodUnits = bloodInventoryRepository.findAll()
                 .stream()
                 .mapToInt(b -> b.getTotalQuantityMl() != null ? b.getTotalQuantityMl() : 0)
                 .sum();
 
-        long pendingUrgentRequests = urgentRequestRepository.countByStatus("Pending");
-        long totalDonations = donationRepository.count();
-        long activeBlogs = blogRepository.countByStatus("Active");
-        long successfulPayments = vnPayPaymentRepository.countByStatus("Success");
+        int pendingUrgentRequests = (int) urgentRequestRepository.countByStatus("Pending");
+        int totalDonations = (int) donationRepository.count();
+        int activeBlogs = (int) blogRepository.countByStatus("Active");
+        int successfulPayments = (int) vnPayPaymentRepository.countByStatus("Success");
 
-        return new StatResponse(
+        return new StatResponseDTO(
                 totalUsers,
                 totalBloodUnits,
-                (int) pendingUrgentRequests,
-                (int) totalDonations,
-                (int) activeBlogs,
-                (int) successfulPayments
+                pendingUrgentRequests,
+                totalDonations,
+                activeBlogs,
+                successfulPayments
         );
     }
 }

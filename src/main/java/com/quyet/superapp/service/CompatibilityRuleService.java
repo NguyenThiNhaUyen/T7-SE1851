@@ -37,11 +37,11 @@ public class CompatibilityRuleService {
     }
 
     public List<CompatibilityRule> getCompatibleRules(String recipientType, String component) {
-        return ruleRepo.findByRecipientTypeAndComponentAndIsCompatibleTrue(recipientType, component);
+        return ruleRepo.findByRecipientType_DescriptionAndComponent_NameAndIsCompatibleTrue(recipientType, component);
     }
 
     public List<BloodType> getCompatibleDonors(String recipientType, String component) {
-        return ruleRepo.findByRecipientTypeAndComponentAndIsCompatibleTrue(recipientType, component)
+        return ruleRepo.findByRecipientType_DescriptionAndComponent_NameAndIsCompatibleTrue(recipientType, component)
                 .stream()
                 .map(CompatibilityRule::getDonorType)
                 .distinct()

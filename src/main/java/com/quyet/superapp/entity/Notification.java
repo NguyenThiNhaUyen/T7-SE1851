@@ -13,7 +13,8 @@ public class Notification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "NotificationId")
+    private Long notificationId;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -25,7 +26,6 @@ public class Notification {
     @Column(name = "sent_at", columnDefinition = "DATETIME")
     private LocalDateTime sentAt;
 
-    @Column(name = "read")
-    private Boolean read;
+    @Column(name = "[read]") // vẫn để SQL nhận đúng tên cột
+    private Boolean isRead;  // Java field đổi cho rõ nghĩa
 }
-

@@ -13,14 +13,15 @@ public class Report {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "report_id")
-    private Long id;
+    @Column(name = "Report_Id")
+    private Long reportId;
+
 
     @Column(name = "report_type", columnDefinition = "VARCHAR", nullable = false)
     private String reportType;
 
-    @ManyToOne
-    @JoinColumn(name = "generated_by", referencedColumnName = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "generated_by")
     private User generatedBy;
 
     @Column(name = "created_at", columnDefinition = "DATETIME")

@@ -1,5 +1,9 @@
 package com.quyet.superapp.entity;
 
+
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,11 +21,11 @@ public class BloodType {
     @Column(name = "BloodTypeID")
     private Long bloodTypeId;
 
-
     @Column(name = "Description", columnDefinition = "VARCHAR")
     private String description;
 
     @OneToMany(mappedBy = "bloodType")
+    @JsonIgnore
     private List<Donation> donations;
 
     @OneToMany(mappedBy = "bloodType")

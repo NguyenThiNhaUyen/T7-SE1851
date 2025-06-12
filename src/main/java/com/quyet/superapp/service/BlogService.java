@@ -1,6 +1,6 @@
 package com.quyet.superapp.service;
 
-import com.quyet.superapp.dto.BlogDto;
+import com.quyet.superapp.dto.BlogDTO;
 import com.quyet.superapp.entity.Blog;
 import com.quyet.superapp.entity.User;
 import com.quyet.superapp.mapper.BlogMapper;
@@ -20,19 +20,19 @@ public class BlogService {
     private final UserRepository userRepository;
     private final BlogMapper blogMapper;
 
-    public BlogDto getById(Long id) {
+    public BlogDTO getById(Long id) {
         Blog blog = blogRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bài viết với ID: " + id));
         return blogMapper.toDto(blog);
     }
 
-    public List<BlogDto> getAll() {
+    public List<BlogDTO> getAll() {
         return blogRepository.findAll().stream()
                 .map(blogMapper::toDto)
                 .toList();
     }
 
-    public BlogDto save(BlogDto dto) {
+    public BlogDTO save(BlogDTO dto) {
         Blog blog = blogMapper.toEntity(dto);
         User author = userRepository.findById(dto.getAuthorId())
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy tác giả với ID: " + dto.getAuthorId()));

@@ -14,19 +14,22 @@ public class BloodUnit {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "unit_id")
+    private Long bloodUnitId;
 
-    @ManyToOne
+
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "BloodType", referencedColumnName = "BloodTypeID")
     private BloodType bloodType;
 
 
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "component_id")
     private BloodComponent component;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "donation_id")
     private Donation donation;
 

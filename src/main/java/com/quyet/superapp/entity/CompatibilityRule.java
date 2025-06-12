@@ -12,18 +12,18 @@ public class CompatibilityRule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "rule_id")
-    private Long id;
+    @Column(name = "Rule_Id")
+    private Long compatibilityRuleId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "donor_type", referencedColumnName = "BloodTypeID")
     private BloodType donorType;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recipient_type", referencedColumnName = "BloodTypeID")
     private BloodType recipientType;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "component_id")
     private BloodComponent component;
 

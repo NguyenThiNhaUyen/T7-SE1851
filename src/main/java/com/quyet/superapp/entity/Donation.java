@@ -1,37 +1,38 @@
-    package com.quyet.superapp.entity;
+        package com.quyet.superapp.entity;
 
-    import jakarta.persistence.*;
-    import lombok.*;
-    import java.time.LocalDate;
+        import jakarta.persistence.*;
+        import lombok.*;
+        import java.time.LocalDate;
 
-    @Entity
-    @Table(name = "Donations")
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public class Donation {
+        @Entity
+        @Table(name = "Donations")
+        @Data
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public class Donation {
 
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
+        @Column(name = "Donation_Id")
+        private Long donationId;
 
-        @ManyToOne
-        @JoinColumn(name = "user_id")
+
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JoinColumn(name = "User_Id")
         private User user;
 
-        @ManyToOne
+        @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "registration_id")
         private DonationRegistration registration;
 
-        @ManyToOne
-        @JoinColumn(name = "BloodType", referencedColumnName = "BloodTypeID")
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JoinColumn(name = "blood_type", referencedColumnName = "BloodTypeID")
         private BloodType bloodType;
 
-
-
-        @ManyToOne
+        @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "component_id")
         private BloodComponent component;
+
 
         @Column(name = "donation_date", columnDefinition = "DATE")
         private LocalDate donationDate;
@@ -44,4 +45,4 @@
 
         @Column(name = "notes", columnDefinition = "TEXT")
         private String notes;
-    }
+        }

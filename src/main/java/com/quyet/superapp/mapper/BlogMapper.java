@@ -1,16 +1,31 @@
 package com.quyet.superapp.mapper;
 
-import com.quyet.superapp.dto.BlogDto;
+import com.quyet.superapp.dto.BlogDTO;
 import com.quyet.superapp.entity.Blog;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.springframework.stereotype.Component;
 
-@Mapper(componentModel = "spring")
-public interface BlogMapper {
+@Component
+public class BlogMapper {
 
-    @Mapping(source = "author.id", target = "authorId")
-    BlogDto toDto(Blog blog);
+    public BlogDTO toDto(Blog blog) {
+        return new BlogDTO(
+                blog.getBlogId(),
+                blog.getTitle(),
+                blog.getContent(),
+                blog.getStatus(),
+                blog.getCreatedAt(),
+                blog.getAuthor().getUserId()
+        );
+    }
 
-    @Mapping(source = "authorId", target = "author.id")
-    Blog toEntity(BlogDto dto);
+    public Blog toEntity(BlogDTO dto) {
+        Blog blog = new Blog();
+        blog.setBlogId(dto.getBlogId());
+        blog.setTitle(dto.getTitle());
+        blog.setContent(dto.getContent());
+        blog.setStatus(dto.getStatus());
+        blog.setCreatedAt(dto.getCreatedAt());
+        // blog.setAuthor(...) sẽ được gán trong BlogService
+        return blog;
+    }
 }

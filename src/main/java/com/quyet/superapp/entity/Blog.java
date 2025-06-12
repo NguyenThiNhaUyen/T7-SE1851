@@ -13,13 +13,14 @@
 
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
+        @Column(name = "Blog_Id")
+        private Long blogId;
 
         @Column(name = "Title", columnDefinition = "VARCHAR")
         private String title;
 
         @ManyToOne
-        @JoinColumn(name = "AuthorId")
+        @JoinColumn(name = "User_Id")
         private User author;
 
         @Column(name = "Content", columnDefinition = "TEXT")

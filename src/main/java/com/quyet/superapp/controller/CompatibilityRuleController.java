@@ -2,17 +2,19 @@ package com.quyet.superapp.controller;
 
 import com.quyet.superapp.entity.CompatibilityRule;
 import com.quyet.superapp.service.CompatibilityRuleService;
-import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/compatibility-rules")
-@RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:5713")
 public class CompatibilityRuleController {
 
-    private final CompatibilityRuleService service;
+    @Autowired
+    private CompatibilityRuleService service;
 
     @GetMapping
     public List<CompatibilityRule> getAll() {

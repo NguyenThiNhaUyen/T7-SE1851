@@ -1,7 +1,6 @@
 package com.quyet.superapp.controller;
 
-import com.quyet.superapp.dto.BlogDto;
-import com.quyet.superapp.entity.Blog;
+import com.quyet.superapp.dto.BlogDTO;
 import com.quyet.superapp.service.BlogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,17 +16,17 @@ public class BlogController {
     private final BlogService blogService;
 
     @GetMapping
-    public ResponseEntity<List<BlogDto>> getAllBlogs() {
+    public ResponseEntity<List<BlogDTO>> getAllBlogs() {
         return ResponseEntity.ok(blogService.getAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BlogDto> getBlogById(@PathVariable Long id) {
+    public ResponseEntity<BlogDTO> getBlogById(@PathVariable Long id) {
         return ResponseEntity.ok(blogService.getById(id));
     }
 
     @PostMapping("/create")
-    public ResponseEntity<BlogDto> createBlog(@RequestBody BlogDto blogDto) {
+    public ResponseEntity<BlogDTO> createBlog(@RequestBody BlogDTO blogDto) {
         return ResponseEntity.ok(blogService.save(blogDto));
     }
 

@@ -12,12 +12,13 @@ import java.time.LocalDate;
 public class UserProfile {
 
     @Id
-    @Column(name = "user_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "User_Id")
     private Long userId;
 
     @OneToOne
     @MapsId
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "User_Id")
     private User user;
 
     @Column(name = "full_name", columnDefinition = "VARCHAR")

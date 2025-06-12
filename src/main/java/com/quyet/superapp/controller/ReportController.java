@@ -3,6 +3,7 @@ package com.quyet.superapp.controller;
 import com.quyet.superapp.entity.Report;
 import com.quyet.superapp.service.ReportService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +15,8 @@ import java.util.List;
 
 public class ReportController {
 
-    private final ReportService service;
+    @Autowired
+    private ReportService service;
 
     @GetMapping
     public List<Report> getAll() {
@@ -41,7 +43,7 @@ public class ReportController {
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
-        service.delete(id);
+        service.deleteById(id);
     }
 }
 

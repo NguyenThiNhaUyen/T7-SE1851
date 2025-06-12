@@ -14,22 +14,24 @@ public class VnPayment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "payment_id")
-    private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+    @Column(name = "Payment_Id")
+    private Long paymentId;
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "User_Id")
     private User user;
 
-    @Column(name = "amount", precision = 10, scale = 2)
+    @Column(name = "Amount", precision = 10, scale = 2)
     private BigDecimal amount;
 
-    @Column(name = "payment_time", columnDefinition = "DATETIME")
+    @Column(name = "Payment_Time", columnDefinition = "DATETIME")
     private LocalDateTime paymentTime;
 
-    @Column(name = "transaction_code", columnDefinition = "VARCHAR(100)")
+    @Column(name = "Transaction_Code", columnDefinition = "VARCHAR(100)")
     private String transactionCode;
 
-    @Column(name = "status", columnDefinition = "VARCHAR(20)")
+    @Column(name = "Status", columnDefinition = "VARCHAR(20)")
     private String status;
 }

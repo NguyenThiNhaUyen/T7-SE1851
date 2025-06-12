@@ -42,7 +42,7 @@ public class BloodService {
     }
 
     public List<BloodInventory> searchBloodByType(String bloodType) {
-        return bloodRepo.findByBloodType_Type(bloodType);
+        return bloodRepo.findByBloodType_Description(bloodType);
     }
 
 }

@@ -13,17 +13,19 @@ public class Transfusion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "Transfusion_Id")
+    private Long transfusionId;
 
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recipient_id")
     private User recipient;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "request_id")
     private BloodRequest request;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "blood_unit_id")
     private BloodUnit bloodUnit;
 
@@ -35,4 +37,5 @@ public class Transfusion {
 
     @Column(name = "notes", columnDefinition = "TEXT")
     private String notes;
+
 }
