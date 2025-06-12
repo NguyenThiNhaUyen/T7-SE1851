@@ -1,9 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
+
+import eventBus from "./common/EventBus"; // 
 
 // Giao diện chung
 import Navbar from "./components/Navbar";
@@ -50,10 +52,16 @@ import NotificationList from "./components/NotificationList";
 import NotificationForm from "./components/NotificationForm";
 import VnPayForm from "./components/VnPayForm";
 import Activities from "./components/Activities";
+import AuthService from "./services/auth.service";
+
 
 const App = () => {
+  const [currentUser, setCurrentUser] = useState(undefined);
+  const [showAdminBoard, setShowAdminBoard] = useState(false);
+  const [showStaffBoard, setShowStaffBoard] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-
+  
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -73,25 +81,27 @@ const App = () => {
       }
     }
     setLoading(false);
-    EventBus.on("logout", logOut);
-    return () => EventBus.remove("logout");
-
-    // Tạm thời không kiểm tra quyền truy cập
-
+    eventBus.on("logout", logOut);
+    return () => eventBus.remove("logout", logOut);
   }, [location]);
 
   const logOut = () => {
     // Tạm thời không xử lý logout
+    // TODO: xử lý đăng xuất
+    AuthService.logout?.(); // nếu có
+    setCurrentUser(undefined);
+    setShowAdminBoard(false);
+    setShowStaffBoard(false);
+    navigate("/login");
   };
 
-  if (loading) return <div>Đang tải...</div>;
 
   return (
     <div>
       <Navbar
-        currentUser={undefined}
-        showAdminBoard={false}
-        showStaffBoard={false}
+        currentUser={currentUser}
+        showAdminBoard={showAdminBoard}
+        showStaffBoard={showStaffBoard}
         logOut={logOut}
       />
 
@@ -111,7 +121,7 @@ const App = () => {
           <Route path="/admin" element={<BoardAdmin />} />
 
           {/* Staff */}
-          <Route path="/staff" element={<StaffLayout />}> 
+          <Route path="/staff" element={<StaffLayout />}>
             <Route index element={<BoardStaff />} />
             <Route path="requests" element={<StaffRequests />} />
             <Route path="transfusions" element={<TransfusionConfirm />} />

@@ -2,14 +2,11 @@ import axios from 'axios';
 
 // import React from "react-router-dom"
 
-const API_URL = 'http://localhost:8080/api/auth'; // Đường dẫn tương đối, sẽ được proxy qua Vite
+const API_URL = '/api/auth/'; ; // Đường dẫn tương đối, sẽ được proxy qua Vite
 
 // Đăng nhập
 const login = (username, password) => {
-  return axios
-    .post(
-      API_URL ,
-      { username, password },
+  return axios.post(API_URL + 'login', { username, password },
       {
         headers: {
           'Content-Type': 'application/json' // BẮT BUỘC cho Spring Boot
@@ -49,7 +46,7 @@ const login = (username, password) => {
 // Đăng ký
 const register = (username, email, password, profile) => {
   return axios.post(
-    API_URL + 'register',
+    '/api/auth/register',
     {
       username,
       email,
