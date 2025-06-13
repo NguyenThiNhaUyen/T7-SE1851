@@ -50,10 +50,6 @@ const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, logOut }) => {
           </>
         )}
 
-        {/* Người dùng */}
-        {currentUser && !showAdminBoard && !showStaffBoard && (
-          <NavLink to={`/user/${currentUser.id}`} className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Trang người dùng</NavLink>
-        )}
       </div>
 
       {/* Phải - tài khoản */}
