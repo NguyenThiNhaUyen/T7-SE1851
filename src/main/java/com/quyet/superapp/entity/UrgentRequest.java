@@ -23,7 +23,7 @@ public class UrgentRequest {
     @Column(name = "HospitalName", columnDefinition = "NVARCHAR(100)", nullable = false)
     private String hospitalName;
 
-    @Column(name = "BloodType", columnDefinition = "VARCHAR(5)", nullable = false)
+    @Column(name = "BloodType", columnDefinition = "NVARCHAR(20)", nullable = false)
     private String bloodType;
 
     @Column(name = "Units", nullable = false)

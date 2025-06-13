@@ -39,7 +39,7 @@ public class BloodUnit {
     @Column(name = "expiration_date", columnDefinition = "DATE")
     private LocalDate expirationDate;
 
-    @Column(name = "status", columnDefinition = "VARCHAR")
+    @Column(name = "status", columnDefinition = "NVARCHAR(20)")
     private String status;
 
     @Column(name = "stored_at", columnDefinition = "DATETIME")

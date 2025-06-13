@@ -40,9 +40,9 @@
         @Column(name = "volume_ml")
         private Integer volumeMl;
 
-        @Column(name = "location", columnDefinition = "VARCHAR")
+        @Column(name = "location", columnDefinition = "NVARCHAR(20)")
         private String location;
 
-        @Column(name = "notes", columnDefinition = "TEXT")
+        @Column(name = "notes", columnDefinition = "NVARCHAR(200)")
         private String notes;
         }

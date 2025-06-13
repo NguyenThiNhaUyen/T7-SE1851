@@ -17,7 +17,7 @@
         @Column(name = "User_Id")
         private Long userId;
 
-        @Column(name = "UserName", columnDefinition = "NVARCHAR(100)", nullable = false)
+        @Column(name = "UserName", columnDefinition = "VARCHAR(100)", nullable = false)
         private String username;
 
         @Column(name = "Password", columnDefinition = "VARCHAR(255)", nullable = false)

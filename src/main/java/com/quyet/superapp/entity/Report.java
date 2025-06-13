@@ -16,8 +16,7 @@ public class Report {
     @Column(name = "Report_Id")
     private Long reportId;
 
-
-    @Column(name = "report_type", columnDefinition = "VARCHAR", nullable = false)
+    @Column(name = "report_type", columnDefinition = "NVARCHAR(20)", nullable = false)
     private String reportType;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -27,6 +26,6 @@ public class Report {
     @Column(name = "created_at", columnDefinition = "DATETIME")
     private LocalDateTime createdAt;
 
-    @Column(name = "content", columnDefinition = "TEXT")
+    @Column(name = "content", columnDefinition = "NVARCHAR(200)")
     private String content;
 }

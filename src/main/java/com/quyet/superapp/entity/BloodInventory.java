@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+
 @Entity
 @Table(name = "BloodInventory")
 @Data
@@ -23,7 +24,6 @@ public class BloodInventory {
     @JoinColumn(name = "BloodType",  referencedColumnName = "BloodTypeID")
     private BloodType bloodType;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ComponentID")
     private BloodComponent component;
@@ -34,4 +34,3 @@ public class BloodInventory {
     @Column(name = "LastUpdated", columnDefinition = "DATETIME")
     private LocalDateTime lastUpdated;
 }
-

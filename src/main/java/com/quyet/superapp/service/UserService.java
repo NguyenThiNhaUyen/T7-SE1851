@@ -1,6 +1,5 @@
 package com.quyet.superapp.service;
 
-
 import com.quyet.superapp.dto.LoginRequestDTO;
 import com.quyet.superapp.dto.LoginResponseDTO;
 import com.quyet.superapp.dto.RegisterRequestDTO;
@@ -11,6 +10,7 @@ import com.quyet.superapp.repository.RoleRepository;
 import com.quyet.superapp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,6 +19,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -75,7 +77,14 @@ public class UserService {
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setEnable(true);
-        user.setRole(roleMember);
+        String roleName = Optional.ofNullable(request.getRole())
+                .map(String::toUpperCase)
+                .orElse("MEMBER");
+
+        Role role = roleRepository.findByName(roleName)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy vai trò: " + roleName));
+
+        user.setRole(role);
 
         UserDetail detail = new UserDetail();
         detail.setFirstname(request.getFirstName());

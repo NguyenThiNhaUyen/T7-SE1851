@@ -21,22 +21,22 @@ public class UserProfile {
     @JoinColumn(name = "User_Id")
     private User user;
 
-    @Column(name = "full_name", columnDefinition = "VARCHAR")
+    @Column(name = "full_name", columnDefinition = "NVARCHAR(20)")
     private String fullName;
 
     @Column(name = "dob", columnDefinition = "DATE")
     private LocalDate dob;
 
-    @Column(name = "gender", columnDefinition = "VARCHAR")
+    @Column(name = "gender", columnDefinition = "NVARCHAR(20)")
     private String gender;
 
-    @Column(name = "blood_type", columnDefinition = "VARCHAR")
+    @Column(name = "blood_type", columnDefinition = "NVARCHAR(20)")
     private String bloodType;
 
-    @Column(name = "address", columnDefinition = "VARCHAR")
+    @Column(name = "address", columnDefinition = "NVARCHAR(20)")
     private String address;
 
-    @Column(name = "phone", columnDefinition = "VARCHAR")
+    @Column(name = "phone", columnDefinition = "VARCHAR(10)")
     private String phone;
 
     @Column(name = "last_donation_date", columnDefinition = "DATE")
@@ -45,7 +45,7 @@ public class UserProfile {
     @Column(name = "recovery_time")
     private Integer recoveryTime;
 
-    @Column(name = "location", columnDefinition = "VARCHAR")
+    @Column(name = "location", columnDefinition = "NVARCHAR(20)")
     private String location;
 
     @Column(name = "latitude")
