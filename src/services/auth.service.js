@@ -1,72 +1,44 @@
 import axios from 'axios';
 
-// import React from "react-router-dom"
+axios.defaults.withCredentials = true;
 
-const API_URL = '/api/auth/'; ; // Đường dẫn tương đối, sẽ được proxy qua Vite
+const API_URL = 'http://localhost:8080/api/auth'; 
 
 // Đăng nhập
 const login = (username, password) => {
-  return axios.post(API_URL + 'login', { username, password },
-      {
-        headers: {
-          'Content-Type': 'application/json' // BẮT BUỘC cho Spring Boot
-        },
-        // body: JSON.stringify(login)
-      }
-    )
+  return axios.post(`${API_URL}/login`, { username, password }, {
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    withCredentials: true, // ⚠️ Nếu server cần cookie/token sau này
+  })
     .then((response) => {
-      if (response.data.username) {
-        // Tạm thời lưu password để dùng cho Basic Auth (nếu cần)
-        localStorage.setItem('user', JSON.stringify({ ...response.data, password }));
+      if (response.data.userId) {
+        localStorage.setItem('user', JSON.stringify(response.data));
       }
       return response.data;
     });
 };
 
-
-// const [user,setUser] = useStae("
-  
-//   ")
-
-// const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-//   e.preventDefault();
-
-//   try {
-//     const res = await fetch("http://localhost:8080/api/auth/login", {
-//       method: "POST",
-//       headers: {
-//         "Content-Type" : "application:json"
-//       },
-//       body: JSON.stringify()
-//     })
-//   } catch (error) {
-    
-//   }
-// } 
 // Đăng ký
 const register = (username, email, password, profile) => {
-  return axios.post(
-    '/api/auth/register',
-    {
-      username,
-      email,
-      password,
-      ...profile,
+  return axios.post(`${API_URL}/register`, {
+    username,
+    email,
+    password,
+    ...profile,
+  }, {
+    headers: {
+      'Content-Type': 'application/json'
     },
-    {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }
-  );
+    // withCredentials: true
+  });
 };
 
-// Đăng xuất
 const logout = () => {
   localStorage.removeItem('user');
 };
 
-// Lấy thông tin người dùng hiện tại từ localStorage
 const getCurrentUser = () => {
   return JSON.parse(localStorage.getItem('user'));
 };
@@ -75,5 +47,5 @@ export default {
   login,
   register,
   logout,
-  getCurrentUser,
+  getCurrentUser
 };
