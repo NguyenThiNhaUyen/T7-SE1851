@@ -13,8 +13,8 @@ body {
 }
 
 .staff-sidebar {
-  width: 220px;
-  background-color: #dd2d24;
+  width: 240px;
+  background-color: #b91c1c;
   color: white;
   padding: 1.5rem 1rem;
 }
@@ -40,9 +40,12 @@ body {
   transition: background-color 0.3s ease;
 }
 
-.staff-sidebar button:hover,
+.staff-sidebar button:hover {
+  background-color: #991b1b;
+}
+
 .staff-sidebar .active {
-  background-color: #b21d1d;
+  background-color:#7f1d1d;
 }
 
 .staff-main {
