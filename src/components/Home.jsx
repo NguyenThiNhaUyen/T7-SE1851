@@ -13,21 +13,23 @@ const Home = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    UserService.getPublicContent().then(
-      (response) => {
-        setContent(response.data);
-      },
-      (error) => {
-        const _content =
-          (error.response && error.response.data) ||
-          error.message ||
-          error.toString();
+ useEffect(() => {
+  let isMounted = true;
+  UserService.getPublicContent().then(
+    (response) => {
+      if (isMounted) setContent(response.data);
+    },
+    (error) => {
+      if (isMounted) {
+        const _content = (error.response && error.response.data) || error.message || error.toString();
         setContent(_content);
       }
-    );
-  }, []);
-
+    }
+  );
+  return () => {
+    isMounted = false;
+  };
+}, []);
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % images.length);
@@ -57,9 +59,6 @@ const Home = () => {
           <button className="cta-button donate" onClick={() => navigate("/login")}>
             Hiến máu ngay
           </button>
-          <button className="cta-button receive" onClick={() => navigate("/login")}>
-            Nhận máu ngay
-          </button>
         </div>
       </section>
 
@@ -83,7 +82,7 @@ const Home = () => {
 
       {/* Learn More Section */}
       <section className="grid-section">
-        <h2 className="section-title">Tìm hiểu thêm</h2>
+        <h2 className="section-title text-center" >Tìm hiểu thêm</h2>
         <div className="grid-cards">
           <div className="grid-card">
             <h4>Câu hỏi thường gặp</h4>

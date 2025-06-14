@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
-import AuthService from "./services/auth.service";
-import EventBus from "./common/EventBus";
+import eventBus from "./common/EventBus"; // 
 
 // Giao diện chung
 import Navbar from "./components/Navbar";
@@ -53,21 +52,27 @@ import NotificationList from "./components/NotificationList";
 import NotificationForm from "./components/NotificationForm";
 import VnPayForm from "./components/VnPayForm";
 import Activities from "./components/Activities";
+import AuthService from "./services/auth.service";
+
 
 const App = () => {
-  const [showStaffBoard, setShowStaffBoard] = useState(false);
-  const [showAdminBoard, setShowAdminBoard] = useState(false);
   const [currentUser, setCurrentUser] = useState(undefined);
+  const [showAdminBoard, setShowAdminBoard] = useState(false);
+  const [showStaffBoard, setShowStaffBoard] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
+
     const user = AuthService.getCurrentUser();
 
     if (user) {
       setCurrentUser(user);
-      const isAdmin = user.roles.includes("ROLE_ADMIN");
-      const isStaff = user.roles.includes("ROLE_STAFF");
+      const isAdmin = user.roles?.includes("ROLE_ADMIN");
+      const isStaff = user.roles?.includes("ROLE_STAFF");
       setShowAdminBoard(isAdmin);
       setShowStaffBoard(isStaff);
 
@@ -75,17 +80,21 @@ const App = () => {
         navigate("/staff");
       }
     }
-
-    EventBus.on("logout", logOut);
-    return () => EventBus.remove("logout");
+    setLoading(false);
+    eventBus.on("logout", logOut);
+    return () => eventBus.remove("logout", logOut);
   }, [location]);
 
   const logOut = () => {
-    AuthService.logout();
-    setShowStaffBoard(false);
-    setShowAdminBoard(false);
+    // Tạm thời không xử lý logout
+    // TODO: xử lý đăng xuất
+    AuthService.logout?.(); // nếu có
     setCurrentUser(undefined);
+    setShowAdminBoard(false);
+    setShowStaffBoard(false);
+    navigate("/login");
   };
+
 
   return (
     <div>
@@ -96,7 +105,6 @@ const App = () => {
         logOut={logOut}
       />
 
-      {/* ✅ Đã thêm class page-content vào đây */}
       <div className="page-content width-full">
         <Routes>
           {/* Chung */}
@@ -113,7 +121,7 @@ const App = () => {
           <Route path="/admin" element={<BoardAdmin />} />
 
           {/* Staff */}
-          <Route path="/staff" element={showStaffBoard ? <StaffLayout /> : <Navigate to="/home" />}>
+          <Route path="/staff" element={<StaffLayout />}>
             <Route index element={<BoardStaff />} />
             <Route path="requests" element={<StaffRequests />} />
             <Route path="transfusions" element={<TransfusionConfirm />} />
@@ -123,8 +131,8 @@ const App = () => {
           </Route>
 
           {/* User */}
-          <Route path="/user" element={showAdminBoard || showStaffBoard ? <Navigate to="/home" /> : <BoardUser />} />
-          <Route path="/user/:id" element={<UserLayout />}>
+          <Route path="/user" element={<UserLayout />}>
+
             <Route index element={<BoardUser />} />
             <Route path="register" element={<DonationRegister />} />
             <Route path="donation-history" element={<DonationHistory />} />

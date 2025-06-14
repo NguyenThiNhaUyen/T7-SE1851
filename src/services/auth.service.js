@@ -1,26 +1,37 @@
-
 import axios from 'axios';
 
-const API_URL = '/api/auth/'; // Dùng URL tương đối để qua proxy
+axios.defaults.withCredentials = true;
 
+const API_URL = 'http://localhost:8080/api/auth'; 
+
+// Đăng nhập
 const login = (username, password) => {
-  return axios
-    .post(API_URL + 'login', { username, password })
+  return axios.post(`${API_URL}/login`, { username, password }, {
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    withCredentials: true, // ⚠️ Nếu server cần cookie/token sau này
+  })
     .then((response) => {
-      if (response.data.username) {
-        // Lưu cả password để dùng cho HTTP Basic (không an toàn, chỉ tạm thời)
-        localStorage.setItem('user', JSON.stringify({ ...response.data, password }));
+      if (response.data.userId) {
+        localStorage.setItem('user', JSON.stringify(response.data));
       }
       return response.data;
     });
 };
 
+// Đăng ký
 const register = (username, email, password, profile) => {
-  return axios.post(API_URL + 'register', {
+  return axios.post(`${API_URL}/register`, {
     username,
     email,
     password,
     ...profile,
+  }, {
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    // withCredentials: true
   });
 };
 
@@ -36,5 +47,5 @@ export default {
   login,
   register,
   logout,
-  getCurrentUser,
+  getCurrentUser
 };
