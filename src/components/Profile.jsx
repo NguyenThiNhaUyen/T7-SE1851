@@ -174,7 +174,7 @@ const Profile = () => {
   {history.length === 0 ? (
     <div>
       <p>Chưa có lịch sử hiến máu.</p>
-      <a href="/register-donation" className="btn btn-gradient-red mt-2">Đăng ký ngay</a>
+      <a href="/user/register" className="btn btn-gradient-red mt-2">Đăng ký ngay</a>
     </div>
   ) : (
     <ul className="history-list">
