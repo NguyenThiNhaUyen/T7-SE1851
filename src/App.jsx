@@ -25,7 +25,7 @@ import BoardAdmin from "./components/BoardAdmin";
 // Nhân viên
 import BoardStaff from "./components/BoardStaff";
 import StaffLayout from "./layouts/StaffLayout";
-import StaffRequests from "./components/StaffRequests";
+import BloodRequestForm from "./components/BloodRequestForm";
 import TransfusionConfirm from "./components/TransfusionConfirm";
 import InventoryChart from "./components/InventoryChart";
 import StaffStatistics from "./components/StaffStatistics";
@@ -37,7 +37,6 @@ import UserLayout from "./layouts/UserLayout";
 import DonationRegister from "./components/DonationRegister";
 import DonationHistory from "./components/DonationHistory";
 import DonationAftercare from "./components/DonationAftercare";
-import BloodRequestForm from "./components/BloodRequestForm";
 import RequestHistory from "./components/RequestHistory";
 import TransfusionHistory from "./components/TransfusionHistory";
 import BloodTypes from "./components/BloodTypes";
@@ -123,7 +122,7 @@ const App = () => {
           {/* Staff */}
           <Route path="/staff" element={<StaffLayout />}>
             <Route index element={<BoardStaff />} />
-            <Route path="requests" element={<StaffRequests />} />
+            <Route path="requests" element={<BloodRequestForm />} />
             <Route path="transfusions" element={<TransfusionConfirm />} />
             <Route path="inventory" element={<InventoryChart />} />
             <Route path="statistics" element={<StaffStatistics />} />
@@ -137,7 +136,6 @@ const App = () => {
             <Route path="register" element={<DonationRegister />} />
             <Route path="donation-history" element={<DonationHistory />} />
             <Route path="aftercare" element={<DonationAftercare />} />
-            <Route path="new" element={<BloodRequestForm />} />
             <Route path="request-history" element={<RequestHistory />} />
             <Route path="transfusion-history" element={<TransfusionHistory />} />
             <Route path="types" element={<BloodTypes />} />

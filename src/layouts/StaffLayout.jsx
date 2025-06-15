@@ -34,7 +34,7 @@ const StaffLayout = () => {
             onClick={() => handleNavigate("/staff/transfusions")}
             className={active === "transfusions" ? "nav-btn active" : "nav-btn"}
           >
-            Xác nhận truyền máu
+            Xác nhận hiến máu
           </button>
           <button
             onClick={() => handleNavigate("/staff/inventory")}

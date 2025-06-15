@@ -71,13 +71,19 @@ const AdminDashboard = () => {
     <div className="admin-layout">
       <aside className="admin-sidebar">
         <h2>QUẢN TRỊ</h2>
-        {["dashboard", "users", "blood", "compatibility", "urgent"].map((key) => (
+        {["dashboard", "users", "staff", "blood", "compatibility", "notification", "urgent", "history", "report", "blog" ].map((key) => (
           <button key={key} onClick={() => setTab(key)} className={tab === key ? "active" : ""}>
             {key === "dashboard" ? "Tổng quan" :
               key === "users" ? "Người dùng & Vai trò" :
-              key === "blood" ? "Nhóm máu & Thành phần" :
-              key === "compatibility" ? "Tương thích" :
-              "Yêu cầu khẩn cấp"}
+                key === "staff" ? "Nhân viên y tế" :
+                  key === "blood" ? "Nhóm máu & Thành phần" :
+                    key === "compatibility" ? "Quy tắc tương thích" :
+                      key === "notification" ? "Thông báo" :
+                        key === "urgent" ? "Yêu cầu khẩn cấp" :
+                          key === "history" ? "Lịch sử hiến máu" :
+                            key === "report" ? "Báo cáo & Thống kê" :
+                              "Tin tức & Blog"
+            }
           </button>
         ))}
       </aside>
@@ -185,6 +191,11 @@ const AdminDashboard = () => {
             </table>
           </div>
         )}
+
+{tab === "staff" && <div>📋 Danh sách nhân viên y tế</div>}
+{tab === "notification" && <div>🔔 Quản lý thông báo</div>}
+{tab === "report" && <div>📊 Thống kê báo cáo</div>}
+
 
         {tab === "compatibility" && (
           <div>
