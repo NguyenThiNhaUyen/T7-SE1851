@@ -16,7 +16,6 @@ public class Report {
     @Column(name = "Report_Id")
     private Long reportId;
 
-
     @Column(name = "report_type", columnDefinition = "NVARCHAR(20)", nullable = false)
     private String reportType;
 

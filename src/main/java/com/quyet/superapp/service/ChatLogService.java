@@ -27,10 +27,12 @@ public class ChatLogService {
                 .collect(Collectors.toList());
     }
 
+
     public List<ChatLogDTO> getByUserId(Long userId) {
         return chatLogRepository.findByUserUserId(userId).stream()
                 .map(ChatLogMapper::toDTO)
                 .collect(Collectors.toList());
+
     }
 
     public Optional<ChatLogDTO> getById(Long id) {

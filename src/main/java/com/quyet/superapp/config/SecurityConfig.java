@@ -1,14 +1,14 @@
 package com.quyet.superapp.config;
 
+import com.quyet.superapp.config.jwt.JwtAuthenticationFilter;
 import com.quyet.superapp.service.CustomUserDetailsService;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,68 +21,74 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
 
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Autowired
-    private CustomUserDetailsService userDetailsService;
+    private final CustomUserDetailsService userDetailsService;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
+
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        var provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }
 
+    // Nếu cần dùng AuthenticationManager ở chỗ khác (ví dụ login), bạn có thể expose nó
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder builder =
-                http.getSharedObject(AuthenticationManagerBuilder.class);
+        var builder = http.getSharedObject(AuthenticationManagerBuilder.class);
         builder.authenticationProvider(authenticationProvider());
         return builder.build();
     }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173")); // ⚠️ Đổi đúng port FE của bạn
+        var configuration = new CorsConfiguration();
+        configuration.setAllowCredentials(true);
+        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        var source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception{
-        httpSecurity
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                // tắt CSRF và bật CORS
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .authorizeHttpRequests(auth -> auth
 
+                // phân quyền endpoint
+                .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
-                        //QUYỀN MEMBER
                         .requestMatchers(MEMBER_ENDPOINTS).hasAnyRole("MEMBER", "ADMIN")
-                        //QUYỀN STAFF
                         .requestMatchers(STAFF_ENDPOINTS).hasAnyRole("STAFF", "ADMIN")
-                        //QUYỂN ADMIN
                         .requestMatchers(ADMIN_ENDPOINTS).hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
-                .addFilterAfter((request, response, chain) -> {
-                    HttpServletRequest httpRequest = (HttpServletRequest) request;
-                    System.out.println("Authorization header: " + httpRequest.getHeader("Authorization"));
-                    System.out.println("➡️ URI: " + httpRequest.getRequestURI());  // Thêm dòng này
-                    System.out.println("➡️ Method: " + httpRequest.getMethod());   // Và dòng này
-                    chain.doFilter(request, response);
-                }, UsernamePasswordAuthenticationFilter.class);
-        return httpSecurity.build();
 
+                // thêm JWT filter trước UsernamePasswordAuthenticationFilter
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+
+                // (tuỳ chọn) debug log header
+                .addFilterAfter((request, response, chain) -> {
+                    HttpServletRequest req = (HttpServletRequest) request;
+                    System.out.println("🔑 Authorization header: " + req.getHeader("Authorization"));
+                    System.out.println("➡️ URI: " + req.getRequestURI());
+                    System.out.println("➡️ Method: " + req.getMethod());
+                    chain.doFilter(request, response);
+                }, JwtAuthenticationFilter.class);
+
+        return http.build();
     }
 
     private static final String[] PUBLIC_ENDPOINTS = {
@@ -93,7 +99,6 @@ public class SecurityConfig {
             "/api/blog/**",
             "/api/public/**"
     };
-
     private static final String[] MEMBER_ENDPOINTS = {
             "/api/user/**",
             "/api/profile",
@@ -103,12 +108,9 @@ public class SecurityConfig {
             "/api/blood/**",
             "/api/vnpay/**"
     };
-
     private static final String[] STAFF_ENDPOINTS = {
             "/api/staff/**"
-
     };
-
     private static final String[] ADMIN_ENDPOINTS = {
             "/api/admin",
             "/api/dashboard",

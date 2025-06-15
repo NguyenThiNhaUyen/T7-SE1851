@@ -1,42 +1,38 @@
 package com.quyet.superapp.service;
 
-import com.quyet.superapp.dto.StatResponseDTO;
-import com.quyet.superapp.repository.*;
+import com.quyet.superapp.dto.DashboardResponseDTO;
+import com.quyet.superapp.repository.DonationRepository;
+import com.quyet.superapp.repository.BloodInventoryRepository;
+import com.quyet.superapp.repository.UrgentRequestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class DashboardService {
 
-    private final UserRepository userRepository;
+    private final DonationRepository donationRepository;
     private final BloodInventoryRepository bloodInventoryRepository;
     private final UrgentRequestRepository urgentRequestRepository;
-    private final DonationRepository donationRepository;
-    private final BlogRepository blogRepository;
-    private final VnPaymentRepository vnPayPaymentRepository;
 
-    public StatResponseDTO getStatistics() {
+    public DashboardResponseDTO getDashboardStats() {
+        long donorsToday = donationRepository.countByDonationDate(LocalDate.now());
+        long totalUnits  = bloodInventoryRepository.sumAllUnits();
+        long urgentReqs  = urgentRequestRepository.countByStatus("Pending");
 
-        int totalUsers = (int) userRepository.count();
+        List<DashboardResponseDTO.GroupStat> groupStats =
+                bloodInventoryRepository.findGroupCounts()
+                        .stream()
+                        .map(arr -> new DashboardResponseDTO.GroupStat(
+                                (String) arr[0],
+                                ((Number) arr[1]).longValue()
+                        ))
+                        .collect(Collectors.toList());
 
-        int totalBloodUnits = bloodInventoryRepository.findAll()
-                .stream()
-                .mapToInt(b -> b.getTotalQuantityMl() != null ? b.getTotalQuantityMl() : 0)
-                .sum();
-
-        int pendingUrgentRequests = (int) urgentRequestRepository.countByStatus("Pending");
-        int totalDonations = (int) donationRepository.count();
-        int activeBlogs = (int) blogRepository.countByStatus("Active");
-        int successfulPayments = (int) vnPayPaymentRepository.countByStatus("Success");
-
-        return new StatResponseDTO(
-                totalUsers,
-                totalBloodUnits,
-                pendingUrgentRequests,
-                totalDonations,
-                activeBlogs,
-                successfulPayments
-        );
+        return new DashboardResponseDTO(donorsToday, totalUnits, urgentReqs, groupStats);
     }
 }

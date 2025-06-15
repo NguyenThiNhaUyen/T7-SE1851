@@ -10,8 +10,8 @@ import java.util.List;
 @Repository
 public interface BloodInventoryRepository extends JpaRepository<BloodInventory, Long> {
 
-        // Nếu bạn vẫn cần tìm theo mô tả nhóm máu
-        List<BloodInventory> findByBloodType_Description(String type);
+        List<BloodInventory> findByBloodType_Description(String description);
+
 
         // 1) Thống kê phân bố nhóm máu: description + tổng totalQuantityMl
         @Query("SELECT bi.bloodType.description, SUM(bi.totalQuantityMl) "
