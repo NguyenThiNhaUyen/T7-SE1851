@@ -12,7 +12,7 @@ const TransfusionConfirm = () => {
   }));
 
   const [showModal, setShowModal] = useState(false);
-  const [modalMode, setModalMode] = useState("edit"); // 'edit' | 'view'
+  const [modalMode, setModalMode] = useState("edit");
   const [selectedTransfusion, setSelectedTransfusion] = useState(null);
   const [savedVolumes, setSavedVolumes] = useState({});
   const [volume, setVolume] = useState({
@@ -40,6 +40,12 @@ const TransfusionConfirm = () => {
     setVolume({ total: "", redCells: "", platelets: "", plasma: "" });
   };
 
+  const [statusMap, setStatusMap] = useState({});
+
+  const handleStatusChange = (id, newStatus) => {
+    setStatusMap(prev => ({ ...prev, [id]: newStatus }));
+  };
+
   return (
     <div className="container">
       <h3 className="text-danger mb-4">📋 Bảng Truyền Máu (Giả lập)</h3>
@@ -56,43 +62,47 @@ const TransfusionConfirm = () => {
           </tr>
         </thead>
         <tbody>
-          {mockData.map((item) => (
-            <tr key={item.id}>
-              <td>{item.id}</td>
-              <td>{item.recipient_id}</td>
-              <td>{item.request_id}</td>
-              <td>{item.blood_unit_id}</td>
-              <td>{new Date(item.transfusion_date).toLocaleDateString()}</td>
-              <td>{item.status}</td>
-              <td>
-                {item.status !== "Hoàn tất" ? (
-                  item.status
-                ) : savedVolumes[item.id] ? (
-                  <>
-                    <button
-                      className="btn btn-sm btn-outline-info me-1"
-                      onClick={() => handleOpenModal(item, "view")}
-                    >
-                      Xem
-                    </button>
-                    <button
-                      className="btn btn-sm btn-outline-warning"
-                      onClick={() => handleOpenModal(item, "edit")}
-                    >
-                      Sửa
-                    </button>
-                  </>
-                ) : (
-                  <button
-                    className="btn btn-sm btn-outline-primary"
-                    onClick={() => handleOpenModal(item, "edit")}
+          {mockData.map((item) => {
+            const currentStatus = statusMap[item.id] || "Đang xử lý";
+            return (
+              <tr key={item.id}>
+                <td>{item.id}</td>
+                <td>{item.recipient_id}</td>
+                <td>{item.request_id}</td>
+                <td>{item.blood_unit_id}</td>
+                <td>{new Date(item.transfusion_date).toLocaleDateString()}</td>
+                <td>
+                  <select
+                    className="form-select"
+                    value={statusMap[item.id] || "Đang xử lý"}
+                    onChange={(e) => handleStatusChange(item.id, e.target.value)}
                   >
-                    Nhập lượng máu
-                  </button>
-                )}
-              </td>
-            </tr>
-          ))}
+                    <option value="Đang xử lý">Đang xử lý</option>
+                    <option value="Hoàn tất">Hoàn tất</option>
+                    <option value="Đã hủy">Đã hủy</option>
+                  </select>
+                </td>
+                <td>
+                  {currentStatus !== "Hoàn tất" ? (
+                    currentStatus
+                  ) : savedVolumes[item.id] ? (
+                    <>
+                      <button className="btn btn-sm btn-outline-info me-1" onClick={() => handleOpenModal(item, "view")}>
+                        Xem
+                      </button>
+                      <button className="btn btn-sm btn-outline-warning" onClick={() => handleOpenModal(item, "edit")}>
+                        Sửa
+                      </button>
+                    </>
+                  ) : (
+                    <button className="btn btn-sm btn-outline-primary" onClick={() => handleOpenModal(item, "edit")}>
+                      Nhập lượng máu
+                    </button>
+                  )}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
 
@@ -103,39 +113,65 @@ const TransfusionConfirm = () => {
             <h5>{modalMode === "view" ? "Xem lượng máu truyền" : "Nhập lượng máu truyền"}</h5>
             <input
               type="number"
+              min="0"
+              max="650"
               placeholder="Tổng (ml)"
               className="form-control mb-2"
               value={volume.total}
-              onChange={(e) => setVolume({ ...volume, total: e.target.value })}
-              readOnly={modalMode === "view"}
+              onChange={(e) => {
+                const value = Number(e.target.value);
+                if (e.target.value === "" || (value >= 0 && value <= 650)) {
+                  setVolume({ ...volume, total: e.target.value });
+                }
+              }} readOnly={modalMode === "view"}
             />
             <input
               type="number"
+              min="0"
+              max="650"
               placeholder="Hồng cầu (ml)"
               className="form-control mb-2"
               value={volume.redCells}
-              onChange={(e) => setVolume({ ...volume, redCells: e.target.value })}
-              readOnly={modalMode === "view"}
+              onChange={(e) => {
+                const value = Number(e.target.value);
+                if (e.target.value === "" || (value >= 0 && value <= 650)) {
+                  setVolume({ ...volume, redCells: e.target.value });
+                }
+              }} readOnly={modalMode === "view"}
             />
             <input
               type="number"
+              min="0"
+              max="650"
               placeholder="Tiểu cầu (ml)"
               className="form-control mb-2"
               value={volume.platelets}
-              onChange={(e) => setVolume({ ...volume, platelets: e.target.value })}
+              onChange={(e) => {
+                const value = Number(e.target.value);
+                if (e.target.value === "" || (value >= 0 && value <= 650)) {
+                  setVolume({ ...volume, platelets: e.target.value });
+                }
+              }}
               readOnly={modalMode === "view"}
             />
             <input
               type="number"
+              min="0"
+              max="650"
               placeholder="Huyết tương (ml)"
               className="form-control mb-3"
               value={volume.plasma}
-              onChange={(e) => setVolume({ ...volume, plasma: e.target.value })}
+              onChange={(e) => {
+                const value = Number(e.target.value);
+                if (e.target.value === "" || (value >= 0 && value <= 650)) {
+                  setVolume({ ...volume, plasma: e.target.value });
+                }
+              }}
               readOnly={modalMode === "view"}
             />
 
             {modalMode === "edit" && (
-              <button className="btn btn-primary me-2" onClick={handleSaveVolume}>Lưu</button>
+              <button className="btn btn-block btn-gradient-red" onClick={handleSaveVolume}>Lưu</button>
             )}
             <button className="btn btn-secondary" onClick={() => setShowModal(false)}>Đóng</button>
           </div>

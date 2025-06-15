@@ -13,7 +13,6 @@ const StaffLayout = () => {
     else if (path === "/staff/transfusions") setActive("transfusions");
     else if (path === "/staff/inventory") setActive("inventory");
     else if (path === "/staff/statistics") setActive("statistics");
-    else if (path === "/staff/urgent-requests") setActive("urgent");
     else setActive("");
   }, [location.pathname]);
 
@@ -52,7 +51,6 @@ const StaffLayout = () => {
             onClick={() => handleNavigate("/staff/urgent-requests")}
             className={active === "urgent" ? "nav-btn active" : "nav-btn"}
           >
-            Yêu cầu khẩn cấp
           </button>
         </nav>
       </aside>
