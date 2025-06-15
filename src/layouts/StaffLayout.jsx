@@ -30,8 +30,8 @@ const StaffLayout = () => {
             Yêu cầu nhận máu
           </button>
           <button
-            onClick={() => handleNavigate("/staff/transfusions")}
-            className={active === "transfusions" ? "nav-btn active" : "nav-btn"}
+            onClick={() => handleNavigate("/staff/donation")}
+            className={active === "donation" ? "nav-btn active" : "nav-btn"}
           >
             Xác nhận hiến máu
           </button>

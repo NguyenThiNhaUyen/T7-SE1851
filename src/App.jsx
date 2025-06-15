@@ -26,7 +26,7 @@ import BoardAdmin from "./components/BoardAdmin";
 import BoardStaff from "./components/BoardStaff";
 import StaffLayout from "./layouts/StaffLayout";
 import BloodRequestForm from "./components/BloodRequestForm";
-import TransfusionConfirm from "./components/TransfusionConfirm";
+import DonationConfirm from "./components/DonationConfirm";
 import InventoryChart from "./components/InventoryChart";
 import StaffStatistics from "./components/StaffStatistics";
 import UrgentRequests from "./components/UrgentRequests";
@@ -123,7 +123,7 @@ const App = () => {
           <Route path="/staff" element={<StaffLayout />}>
             <Route index element={<BoardStaff />} />
             <Route path="requests" element={<BloodRequestForm />} />
-            <Route path="transfusions" element={<TransfusionConfirm />} />
+            <Route path="donation" element={<DonationConfirm />} />
             <Route path="inventory" element={<InventoryChart />} />
             <Route path="statistics" element={<StaffStatistics />} />
             <Route path="urgent-requests" element={<UrgentRequests />} />
