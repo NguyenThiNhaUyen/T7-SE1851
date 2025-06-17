@@ -95,3 +95,58 @@ body {
 .btn-action:hover {
   background-color: #b21d1d;
 }
+/* === Bổ sung cho StaffStatistics và InventoryChart === */
+
+.staff-statistics-container,
+.inventory-container {
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 2rem;
+}
+
+.staff-statistics-container h2,
+.inventory-container h2 {
+  color: #dd2d24;
+  margin-bottom: 1.5rem;
+}
+
+/* Bộ lọc filter-panel dùng chung */
+.filter-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.filter-panel select,
+.filter-panel input[type="date"] {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  font-size: 0.95rem;
+}
+
+.filter-panel button {
+  background-color: #dd2d24;
+  color: #fff;
+  padding: 8px 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.filter-panel button:hover {
+  background-color: #b21d1d;
+}
+
+/* Biểu đồ ChartJS trong inventory */
+.inventory-container canvas {
+  max-width: 100%;
+  margin-top: 20px;
+}
