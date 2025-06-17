@@ -7,13 +7,12 @@ const DonationConfirm = () => {
     user_id: `USER${i + 100}`,
     request_id: `REQ${i + 200}`,
     blood_unit_id: `UNIT${i + 300}`,
-    transfusion_date: new Date().toISOString(),
-    status: i % 2 === 0 ? "Hoàn tất" : "Đang xử lý",
+    donation_date: new Date().toISOString(),
   }));
 
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState("edit");
-  const [selectedTransfusion, setSelectedTransfusion] = useState(null);
+  const [selectedDonation, setSelectedDonation] = useState(null);
   const [volume, setVolume] = useState({
     total: "",
     redCells: "",
@@ -22,30 +21,10 @@ const DonationConfirm = () => {
     bloodType: ""
   });
 
-  const handleOpenModal = (item, mode = "edit") => {
-    setSelectedTransfusion(item);
-    setModalMode(mode);
-    setVolume(savedVolumes[item.id] || {
-      total: "",
-      redCells: "",
-      platelets: "",
-      plasma: "",
-      bloodType: ""
-    });
-    setShowModal(true);
-  };
-
   const [savedVolumes, setSavedVolumes] = useState(() => {
     const saved = localStorage.getItem("savedVolumes");
     return saved ? JSON.parse(saved) : {};
   });
-
-  const handleSaveVolume = () => {
-    const updated = { ...savedVolumes, [selectedTransfusion.id]: volume };
-    setSavedVolumes(updated);
-    localStorage.setItem("savedVolumes", JSON.stringify(updated));
-    setShowModal(false);
-  };
 
   const [statusMap, setStatusMap] = useState(() => {
     const saved = localStorage.getItem("statusMap");
@@ -58,58 +37,88 @@ const DonationConfirm = () => {
     localStorage.setItem("statusMap", JSON.stringify(updated));
   };
 
+  const handleOpenModal = (item, mode = "edit") => {
+    setSelectedDonation(item);
+    setModalMode(mode);
+    setVolume(savedVolumes[item.id] || {
+      total: "",
+      redCells: "",
+      platelets: "",
+      plasma: "",
+      bloodType: ""
+    });
+    setShowModal(true);
+  };
+
+  const handleSaveVolume = () => {
+    const updated = { ...savedVolumes, [selectedDonation.id]: volume };
+    setSavedVolumes(updated);
+    localStorage.setItem("savedVolumes", JSON.stringify(updated));
+    handleStatusChange(selectedDonation.id, "Đã nhập dữ liệu");
+    setShowModal(false);
+  };
+
+  const handleResetAll = () => {
+    localStorage.removeItem("savedVolumes");
+    localStorage.removeItem("statusMap");
+    setSavedVolumes({});
+    setStatusMap({});
+  };
+
   return (
-    <div className="container">
-      <h3 className="text-danger mb-4">📋 Bảng Hien Máu</h3>
+    <div className="container staff-main">
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h3 className="text-danger">📋 Bảng Hiến Máu</h3>
+        <button className="btn btn-outline-secondary btn-sm" onClick={handleResetAll}>Reset thao tác</button>
+      </div>
+
       <table className="table table-bordered">
         <thead className="thead-dark">
           <tr>
-            <th>ID</th>
-            <th>user_id</th>
-            <th>request_id</th>
-            <th>blood_unit_id</th>
-            <th>transfusion_date</th>
-            <th>status</th>
-            <th>Lượng máu</th>
+            <th>Số thứ tự</th>
+            <th>ID người hiến</th>
+            <th>ID yêu cầu</th>
+            <th>ID máu</th>
+            <th>Ngày hiến</th>
+            <th>Trạng thái</th>
+            <th>Hành động</th>
+            <th>Hủy</th>
           </tr>
         </thead>
         <tbody>
           {mockData.map((item) => {
-            const currentStatus = statusMap[item.id] || "Đang xử lý";
+            const status = statusMap[item.id] || "Đang chờ...";
+            const hasVolume = savedVolumes[item.id];
+            const isCancelled = status === "Đã hủy";
+            const rowClass = isCancelled ? "text-muted bg-light" : "";
+
+            let actionBtn = null;
+            if (status === "Đang chờ...") {
+              actionBtn = <button className="btn btn-success btn-sm" onClick={() => handleStatusChange(item.id, "Đang xử lý...")}>Xác nhận</button>;
+            } else if (status === "Đang xử lý...") {
+              actionBtn = <button className="btn btn-warning btn-sm" onClick={() => handleStatusChange(item.id, "Chưa nhập dữ liệu")}>Hoàn thành</button>;
+            } else if (status === "Chưa nhập dữ liệu") {
+              actionBtn = <button className="btn btn-primary btn-sm" onClick={() => handleOpenModal(item, "edit")}>Nhập lượng máu</button>;
+            } else if (status === "Đã nhập dữ liệu") {
+              actionBtn = (
+                <div className="d-flex gap-2">
+                  <button className="btn btn-info btn-sm" onClick={() => handleOpenModal(item, "view")}>Xem</button>
+                  <button className="btn btn-outline-warning btn-sm" onClick={() => handleOpenModal(item, "edit")}>Sửa</button>
+                </div>
+              );
+            }
+
             return (
-              <tr key={item.id}>
+              <tr key={item.id} className={rowClass}>
                 <td>{item.id}</td>
                 <td>{item.user_id}</td>
                 <td>{item.request_id}</td>
                 <td>{item.blood_unit_id}</td>
-                <td>{new Date(item.transfusion_date).toLocaleDateString()}</td>
+                <td>{new Date(item.donation_date).toLocaleDateString()}</td>
+                <td>{status}</td>
+                <td>{actionBtn}</td>
                 <td>
-                  {currentStatus === "Đang xử lý" ? (
-                    <div style={{ display: "flex", gap: "8px" }}>
-                      <button className="btn btn-success btn-sm" onClick={() => handleStatusChange(item.id, "Hoàn tất")}>Chấp nhận</button>
-                      <button className="btn btn-danger btn-sm" onClick={() => handleStatusChange(item.id, "Đã hủy")}>Hủy bỏ</button>
-                    </div>
-                  ) : (
-                    currentStatus
-                  )}
-                </td>
-                <td>
-                  {currentStatus !== "Hoàn tất" ? (
-                    currentStatus
-                  ) : savedVolumes[item.id] ? (
-                    <div style={{ display: "flex", gap: "8px" }}>
-                      <button className="btn btn-info btn-sm" onClick={() => handleOpenModal(item, "view")}>Xem</button>
-                      <button className="btn btn-outline-warning btn-sm" onClick={() => handleOpenModal(item, "edit")}>Sửa</button>
-                    </div>
-                  ) : (
-                    <button className="btn btn-sm btn-outline-primary" onClick={() => handleOpenModal(item, "edit")}>Nhập lượng máu</button>
-                  )}
-                </td>
-                <td>
-                  {(currentStatus === "Hoàn tất" || currentStatus === "Đã hủy"
-                  )&& (
-                    <button className="btn btn-secondary btn-sm" onClick={() => handleStatusChange(item.id, "Đang xử lý")}>Trở lại</button>
-                  )}
+                  <button className="btn btn-outline-danger btn-sm" onClick={() => handleStatusChange(item.id, "Đã hủy")}>Hủy</button>
                 </td>
               </tr>
             );
@@ -120,47 +129,38 @@ const DonationConfirm = () => {
       {showModal && (
         <div className="modal-backdrop">
           <div className="modal-content">
-            <h5>{modalMode === "view" ? "Xem lượng máu truyền" : "Nhập lượng máu truyền"}</h5>
-            <input type="number" min="0" max="650" placeholder="Tổng (ml)" className="form-control mb-2" value={volume.total} onChange={(e) => {
-              const value = Number(e.target.value);
-              if (e.target.value === "" || (value >= 0 && value <= 650)) {
-                setVolume({ ...volume, total: e.target.value });
-              }
-            }} readOnly={modalMode === "view"} />
-            <input type="number" min="0" max="650" placeholder="Hồng cầu (ml)" className="form-control mb-2" value={volume.redCells} onChange={(e) => {
-              const value = Number(e.target.value);
-              if (e.target.value === "" || (value >= 0 && value <= 650)) {
-                setVolume({ ...volume, redCells: e.target.value });
-              }
-            }} readOnly={modalMode === "view"} />
-            <input type="number" min="0" max="650" placeholder="Tiểu cầu (ml)" className="form-control mb-2" value={volume.platelets} onChange={(e) => {
-              const value = Number(e.target.value);
-              if (e.target.value === "" || (value >= 0 && value <= 650)) {
-                setVolume({ ...volume, platelets: e.target.value });
-              }
-            }} readOnly={modalMode === "view"} />
-            <input type="number" min="0" max="650" placeholder="Huyết tương (ml)" className="form-control mb-2" value={volume.plasma} onChange={(e) => {
-              const value = Number(e.target.value);
-              if (e.target.value === "" || (value >= 0 && value <= 650)) {
-                setVolume({ ...volume, plasma: e.target.value });
-              }
-            }} readOnly={modalMode === "view"} />
-            <input list="bloodTypes" placeholder="Nhóm máu" className="form-control mb-3" value={volume.bloodType} onChange={(e) => 
-              setVolume({ ...volume, bloodType: e.target.value })} readOnly={modalMode === "view"} />
+            <h5 className="mb-3">
+              {modalMode === "view" ? "Xem lượng máu truyền" : "Nhập lượng máu truyền"}
+            </h5>
+            {["Tổng", "Hồng cầu", "Tiểu cầu", "Huyết tương"].map((label, idx) => {
+              const keys = ["total", "redCells", "platelets", "plasma"];
+              const key = keys[idx];
+              return (
+                <input key={key} type="number" placeholder={`${label} (ml)`} className="form-control mb-2"
+                  value={volume[key]}
+                  onChange={(e) => {
+                    const value = Number(e.target.value);
+                    if (e.target.value === "" || (value >= 0 && value <= 650)) {
+                      setVolume({ ...volume, [key]: e.target.value });
+                    }
+                  }}
+                  readOnly={modalMode === "view"}
+                />
+              );
+            })}
+            <input list="bloodTypes" placeholder="Nhóm máu" className="form-control mb-3"
+              value={volume.bloodType}
+              onChange={(e) => setVolume({ ...volume, bloodType: e.target.value })}
+              readOnly={modalMode === "view"} />
             <datalist id="bloodTypes">
-              <option value="A+" />
-              <option value="A-" />
-              <option value="B+" />
-              <option value="B-" />
-              <option value="AB+" />
-              <option value="AB-" />
-              <option value="O+" />
-              <option value="O-" />
+              {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map(b => (
+                <option key={b} value={b} />
+              ))}
             </datalist>
             {modalMode === "edit" && (
-              <button className="btn btn-block btn-gradient-red mb-2" onClick={handleSaveVolume}>Lưu</button>
+              <button className="btn btn-success btn-block mb-2" onClick={handleSaveVolume}>Lưu</button>
             )}
-            <button className="btn btn-secondary" onClick={() => setShowModal(false)}>Đóng</button>
+            <button className="btn btn-secondary btn-block" onClick={() => setShowModal(false)}>Đóng</button>
           </div>
         </div>
       )}
