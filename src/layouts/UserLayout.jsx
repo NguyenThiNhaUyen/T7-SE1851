@@ -36,7 +36,7 @@ const UserLayout = () => {
         <h2 className="sidebar-title">
           👤 {userInfo?.first_name || "Ẩn danh"} {userInfo?.last_name || ""}
         </h2>
-        <p style={{ fontSize: "0.9rem", color: "#888", padding: "0 1rem" }}>
+        <p style={{ fontSize: "1rem", color: "#000", padding: "0 1rem" }}>
           Nhóm máu: <strong>{userInfo?.blood_type || "N/A"}</strong><br />
           Email: {userInfo?.email || "N/A"}<br />
           SĐT: {userInfo?.phone || "N/A"}
@@ -50,6 +50,8 @@ const UserLayout = () => {
         <button className="sidebar-btn" onClick={() => navigate("types")}>Các loại máu</button>
         <button className="sidebar-btn" onClick={() => navigate("receive")}>Cách nhận máu</button>
         <button className="sidebar-btn" onClick={() => navigate("roles")}>Chủ & phụ</button>
+
+        
       </div>
 
       <div className="main-content-user">

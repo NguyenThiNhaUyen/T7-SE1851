@@ -29,11 +29,23 @@ const Home = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const navigate = useNavigate();
 
+  // Kết hợp useEffect an toàn bộ nhớ + fallback lỗi rõ ràng
   useEffect(() => {
+    let isMounted = true;
     UserService.getPublicContent().then(
-      (res) => setContent(res.data),
-      (err) => setContent(err?.response?.data || err.message || "Lỗi tải nội dung.")
+      (res) => {
+        if (isMounted) setContent(res.data);
+      },
+      (err) => {
+        if (isMounted) {
+          const _content = err?.response?.data || err.message || "Lỗi tải nội dung.";
+          setContent(_content);
+        }
+      }
     );
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -90,7 +102,7 @@ const Home = () => {
 
       {/* Learn More Section */}
       <section className="grid-section">
-        <h2 className="section-title">Tìm hiểu thêm</h2>
+        <h2 className="section-title text-center">Tìm hiểu thêm</h2>
         <div className="grid-cards">
           <div className="grid-card">
             <h4>Câu hỏi thường gặp</h4>

@@ -21,7 +21,7 @@ const BloodRequestForm = () => {
     e.preventDefault();
     try {
       const user = JSON.parse(localStorage.getItem("user"));
-      await axios.post("/users/requests/new", {
+      await axios.post("/staff/requests", {
         ...form,
         requester_id: user.id,
       });
