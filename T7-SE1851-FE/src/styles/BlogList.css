@@ -1,0 +1,71 @@
+.blog-list-wrapper {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  padding: 60px 20px;
+  background-color: #fefefe;
+  color: #2E2E2E;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+/* Tiêu đề */
+.blog-list-wrapper h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: white;
+  background: linear-gradient(135deg, #771813, #dd2d24);
+  padding: 16px 24px;
+  text-align: center;
+  border-radius: 18px;
+  margin-bottom: 40px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+
+/* Container dọc */
+.blog-list-column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* THẺ MỚI TÁCH RIÊNG */
+.blog-list-card {
+  background-color: #fff9f9;
+  border-radius: 16px;
+  padding: 24px 28px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.blog-list-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+}
+
+.blog-list-card h4 {
+  margin-bottom: 12px;
+  color: #771813;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.blog-list-card p {
+  margin-bottom: 10px;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #444;
+}
+
+.blog-list-card small {
+  font-size: 0.9rem;
+  color: #888;
+}
+
+.blog-list-card a {
+  text-decoration: none;
+  color: #dd2d24;
+  font-weight: 600;
+}
+
+.blog-list-card a:hover {
+  text-decoration: underline;
+}

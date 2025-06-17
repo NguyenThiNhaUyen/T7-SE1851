@@ -1,0 +1,130 @@
+/* src/styles/staff.css */
+
+/*uyen-donation*/
+.modal-backdrop {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.5); 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal-content {
+  background: rgb(255, 255, 255);
+  padding: 20px;
+  border-radius: 8px;
+  width: 350px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+}
+
+.btn-outline-warning {
+  border-color: #ffc107;
+  color: #ffc107;
+  background-color: transparent;
+}
+
+.btn-outline-warning:hover {
+  background-color: #ffc107;
+  color: white;
+}
+/* old */
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 0;
+}
+
+.staff-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.staff-sidebar {
+  width: 240px;
+  background-color: #b91c1c;
+  color: white;
+  padding: 1.5rem 1rem;
+}
+
+.staff-sidebar h2 {
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+}
+
+.staff-sidebar button {
+  display: block;
+  width: 100%;
+  background: transparent;
+  color: white;
+  border: none;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 1rem;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.staff-sidebar button:hover {
+  background-color: #991b1b;
+}
+
+.staff-sidebar .active {
+  background-color:#7f1d1d;
+}
+
+.staff-main {
+  flex: 1;
+  padding: 2rem;
+  background-color: #ffffff;
+}
+
+.staff-main h3 {
+  color: #dd2d24;
+  margin-bottom: 1.5rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  font-size: 0.95rem;
+}
+
+.table thead {
+  background-color: #dd2d24;
+  color: white;
+}
+
+.table th, .table td {
+  border: 1px solid #ddd;
+  padding: 0.75rem 1rem;
+  text-align: left;
+}
+
+.table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.table tr:hover {
+  background-color: #ffe8e6;
+}
+
+.btn-action {
+  background-color: #dd2d24;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-action:hover {
+  background-color: #b21d1d;
+}
