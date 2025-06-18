@@ -1,6 +1,6 @@
 .admin-layout {
   display: flex;
-  min-height: 100vh;
+  min-height: fit-content;
   font-family: Arial, sans-serif;
 }
 

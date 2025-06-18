@@ -1,11 +1,11 @@
 /* ========== Global Styles ========== */
 .home-wrapper {
   font-family: 'Inter', 'Segoe UI', sans-serif;
-  background-color: #fafafa;
+  background-color: #fffdfb;
   color: #2e2e2e;
   line-height: 1.6;
+  scroll-behavior: smooth;
 }
-
 
 /* ========== Fade Slider ========== */
 .fade-slider {
@@ -23,7 +23,7 @@
   height: 100%;
   object-fit: cover;
   opacity: 0;
-  transition: opacity 1s ease-in-out;
+  transition: opacity 1.5s ease;
   z-index: 0;
 }
 
@@ -37,20 +37,20 @@
   background: linear-gradient(135deg, #771813, #dd2d24);
   color: white;
   text-align: center;
-  padding: 70px 20px;
-  border-radius: 0 0 32px 32px;
+  padding: 100px 20px 80px;
+  border-radius: 0 0 48px 48px;
 }
 
 .hero h1 {
-  font-size: 2.8rem;
+  font-size: 3rem;
   font-weight: 800;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .hero p {
-  font-size: 1.2rem;
-  margin-bottom: 24px;
+  font-size: 1.25rem;
   opacity: 0.9;
+  margin-bottom: 32px;
 }
 
 .cta-buttons-vertical {
@@ -61,56 +61,56 @@
 }
 
 .cta-button {
-  background: linear-gradient(to right, #771813, #dd2d24);
-  color: white;
+  background: linear-gradient(to right, #fdd835, #fbc02d);
+  color: #771813;
   border: none;
-  padding: 12px 30px;
-  border-radius: 10px;
+  padding: 14px 36px;
+  border-radius: 12px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   min-width: 180px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
 }
 
 .cta-button:hover {
-  background: linear-gradient(to right, #5e110e, #c7221d);
+  background: linear-gradient(to right, #fbc02d, #f9a825);
   transform: translateY(-2px);
 }
 
 /* ========== Section Divider ========== */
 .section-divider {
-  height: 40px;
+  height: 30px;
 }
 
-/* ========== Info Section (màu giống testimonial) ========== */
+/* ========== Info Section ========== */
 .info-section {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 32px;
   padding: 60px 20px;
-  background-color: #ffffff;
+  background-color: #fffaf0;
 }
 
 .info-card {
   background-color: #fff5f5;
   padding: 32px 24px;
   width: 300px;
-  border-radius: 24px;
-  box-shadow: 0 8px 24px rgba(221, 45, 36, 0.08);
+  border-radius: 20px;
+  box-shadow: 0 6px 18px rgba(221, 45, 36, 0.08);
   text-align: center;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .info-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 14px 32px rgba(221, 45, 36, 0.15);
+  transform: translateY(-8px);
+  box-shadow: 0 14px 36px rgba(221, 45, 36, 0.15);
 }
 
 .info-card h3 {
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: #771813;
   margin-bottom: 16px;
@@ -125,12 +125,12 @@
 /* ========== Grid Section ========== */
 .grid-section {
   padding: 60px 20px;
-  background-color: #fff4f4;
+  background-color: #e3f2fd;
+  text-align: center;
 }
 
 .section-title {
-  text-align: center;
-  font-size: 2rem;
+  font-size: 2.2rem;
   color: #771813;
   font-weight: 800;
   margin-bottom: 40px;
@@ -153,24 +153,24 @@
   padding: 28px;
   width: 300px;
   border-radius: 20px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .grid-card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
 }
 
 .grid-card h4 {
-  font-size: 1.3rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: #771813;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 
 .grid-card ul {
-  padding-left: 18px;
+  padding-left: 20px;
   font-size: 1rem;
   color: #333;
 }
@@ -181,7 +181,7 @@
 
 /* ========== Testimonial Section ========== */
 .testimonial-section {
-  background-color: #fff;
+  background-color: #fef6f6;
   padding: 60px 20px;
   text-align: center;
 }
@@ -195,10 +195,10 @@
 }
 
 .testimonial-card {
-  background-color: #fff5f5;
+  background-color: #fff0f0;
   padding: 24px;
   width: 300px;
-  border-radius: 16px;
+  border-radius: 20px;
   box-shadow: 0 6px 20px rgba(221, 45, 36, 0.12);
   font-style: italic;
   text-align: left;
@@ -213,10 +213,9 @@
 
 /* ========== Blog Preview Section ========== */
 .blog-preview-section {
-  background-color: #fff7f7;
-  padding: 60px 20px;
+  background-color: #fff8e1;
+  padding: 100px 20px;
   text-align: center;
-  margin-top: 60px;
   border-radius: 20px;
 }
 
@@ -238,7 +237,7 @@
 }
 
 .blog-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-6px);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
 }
 
@@ -252,7 +251,7 @@
 
 .blog-card h4 {
   color: #771813;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   margin-bottom: 8px;
 }
 
@@ -261,28 +260,15 @@
   color: #444;
 }
 
-.blog-card a {
-  text-decoration: none;
-  color: #dd2d24;
-  font-weight: 600;
-  display: inline-block;
-  margin-top: 10px;
-}
-
-.blog-card a:hover {
-  text-decoration: underline;
-}
-
 /* ========== Footer ========== */
 .footer {
   background: linear-gradient(135deg, #771813, #dd2d24);
   color: white;
   text-align: center;
-  padding: 24px;
+  padding: 25px 0 5px;
   font-size: 1rem;
-  margin-top: 60px;
   border-radius: 24px 24px 0 0;
-  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
 }
 
 /* ========== Responsive ========== */
@@ -305,5 +291,13 @@
   .cta-button {
     padding: 10px 24px;
     font-size: 0.95rem;
+  }
+
+  .fade-slider {
+    height: 260px;
+  }
+
+  .blog-preview-section {
+    padding: 80px 16px;
   }
 }

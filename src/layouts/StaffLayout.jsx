@@ -13,7 +13,6 @@ const StaffLayout = () => {
     else if (path === "/staff/transfusions") setActive("transfusions");
     else if (path === "/staff/inventory") setActive("inventory");
     else if (path === "/staff/statistics") setActive("statistics");
-    else if (path === "/staff/urgent-requests") setActive("urgent");
     else setActive("");
   }, [location.pathname]);
 
@@ -31,10 +30,10 @@ const StaffLayout = () => {
             Yêu cầu nhận máu
           </button>
           <button
-            onClick={() => handleNavigate("/staff/transfusions")}
-            className={active === "transfusions" ? "nav-btn active" : "nav-btn"}
+            onClick={() => handleNavigate("/staff/donation")}
+            className={active === "donation" ? "nav-btn active" : "nav-btn"}
           >
-            Xác nhận truyền máu
+            Xác nhận hiến máu
           </button>
           <button
             onClick={() => handleNavigate("/staff/inventory")}
@@ -52,7 +51,6 @@ const StaffLayout = () => {
             onClick={() => handleNavigate("/staff/urgent-requests")}
             className={active === "urgent" ? "nav-btn active" : "nav-btn"}
           >
-            Yêu cầu khẩn cấp
           </button>
         </nav>
       </aside>

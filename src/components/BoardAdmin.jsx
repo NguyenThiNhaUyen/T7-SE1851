@@ -10,18 +10,22 @@ const AdminDashboard = () => {
   const [tab, setTab] = useState("dashboard");
   const [transfusions, setTransfusions] = useState([]);
 
- useEffect(() => {
-  getAllTransfusions()
-    .then(res => {
-      console.log("✅ Dữ liệu từ API:", res.data); // Thêm dòng này để kiểm tra
-      setTransfusions(res.data);
-    })
-    .catch(error => {
-      console.error("❌ Lỗi khi gọi API:", error);
-    });
-}, []);
-
-
+  useEffect(() => {
+    getAllTransfusions()
+      .then(res => {
+        console.log("✅ Dữ liệu từ API:", res.data);
+        if (Array.isArray(res.data)) {
+          setTransfusions(res.data);
+        } else {
+          console.error("❌ API không trả về mảng:", res.data);
+          setTransfusions([]);
+        }
+      })
+      .catch(error => {
+        console.error("❌ Lỗi khi gọi API:", error);
+        setTransfusions([]);
+      });
+  }, []);
 
   const stats = {
     donorsToday: 25,
@@ -67,13 +71,19 @@ const AdminDashboard = () => {
     <div className="admin-layout">
       <aside className="admin-sidebar">
         <h2>QUẢN TRỊ</h2>
-        {["dashboard", "users", "blood", "compatibility", "urgent"].map((key) => (
+        {["dashboard", "users", "staff", "blood", "compatibility", "notification", "urgent", "history", "report", "blog" ].map((key) => (
           <button key={key} onClick={() => setTab(key)} className={tab === key ? "active" : ""}>
             {key === "dashboard" ? "Tổng quan" :
               key === "users" ? "Người dùng & Vai trò" :
-              key === "blood" ? "Nhóm máu & Thành phần" :
-              key === "compatibility" ? "Tương thích" :
-              "Yêu cầu khẩn cấp"}
+                key === "staff" ? "Nhân viên y tế" :
+                  key === "blood" ? "Nhóm máu & Thành phần" :
+                    key === "compatibility" ? "Quy tắc tương thích" :
+                      key === "notification" ? "Thông báo" :
+                        key === "urgent" ? "Yêu cầu khẩn cấp" :
+                          key === "history" ? "Lịch sử hiến máu" :
+                            key === "report" ? "Báo cáo & Thống kê" :
+                              "Tin tức & Blog"
+            }
           </button>
         ))}
       </aside>
@@ -113,15 +123,21 @@ const AdminDashboard = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {transfusions.map((t, i) => (
-                    <tr key={i}>
-                      <td>{t.recipientName}</td>
-                      <td>{t.bloodType}</td>
-                      <td>{t.units}</td>
-                      <td>{t.confirmedAt ? new Date(t.confirmedAt).toLocaleDateString() : '—'}</td>
-                      <td>{t.status}</td>
+                  {Array.isArray(transfusions) && transfusions.length > 0 ? (
+                    transfusions.map((t, i) => (
+                      <tr key={i}>
+                        <td>{t.recipientName}</td>
+                        <td>{t.bloodType}</td>
+                        <td>{t.units}</td>
+                        <td>{t.confirmedAt ? new Date(t.confirmedAt).toLocaleDateString() : '—'}</td>
+                        <td>{t.status}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="5">Không có dữ liệu truyền máu.</td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>
@@ -175,6 +191,11 @@ const AdminDashboard = () => {
             </table>
           </div>
         )}
+
+{tab === "staff" && <div>📋 Danh sách nhân viên y tế</div>}
+{tab === "notification" && <div>🔔 Quản lý thông báo</div>}
+{tab === "report" && <div>📊 Thống kê báo cáo</div>}
+
 
         {tab === "compatibility" && (
           <div>

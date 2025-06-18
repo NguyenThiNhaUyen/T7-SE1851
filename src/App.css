@@ -1,4 +1,4 @@
-.login-fullpage {
+.login-fullpage { 
   background-image: url("/public/9069379.jpg"); 
   background-size: cover;
   background-position: center;
@@ -51,9 +51,9 @@
 
 .change-box {
   background: white;
-  padding: 80px 80px;
+  padding: 40px 120px;
   border-radius: 12px;
-  max-width: 500px;
+  max-width: 700px;
   width: 100%;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
@@ -64,9 +64,48 @@
   background-position: center;
   background-repeat: no-repeat;
   display: flex;
+  gap: 40px;
   justify-content: center; 
-  align-items: center;
-  padding: 40px 0;
+  padding: 30px 60px;
+}
+
+.profile-left {
+  flex: 1;
+  border-radius: 12px;
+  max-width: 750px;
+}
+
+.profile-right {
+  flex: 1;
+  padding: 40px 60px;   
+  background: white;
+  border-radius: 12px;
+  height: fit-content;
+  max-width: 600px;
+}
+
+.history-list {
+  list-style: none;
+  padding: 0;
+  line-height: 2rem;
+}
+
+@media (max-width: 768px) {
+  .regis-fullpage {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .profile-left,
+  .profile-right {
+    max-width: 90%;
+    width: 100%;
+  }
+
+  .profile-right {
+    border-left: none;
+  }
 }
 
 .card-container.card {

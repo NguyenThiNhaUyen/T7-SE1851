@@ -174,10 +174,12 @@ CREATE TABLE VnPayPayments (
 INSERT INTO Roles (name) VALUES ('Admin'), ('Staff'), ('User');
 
 -- Users
+-- Users (dùng bcrypt hash)
 INSERT INTO Users (username, email, password, role_id, enable, created_at, updated_at) VALUES
-('admin', 'admin@blood.com', 'admin123', 1, 1, GETDATE(), GETDATE()),
-('staff1', 'staff1@blood.com', 'staff123', 2, 1, GETDATE(), GETDATE()),
-('user1', 'user1@blood.com', 'user123', 3, 1, GETDATE(), GETDATE());
+('admin', 'admin@blood.com', '$2b$12$JqrfVuw1OjElUK78h17GaOd9muSPzcsL8KSKp04KwiMnJGC2mZZJu', 1, 1, GETDATE(), GETDATE()),
+('staff1', 'staff1@blood.com', '$2b$12$FQkrLN6U7xOV3rd3HSE7puVg4ioYW0fZkweI27gad9zchch1OOh3S', 2, 1, GETDATE(), GETDATE()),
+('user1', 'user1@blood.com', '$2b$12$lzbGN.Ywn4lC08ngWfS9Fe3i2df/X1y8ljSq/xGSVRgxw5TZE4JXC', 3, 1, GETDATE(), GETDATE());
+
 
 -- UserProfile
 INSERT INTO UserProfile (user_id, first_name, last_name, dob, gender, blood_type, address, phone, last_donation_date, recovery_time, location, latitude, longitude) VALUES

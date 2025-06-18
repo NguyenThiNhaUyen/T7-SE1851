@@ -41,6 +41,7 @@ const Register = () => {
   const [lastName, setLastName] = useState("");
   const [dob, setDob] = useState("");
   const [gender, setGender] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // ← thêm dòng này
 
   const [successful, setSuccessful] = useState(false);
   const [message, setMessage] = useState("");
@@ -81,7 +82,7 @@ const Register = () => {
 
   return (
     <div className="regis-fullpage">
-  <div className="change-box">
+      <div className="change-box">
         <img
           src="/donor.png"
           alt="profile-img"
@@ -116,17 +117,37 @@ const Register = () => {
                 />
               </div>
 
-              <div className="form-group">
+              <div className="form-group position-relative">
                 <label htmlFor="password">Password</label>
-                <Input
-                  type="password"
-                  className="form-control"
-                  name="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  validations={[required, vpassword]}
-                />
+                <div style={{ position: "relative" }}>
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    className="form-control"
+                    name="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    validations={[required, vpassword]}
+                    style={{ paddingRight: "40px" }}
+                  />
+                  <span
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={{
+                      position: "absolute",
+                      top: "50%",
+                      right: "10px",
+                      transform: "translateY(-50%)",
+                      cursor: "pointer"
+                    }}
+                  >
+                    <img
+                      src={showPassword ? "/eye-open.png" : "/eye-close.png"}
+                      alt="toggle"
+                      width={20}
+                    />
+                  </span>
+                </div>
               </div>
+
 
               <div className="form-group">
                 <label htmlFor="firstName">First Name</label>

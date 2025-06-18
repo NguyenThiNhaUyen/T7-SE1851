@@ -8,7 +8,7 @@ import AuthService from "../services/auth.service";
 
 const Login = () => {
   const form = useRef();
-  const checkBtn = useRef();  
+  const checkBtn = useRef();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -49,14 +49,14 @@ const Login = () => {
     if (checkBtn.current.context._errors.length === 0) {
       AuthService.login(username, password).then(
         (data) => {
-          if (data && data.accessToken && data.id) {
-            const roles = data.roles || [];
-            if (roles.includes("ROLE_ADMIN")) {
+          if (data && data.userId && data.username) {
+            localStorage.setItem('user', JSON.stringify(data));
+            if (data.role === "ADMIN") {
               navigate("/admin");
-            } else if (roles.includes("ROLE_STAFF")) {
+            } else if (data.role === "STAFF") {
               navigate("/staff");
             } else {
-              navigate(`/user/${data.id}`);
+              navigate(`/user/${data.userId}`);
             }
           } else {
             setMessage("Phản hồi đăng nhập không hợp lệ.");
@@ -83,9 +83,9 @@ const Login = () => {
         <div className="login-left-content">
           <h2>Hiến máu - Hành động nhỏ, ý nghĩa lớn</h2>
           <p style={{ lineHeight: 1.6 }}>
-            Ở Việt Nam, cứ mỗi <strong>2 giây</strong> lại có một người cần truyền máu.  
+            Ở Việt Nam, cứ mỗi <strong>2 giây</strong> lại có một người cần truyền máu.
             <br />
-            Sự đóng góp của bạn thật sự quan trọng!  
+            Sự đóng góp của bạn thật sự quan trọng!
             <br />
             Hãy tiếp tục đồng hành cùng mạng lưới hiến máu toàn quốc – nơi trái tim chung một nhịp yêu thương.
           </p>

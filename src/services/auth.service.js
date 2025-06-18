@@ -1,40 +1,51 @@
-import axios from "axios";
+import axios from 'axios';
 
-const API_URL = "/api/auth/"; // Proxy đến http://localhost:5000
+axios.defaults.withCredentials = true;
 
+const API_URL = 'http://localhost:8080/api/auth'; 
+
+// Đăng nhập
 const login = (username, password) => {
-  return axios
-    .post(API_URL + "login", { username, password }, { withCredentials: true })
+  return axios.post(`${API_URL}/login`, { username, password }, {
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    withCredentials: true, // ⚠️ Nếu server cần cookie/token sau này
+  })
     .then((response) => {
-      if (response.data.username) {
-        localStorage.setItem("user", JSON.stringify(response.data));
+      if (response.data.userId) {
+        localStorage.setItem('user', JSON.stringify(response.data));
       }
       return response.data;
     });
 };
 
+// Đăng ký
 const register = (username, email, password, profile) => {
-  return axios.post(API_URL + "register", {
+  return axios.post(`${API_URL}/register`, {
     username,
     email,
     password,
     ...profile,
+  }, {
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    // withCredentials: true
   });
 };
 
 const logout = () => {
-  localStorage.removeItem("user");
+  localStorage.removeItem('user');
 };
 
 const getCurrentUser = () => {
-  return JSON.parse(localStorage.getItem("user"));
+  return JSON.parse(localStorage.getItem('user'));
 };
 
-const AuthService = {
+export default {
   login,
   register,
   logout,
-  getCurrentUser,
+  getCurrentUser
 };
-
-export default AuthService;
