@@ -56,9 +56,11 @@ const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, logOut }) => {
       <div className="navbar-right">
         {currentUser ? (
           <>
-            <NavLink to="/profile" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
-              {currentUser.username}
-            </NavLink>
+            {currentUser.roles.includes("ROLE_USER") && (
+              <NavLink to="/profile" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+                {currentUser.username}
+              </NavLink>
+            )}
             <a href="/" onClick={handleLogout} className="nav-link">Đăng xuất</a>
           </>
         ) : (
@@ -68,7 +70,8 @@ const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, logOut }) => {
           </>
         )}
       </div>
-    </nav>
+
+    </nav >
   );
 };
 
