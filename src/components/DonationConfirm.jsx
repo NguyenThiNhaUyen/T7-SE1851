@@ -11,6 +11,7 @@ const DonationConfirm = () => {
   }));
 
   const [showModal, setShowModal] = useState(false);
+  const [showSuggest, setShowSuggest] = useState(false);
   const [modalMode, setModalMode] = useState("edit");
   const [selectedDonation, setSelectedDonation] = useState(null);
   const [volume, setVolume] = useState({
@@ -19,6 +20,13 @@ const DonationConfirm = () => {
     platelets: "",
     plasma: "",
     bloodType: ""
+  });
+
+  const [suggestForm, setSuggestForm] = useState({
+    weight: "",
+    gender: "Nam",
+    total: "",
+    method: "gạn tách"
   });
 
   const [savedVolumes, setSavedVolumes] = useState(() => {
@@ -51,6 +59,10 @@ const DonationConfirm = () => {
   };
 
   const handleSaveVolume = () => {
+    if (!volume.total || !volume.bloodType) {
+      alert("Vui lòng nhập tổng lượng máu và nhóm máu.");
+      return;
+    }
     const updated = { ...savedVolumes, [selectedDonation.id]: volume };
     setSavedVolumes(updated);
     localStorage.setItem("savedVolumes", JSON.stringify(updated));
@@ -63,6 +75,13 @@ const DonationConfirm = () => {
     localStorage.removeItem("statusMap");
     setSavedVolumes({});
     setStatusMap({});
+  };
+
+  const handleApplySuggestion = () => {
+    if (showModal && modalMode === "edit") {
+      setVolume(prev => ({ ...prev, total: suggestForm.total }));
+    }
+    setShowSuggest(false);
   };
 
   return (
@@ -158,9 +177,36 @@ const DonationConfirm = () => {
               ))}
             </datalist>
             {modalMode === "edit" && (
-              <button className="btn btn-success btn-block mb-2" onClick={handleSaveVolume}>Lưu</button>
+              <>
+                <button className="btn btn-success btn-block mb-2" onClick={handleSaveVolume}>Lưu</button>
+                <button className="btn btn-info btn-sm mb-2" onClick={() => setShowSuggest(true)}>Gợi ý</button>
+              </>
             )}
             <button className="btn btn-secondary btn-block" onClick={() => setShowModal(false)}>Đóng</button>
+          </div>
+        </div>
+      )}
+
+      {showSuggest && (
+        <div className="modal-backdrop">
+          <div className="modal-content">
+            <h5 className="mb-3">Gợi ý lượng máu</h5>
+            <input type="number" placeholder="Cân nặng (kg)" min={0} className="form-control mb-2" value={suggestForm.weight} onChange={(e) => {
+              const v = Number(e.target.value);
+              if (e.target.value === "" || (v >= 0 && v <= 200)) setSuggestForm({ ...suggestForm, weight: e.target.value });
+            }} />
+            <select className="form-control mb-2" value={suggestForm.gender} onChange={(e) => setSuggestForm({ ...suggestForm, gender: e.target.value })}>
+              <option value="Nam">Nam</option>
+              <option value="Nữ">Nữ</option>
+            </select>
+            <input type="number" placeholder="Tổng (ml)" min={0} max={650}
+            className="form-control mb-2" value={suggestForm.total} onChange={(e) => setSuggestForm({ ...suggestForm, total: e.target.value })} />
+            <select className="form-control mb-3" value={suggestForm.method} onChange={(e) => setSuggestForm({ ...suggestForm, method: e.target.value })}>
+              <option value="gạn tách">Gạn tách</option>
+              <option value="li tâm">Li tâm</option>
+            </select>
+            <button className="btn btn-success btn-block mb-2" onClick={handleApplySuggestion}>Lưu</button>
+            <button className="btn btn-secondary btn-block" onClick={() => setShowSuggest(false)}>Đóng</button>
           </div>
         </div>
       )}
