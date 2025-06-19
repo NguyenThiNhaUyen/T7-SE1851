@@ -24,9 +24,9 @@ const DonationConfirm = () => {
 
   const [suggestForm, setSuggestForm] = useState({
     weight: "",
-    gender: "Nam",
+    gender: "",
     total: "",
-    method: "gạn tách"
+    method: ""
   });
 
   const [savedVolumes, setSavedVolumes] = useState(() => {
@@ -75,6 +75,13 @@ const DonationConfirm = () => {
     localStorage.removeItem("statusMap");
     setSavedVolumes({});
     setStatusMap({});
+    setSuggestForm({
+      weight: "",
+      gender: "",
+      total: "",
+      method: ""
+    });
+
   };
 
   const handleApplySuggestion = () => {
@@ -155,34 +162,52 @@ const DonationConfirm = () => {
               const keys = ["total", "redCells", "platelets", "plasma"];
               const key = keys[idx];
               return (
-                <input key={key} type="number" placeholder={`${label} (ml)`} className="form-control mb-2"
-                  value={volume[key]}
-                  onChange={(e) => {
-                    const value = Number(e.target.value);
-                    if (e.target.value === "" || (value >= 0 && value <= 650)) {
-                      setVolume({ ...volume, [key]: e.target.value });
-                    }
-                  }}
-                  readOnly={modalMode === "view"}
-                />
+                <div className="input-group" key={key}>
+                  <label>{label} (ml)</label>
+                  <input
+                    type="number"
+                    className="input-clean"
+                    value={volume[key]}
+                    onChange={(e) => {
+                      const value = Number(e.target.value);
+                      if (e.target.value === "" || (value >= 0 && value <= 650)) {
+                        setVolume({ ...volume, [key]: e.target.value });
+                      }
+                    }}
+                    readOnly={modalMode === "view"}
+                  />
+                </div>
               );
             })}
-            <input list="bloodTypes" placeholder="Nhóm máu" className="form-control mb-3"
-              value={volume.bloodType}
-              onChange={(e) => setVolume({ ...volume, bloodType: e.target.value })}
-              readOnly={modalMode === "view"} />
-            <datalist id="bloodTypes">
-              {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map(b => (
-                <option key={b} value={b} />
-              ))}
-            </datalist>
+
+            <div className="input-group">
+              <label>Nhóm máu</label>
+              <input
+                className="input-clean"
+                list="bloodTypes"
+                value={volume.bloodType}
+                onChange={(e) => setVolume({ ...volume, bloodType: e.target.value })}
+                readOnly={modalMode === "view"}
+              />
+              <datalist id="bloodTypes">
+                {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map(b => (
+                  <option key={b} value={b} />
+                ))}
+              </datalist>
+            </div>
             {modalMode === "edit" && (
-              <>
-                <button className="btn btn-success btn-block mb-2" onClick={handleSaveVolume}>Lưu</button>
-                <button className="btn btn-info btn-sm mb-2" onClick={() => setShowSuggest(true)}>Gợi ý</button>
-              </>
+              <div className="button-row">
+                <button className="btn btn-success flex-fill" onClick={handleSaveVolume}>Lưu</button>
+                <button className="btn btn-primary flex-fill" onClick={() => setShowSuggest(true)}>Gợi ý</button>
+                <button className="btn btn-secondary flex-fill" onClick={() => setShowModal(false)}>Đóng</button>
+              </div>
             )}
-            <button className="btn btn-secondary btn-block" onClick={() => setShowModal(false)}>Đóng</button>
+
+            {modalMode === "view" && (
+              <div className="button-row">
+                <button className="btn btn-secondary flex-fill" onClick={() => setShowModal(false)}>Đóng</button>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -191,22 +216,60 @@ const DonationConfirm = () => {
         <div className="modal-backdrop">
           <div className="modal-content">
             <h5 className="mb-3">Gợi ý lượng máu</h5>
-            <input type="number" placeholder="Cân nặng (kg)" min={0} className="form-control mb-2" value={suggestForm.weight} onChange={(e) => {
-              const v = Number(e.target.value);
-              if (e.target.value === "" || (v >= 0 && v <= 200)) setSuggestForm({ ...suggestForm, weight: e.target.value });
-            }} />
-            <select className="form-control mb-2" value={suggestForm.gender} onChange={(e) => setSuggestForm({ ...suggestForm, gender: e.target.value })}>
-              <option value="Nam">Nam</option>
-              <option value="Nữ">Nữ</option>
-            </select>
-            <input type="number" placeholder="Tổng (ml)" min={0} max={650}
-            className="form-control mb-2" value={suggestForm.total} onChange={(e) => setSuggestForm({ ...suggestForm, total: e.target.value })} />
-            <select className="form-control mb-3" value={suggestForm.method} onChange={(e) => setSuggestForm({ ...suggestForm, method: e.target.value })}>
-              <option value="gạn tách">Gạn tách</option>
-              <option value="li tâm">Li tâm</option>
-            </select>
+
+            <div className="input-group-tip">
+              <label>Cân nặng (kg)</label>
+              <input
+                type="number"
+                className="input-clean"
+                value={suggestForm.weight}
+                onChange={(e) => {
+                  const v = Number(e.target.value);
+                  if (e.target.value === "" || (v >= 0 && v <= 200)) {
+                    setSuggestForm({ ...suggestForm, weight: e.target.value });
+                  }
+                }}
+              />
+            </div>
+
+            <div className="input-group-tip">
+              <label>Giới tính</label>
+              <select
+                className="input-clean"
+                value={suggestForm.gender}
+                onChange={(e) => setSuggestForm({ ...suggestForm, gender: e.target.value })}
+              >
+                <option value="">-- Chọn giới tính --</option>
+                <option value="Nam">Nam</option>
+                <option value="Nữ">Nữ</option>
+              </select>
+            </div>
+
+            <div className="input-group-tip">
+              <label>Tổng (ml)</label>
+              <input
+                type="number"
+                className="input-clean"
+                value={suggestForm.total}
+                onChange={(e) => setSuggestForm({ ...suggestForm, total: e.target.value })}
+              />
+            </div>
+
+            <div className="input-group-tip">
+              <label>Phương pháp</label>
+              <select
+                className="input-clean"
+                value={suggestForm.method}
+                onChange={(e) => setSuggestForm({ ...suggestForm, method: e.target.value })}
+              >
+                <option value="">-- Chọn phương pháp --</option>
+                <option value="gạn tách">Gạn tách</option>
+                <option value="li tâm">Li tâm</option>
+              </select>
+            </div>
             <button className="btn btn-success btn-block mb-2" onClick={handleApplySuggestion}>Lưu</button>
             <button className="btn btn-secondary btn-block" onClick={() => setShowSuggest(false)}>Đóng</button>
+
           </div>
         </div>
       )}
