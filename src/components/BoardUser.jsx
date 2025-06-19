@@ -6,7 +6,7 @@ const BoardUser = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    axios.get("http://localhost:5000/api/test/user")
+    axios.get("http://localhost:8080/api/test/user")
       .then((res) => setUserDetail(res.data))
       .catch(() => setError("Không thể tải thông tin người dùng."));
   }, []);

@@ -56,7 +56,8 @@ const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, logOut }) => {
       <div className="navbar-right">
         {currentUser ? (
           <>
-            {currentUser.roles.includes("ROLE_USER") && (
+            {currentUser?.roles?.includes("ROLE_USER") && (
+
               <NavLink to="/profile" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
                 {currentUser.username}
               </NavLink>

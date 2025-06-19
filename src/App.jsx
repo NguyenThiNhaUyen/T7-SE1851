@@ -130,7 +130,7 @@ const App = () => {
           </Route>
 
           {/* User */}
-          <Route path="/user" element={<UserLayout />}>
+           <Route path="/user/:id" element={<UserLayout />}>
 
             <Route index element={<BoardUser />} />
             <Route path="register" element={<DonationRegister />} />
