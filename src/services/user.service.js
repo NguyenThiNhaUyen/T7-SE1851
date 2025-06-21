@@ -1,72 +1,100 @@
-
 import axios from 'axios';
 
-const API_URL = '/api/auth/'; // Dùng URL tương đối để qua proxy
+// ✅ Gửi cookie nếu backend yêu cầu (ví dụ: Spring Security dùng JSESSIONID)
+axios.defaults.withCredentials = true;
 
-// Hàm lấy thông tin xác thực từ localStorage
-// const getAuthHeader = () => {
-//   const user = JSON.parse(localStorage.getItem('user'));
-//   if (user && user.username) {
-//     // Tạm thời giả định mật khẩu được lưu (thực tế nên dùng session hoặc token)
-//     // Đây là cách dùng HTTP Basic, cần username:password
-//     const credentials = btoa(`${user.username}:${user.password || ''}`);
-//     return { Authorization: `Basic ${credentials}` };
-//   }
-//   return {};
-// };
+// ✅ Base URL cho mọi request
+const API_URL = '/api/';
 
-const getAuthHeader = () => {
-  return {}; // Tắt toàn bộ phần quyền
+// ✅ Tạo Authorization Header từ JWT
+export const getAuthHeader = () => {
+  const token = localStorage.getItem("token");
+  return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
+// =======================
+// 🔓 API công khai
+// =======================
 const getPublicContent = () => {
-  return axios.get(API_URL + 'public/content');
+  return axios.get(`${API_URL}auth/public/content`);
 };
 
+// =======================
+// 👤 API người dùng
+// =======================
 const getUserProfile = () => {
-  return axios.get(API_URL + 'profile', { headers: getAuthHeader() });
+  return axios.get(`${API_URL}user/profile`, {
+    headers: getAuthHeader()
+  });
 };
 
-const getUserDetails = (id) => {
-  return axios.get(API_URL + `user/${id}`, { headers: getAuthHeader() });
+const getUserById = (id) => {
+  return axios.get(`${API_URL}users/${id}`, {
+    headers: getAuthHeader()
+  });
 };
 
 const getDonationHistory = () => {
-  return axios.get(API_URL + 'donation/history', { headers: getAuthHeader() });
+  return axios.get(`${API_URL}donation/history`, {
+    headers: getAuthHeader()
+  });
 };
 
 const getBloodRequest = () => {
-  return axios.get(API_URL + 'request/list', { headers: getAuthHeader() });
+  return axios.get(`${API_URL}request/list`, {
+    headers: getAuthHeader()
+  });
 };
 
 const getTransfusionHistory = () => {
-  return axios.get(API_URL + 'transfusion/history', { headers: getAuthHeader() });
+  return axios.get(`${API_URL}transfusion/history`, {
+    headers: getAuthHeader()
+  });
 };
 
+// =======================
+// 🧑‍⚕️ API nhân viên
+// =======================
 const getStaffDashboard = () => {
-  return axios.get(API_URL + 'staff/dashboard', { headers: getAuthHeader() });
+  return axios.get(`${API_URL}staff/dashboard`, {
+    headers: getAuthHeader()
+  });
 };
 
+// =======================
+// 🛠️ API admin
+// =======================
 const getAdminDashboard = () => {
-  return axios.get(API_URL + 'admin', { headers: getAuthHeader() });
+  return axios.get(`${API_URL}admin`, {
+    headers: getAuthHeader()
+  });
 };
 
 const getAllUsers = () => {
-  return axios.get(API_URL + 'users/list', { headers: getAuthHeader() });
+  return axios.get(`${API_URL}users/list`, {
+    headers: getAuthHeader()
+  });
 };
 
 const getAllRoles = () => {
-  return axios.get(API_URL + 'roles/list', { headers: getAuthHeader() });
+  return axios.get(`${API_URL}roles/list`, {
+    headers: getAuthHeader()
+  });
 };
 
 const getNotifications = () => {
-  return axios.get(API_URL + 'notifications/list', { headers: getAuthHeader() });
+  return axios.get(`${API_URL}notifications/list`, {
+    headers: getAuthHeader()
+  });
 };
 
-export default {
+// =======================
+// 📦 Export tất cả
+// =======================
+const UserService = {
   getPublicContent,
   getUserProfile,
-  getUserDetails,
+  getUserById,
   getDonationHistory,
   getBloodRequest,
   getTransfusionHistory,
@@ -75,4 +103,7 @@ export default {
   getAllUsers,
   getAllRoles,
   getNotifications,
+  getAuthHeader
 };
+
+export default UserService;

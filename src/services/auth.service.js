@@ -2,50 +2,62 @@ import axios from 'axios';
 
 axios.defaults.withCredentials = true;
 
-const API_URL = 'http://localhost:8080/api/auth'; 
+const API_URL = 'http://localhost:8080/api/auth';
 
-// Đăng nhập
+// ✅ Đăng nhập
 const login = (username, password) => {
   return axios.post(`${API_URL}/login`, { username, password }, {
     headers: {
       'Content-Type': 'application/json'
     },
-    withCredentials: true, // ⚠️ Nếu server cần cookie/token sau này
-  })
-    .then((response) => {
-      if (response.data.userId) {
-        localStorage.setItem('user', JSON.stringify(response.data));
-      }
-      return response.data;
-    });
+    withCredentials: true
+  }).then((response) => {
+    if (response.data?.accessToken) {
+      localStorage.setItem('user', JSON.stringify(response.data));
+      localStorage.setItem('token', response.data.accessToken); // 🔐 lưu token nếu dùng JWT
+    }
+    return response.data;
+  });
 };
 
-// Đăng ký
+// ✅ Đăng ký
 const register = (username, email, password, profile) => {
   return axios.post(`${API_URL}/register`, {
     username,
     email,
     password,
-    ...profile,
+    ...profile
   }, {
     headers: {
       'Content-Type': 'application/json'
-    },
-    // withCredentials: true
+    }
   });
 };
 
+// ✅ Đăng xuất
 const logout = () => {
   localStorage.removeItem('user');
+  localStorage.removeItem('token');
 };
 
+// ✅ Lấy user hiện tại
 const getCurrentUser = () => {
   return JSON.parse(localStorage.getItem('user'));
 };
 
-export default {
+// ✅ Tạo Authorization Header
+const getAuthHeader = () => {
+  const token = localStorage.getItem('token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
+// ✅ Export tất cả
+const AuthService = {
   login,
   register,
   logout,
-  getCurrentUser
+  getCurrentUser,
+  getAuthHeader
 };
+
+export default AuthService;

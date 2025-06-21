@@ -55,8 +55,11 @@ const Login = () => {
       try {
         const res = await AuthService.login(username, password);
 
-        // Lưu vào localStorage
-        localStorage.setItem("user", JSON.stringify(res));
+        // Lưu user và token (nếu có)
+        if (res?.accessToken) {
+          localStorage.setItem("user", JSON.stringify(res));
+          localStorage.setItem("token", res.accessToken);
+        }
 
         // Điều hướng theo vai trò
         switch (res.role) {
@@ -72,7 +75,7 @@ const Login = () => {
       } catch (err) {
         if (isMounted.current) {
           const msg =
-            err.response?.data?.message || err.message || "Lỗi đăng nhập.";
+            err.response?.data?.message || err.message || "Đăng nhập thất bại.";
           setMessage(msg);
         }
       } finally {
@@ -111,7 +114,6 @@ const Login = () => {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               autoFocus
-              aria-label="username"
               required
             />
           </div>
@@ -126,7 +128,6 @@ const Login = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 style={{ paddingRight: "40px" }}
-                aria-label="password"
                 required
               />
               <span
@@ -145,9 +146,9 @@ const Login = () => {
                   width={20}
                 />
               </span>
-            </div>
-            <div className="text-right mt-2">
-              <a href="/forgot">Bạn quên mật khẩu?</a>
+              <div className="text-right mt-2">
+                <a href="/forgot">Bạn quên mật khẩu?</a>
+              </div>
             </div>
           </div>
 

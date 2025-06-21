@@ -5,7 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
-import eventBus from "./common/EventBus"; // 
+import eventBus from "./common/EventBus";
 
 // Giao diện chung
 import Navbar from "./components/Navbar";
@@ -53,48 +53,46 @@ import VnPayForm from "./components/VnPayForm";
 import Activities from "./components/Activities";
 import AuthService from "./services/auth.service";
 
-
 const App = () => {
   const [currentUser, setCurrentUser] = useState(undefined);
   const [showAdminBoard, setShowAdminBoard] = useState(false);
   const [showStaffBoard, setShowStaffBoard] = useState(false);
-  const [loading, setLoading] = useState(true);
 
-  
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
-
     const user = AuthService.getCurrentUser();
 
     if (user) {
       setCurrentUser(user);
-      const isAdmin = user.roles?.includes("ROLE_ADMIN");
-      const isStaff = user.roles?.includes("ROLE_STAFF");
-      setShowAdminBoard(isAdmin);
-      setShowStaffBoard(isStaff);
+      setShowAdminBoard(user.role === "ADMIN");
+      setShowStaffBoard(user.role === "STAFF");
 
-      if (isStaff && (location.pathname === "/login" || location.pathname === "/home" || location.pathname === "/")) {
+      if (user.role === "STAFF" && ["/", "/home", "/login"].includes(location.pathname)) {
         navigate("/staff");
       }
+
+      if (user.role === "ADMIN" && ["/", "/home", "/login"].includes(location.pathname)) {
+        navigate("/admin");
+      }
+
+      if (user.role === "USER" && ["/", "/home", "/login"].includes(location.pathname)) {
+        navigate(`/user/${user.id}`);
+      }
     }
-    setLoading(false);
+
     eventBus.on("logout", logOut);
     return () => eventBus.remove("logout", logOut);
   }, [location]);
 
   const logOut = () => {
-    // Tạm thời không xử lý logout
-    // TODO: xử lý đăng xuất
-    AuthService.logout?.(); // nếu có
+    AuthService.logout?.();
     setCurrentUser(undefined);
     setShowAdminBoard(false);
     setShowStaffBoard(false);
     navigate("/login");
   };
-
-
   return (
     <div>
       <Navbar
@@ -130,8 +128,7 @@ const App = () => {
           </Route>
 
           {/* User */}
-           <Route path="/user/:id" element={<UserLayout />}>
-
+          <Route path="/user/:id" element={<UserLayout />}>
             <Route index element={<BoardUser />} />
             <Route path="register" element={<DonationRegister />} />
             <Route path="donation-history" element={<DonationHistory />} />
@@ -151,6 +148,9 @@ const App = () => {
           <Route path="/notifications" element={<NotificationList />} />
           <Route path="/notifications/send" element={<NotificationForm />} />
           <Route path="/vnpay" element={<VnPayForm />} />
+
+          {/* Nếu không khớp */}
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
 
         <ToastContainer position="top-right" autoClose={3000} />

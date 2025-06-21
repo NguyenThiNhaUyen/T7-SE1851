@@ -1,28 +1,48 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import AuthService from "../services/auth.service";
+import { getAuthHeader } from "../services/user.service";
+
+const API_BASE = "http://localhost:8080";
 
 const DonationRegister = () => {
   const [readyDate, setReadyDate] = useState("");
   const [timeSlot, setTimeSlot] = useState("");
   const [availableSlots, setAvailableSlots] = useState({});
+  const [location, setLocation] = useState("FPTU");
+  const [status] = useState("PENDING");
+  const [bloodType, setBloodType] = useState(null);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("info");
-  const currentUser = AuthService.getCurrentUser();
 
+  const currentUser = AuthService.getCurrentUser();
   const timeSlots = ["08:00", "09:00", "10:00", "11:00", "13:00", "14:00"];
 
   useEffect(() => {
-    if (readyDate) {
-      axios.get(`/users/donation/slots?date=${readyDate}`).then((res) => {
-        setAvailableSlots(res.data);
-        setTimeSlot("");
-      });
+    if (readyDate && currentUser?.userId) {
+      axios
+        .get(`${API_BASE}/api/donation`, {
+          headers: getAuthHeader(),
+        })
+        .then((res) => {
+          setAvailableSlots(res.data);
+          setTimeSlot("");
+        })
+        .catch(() => {
+          setAvailableSlots({});
+        });
     }
-  }, [readyDate]);
+  }, [readyDate, currentUser?.userId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!currentUser || !currentUser.userId) {
+      setMessage("Vui lòng đăng nhập trước khi đăng ký.");
+      setMessageType("danger");
+      return;
+    }
+
     if (!readyDate || !timeSlot) {
       setMessage("Vui lòng chọn ngày và khung giờ.");
       setMessageType("warning");
@@ -31,21 +51,27 @@ const DonationRegister = () => {
 
     if (window.confirm("Bạn có chắc chắn muốn đăng ký hiến máu?")) {
       const data = {
-        user_id: currentUser?.id,
-        ready_date: readyDate,
-        time_slot: timeSlot,
+        scheduledDate: readyDate,
+        timeSlot,
+        location,
+        bloodType,
+        status,
       };
 
       try {
-        await axios.post("/users/donation/register", data);
+        await axios.post(`${API_BASE}/api/donation/register/${currentUser.userId}`, data, {
+          headers: {
+            ...getAuthHeader(),
+            "Content-Type": "application/json",
+          },
+        });
+
         setMessage("Đăng ký thành công!");
         setMessageType("success");
-        setReadyDate("");
-        setTimeSlot("");
       } catch (error) {
-        const status = error.response?.status;
-        if (status === 409 || status === 400) {
-          setMessage("Bạn đã đăng ký rồi. Vui lòng không đăng ký lại.");
+        const statusCode = error.response?.status;
+        if (statusCode === 409 || statusCode === 400) {
+          setMessage("Bạn đã đăng ký khung giờ này rồi.");
         } else {
           setMessage("Gửi đăng ký thất bại. Vui lòng thử lại.");
         }
@@ -69,6 +95,17 @@ const DonationRegister = () => {
           />
         </div>
 
+        <div className="form-group mb-3">
+          <label>Địa điểm hiến máu</label>
+          <select
+            className="form-control"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+          >
+            <option value="FPTU">FPTU</option>
+          </select>
+        </div>
+
         {readyDate && (
           <div className="form-group mb-3">
             <label>Chọn khung giờ</label>
@@ -81,9 +118,10 @@ const DonationRegister = () => {
                   <button
                     key={slot}
                     type="button"
-                    className={`btn ${
-                      isSelected ? "btn-success" : "btn-outline-primary"
-                    } ${isFull ? "disabled btn-secondary" : ""}`}
+                    title={isFull ? "Đã đầy" : "Sẵn sàng đăng ký"}
+                    className={`btn ${isSelected ? "btn-success" : "btn-outline-primary"} ${
+                      isFull ? "disabled btn-secondary" : ""
+                    }`}
                     onClick={() => !isFull && setTimeSlot(slot)}
                   >
                     {slot} ({availableSlots[slot] || 0})
