@@ -56,9 +56,11 @@ const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, logOut }) => {
       <div className="navbar-right">
         {currentUser ? (
           <>
+
             <NavLink to="/profile" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
               {currentUser.username}
             </NavLink>
+
             <a href="/" onClick={handleLogout} className="nav-link">Đăng xuất</a>
           </>
         ) : (
