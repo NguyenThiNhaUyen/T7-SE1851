@@ -64,7 +64,7 @@ const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, logOut }) => {
         ) : (
           <>
             <NavLink to="/login" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Đăng nhập</NavLink>
-            <NavLink to="/register" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Đăng ký</NavLink>
+            <NavLink to="/register/information" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Đăng ký</NavLink>
           </>
         )}
       </div>

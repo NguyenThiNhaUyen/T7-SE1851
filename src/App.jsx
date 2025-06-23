@@ -13,7 +13,10 @@ import Navbar from "./components/Navbar";
 // Các trang chính
 import Home from "./components/Home";
 import Login from "./components/Login";
-import Register from "./components/Register";
+import RegisterInformation from "./components/RegisterInformation";
+import RegisterContact from "./components/RegisterContact";
+import RegisterAccount from "./components/RegisterAccount";
+import RegisterConfirm from "./components/RegisterConfirm";
 import Profile from "./components/Profile";
 import Forgot from "./components/Forgot";
 import ChangePassword from "./components/ChangePassword";
@@ -60,7 +63,7 @@ const App = () => {
   const [showStaffBoard, setShowStaffBoard] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  
+
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -94,7 +97,6 @@ const App = () => {
     navigate("/login");
   };
 
-
   return (
     <div>
       <Navbar
@@ -110,11 +112,18 @@ const App = () => {
           <Route path="/" element={<Home />} />
           <Route path="/home" element={<Home />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/forgot" element={<Forgot />} />
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/verify-otp" element={<OtpVerify />} />
+
+          {/* Đăng ký */}
+          <Route path="/register/information" element={<RegisterInformation />} />
+          <Route path="/register/contact" element={<RegisterContact />} />
+          <Route path="/register/account" element={<RegisterAccount />} />
+          <Route path="/register/confirm" element={<RegisterConfirm />} />
+
+
 
           {/* Admin */}
           <Route path="/admin" element={<BoardAdmin />} />
