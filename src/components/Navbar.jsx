@@ -56,15 +56,17 @@ const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, logOut }) => {
       <div className="navbar-right">
         {currentUser ? (
           <>
+
             <NavLink to="/profile" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
               {currentUser.username}
             </NavLink>
+
             <a href="/" onClick={handleLogout} className="nav-link">Đăng xuất</a>
           </>
         ) : (
           <>
             <NavLink to="/login" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Đăng nhập</NavLink>
-            <NavLink to="/register" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Đăng ký</NavLink>
+            <NavLink to="/register/information" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Đăng ký</NavLink>
           </>
         )}
       </div>

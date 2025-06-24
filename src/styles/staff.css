@@ -1,3 +1,29 @@
+.input-clean {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-clean:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+  outline: none;
+}
+
+.input-group-tip {
+  margin-bottom: 12px;
+}
+
+.button-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 12px;
+}
+
 /* ==== Base Layout ==== */
 body {
   font-family: "Inter", "Segoe UI", Tahoma, sans-serif;

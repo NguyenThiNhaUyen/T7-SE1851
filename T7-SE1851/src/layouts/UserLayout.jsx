@@ -54,7 +54,7 @@ const UserLayout = () => {
     <div className="user-layout">
       <div className="sidebar-user">
         <h2 className="sidebar-title">
-          👤 {userInfo?.first_name || "Ẩn danh"} {userInfo?.last_name || ""}
+          👤 {userInfo?.fullName || `${userInfo?.first_name || ""} ${userInfo?.last_name || ""}`}
         </h2>
         <p style={{ fontSize: "1rem", color: "#000", padding: "0 1rem" }}>
           Nhóm máu: <strong>{userInfo?.blood_type || "N/A"}</strong><br />

@@ -1,12 +1,20 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import AuthService from "../services/auth.service";
+import UserService from "../services/user.service";
 
 const BoardUser = () => {
   const [userDetail, setUserDetail] = useState(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    axios.get("http://localhost:5000/api/test/user")
+    const currentUser = AuthService.getCurrentUser();
+
+    if (!currentUser || !currentUser.userId) {
+      setError("Vui lòng đăng nhập để truy cập.");
+      return;
+    }
+
+    UserService.getUserById(currentUser.userId)
       .then((res) => setUserDetail(res.data))
       .catch(() => setError("Không thể tải thông tin người dùng."));
   }, []);
