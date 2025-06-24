@@ -1,0 +1,95 @@
+.blood-wrapper {
+  background-color: #073a7a;
+  padding: 50px 20px;
+  font-family: 'Segoe UI', sans-serif;
+  color: white;
+}
+
+.section-card {
+  background-color: #002c5f;
+  border-radius: 14px;
+  padding: 35px 30px;
+  margin-bottom: 0;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+
+.section-title {
+  text-align: left;
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+
+.section-title.gold {
+  color: #FFD700;
+}
+
+.subtitle {
+  text-align: left;
+  font-size: 15px;
+  color: #c9d9ff;
+  margin-bottom: 25px;
+}
+
+.eligibility-grid,
+.compatibility-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.eligibility-card {
+  background: white;
+  color: #002c5f;
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.eligibility-icon {
+  font-size: 20px;
+  margin-top: 4px;
+}
+
+.compatibility-card {
+  background: white;
+  color: #002c5f;
+  border-radius: 10px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+}
+
+.compatibility-card:hover {
+  transform: translateY(-4px);
+}
+
+.compatibility-card.active {
+  background-color: #fff8dc;
+  color: #222;
+}
+
+.group-info {
+  font-size: 13px;
+  margin-top: 10px;
+  line-height: 1.5;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* KHỐI CHUYỂN MÀU GIỮA 2 SECTION */
+.section-spacer {
+  height: 60px;
+  background-color: white;
+  margin: 40px 0;
+  border-radius: 14px;
+}

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import UserService from "../services/user.service";
 import BenefitCarousel from "./BenefitCarousel";
+import Footer from "./Footer";
+import DonationInfoSection from './DonationInfoSection';
 import "../styles/Home.css";
 
 const images = ["/banner1.jpg", "/banner2.jpg"];
@@ -27,9 +29,9 @@ const infoSections = [
 const Home = () => {
   const [content, setContent] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [benefitIndex, setBenefitIndex] = useState(0);
   const navigate = useNavigate();
 
-  // Kết hợp useEffect an toàn bộ nhớ + fallback lỗi rõ ràng
   useEffect(() => {
     let isMounted = true;
     UserService.getPublicContent().then(
@@ -57,7 +59,6 @@ const Home = () => {
 
   return (
     <div className="home-wrapper">
-      {/* Banner Slider */}
       <div className="fade-slider">
         {images.map((src, index) => (
           <img
@@ -69,7 +70,6 @@ const Home = () => {
         ))}
       </div>
 
-      {/* Hero Section */}
       <section className="hero">
         <h1>Hiến máu - Cứu người</h1>
         <p>Mỗi giọt máu cho đi là một cuộc đời ở lại</p>
@@ -80,12 +80,14 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Benefit Carousel Section */}
       <BenefitCarousel />
+
+      <DonationInfoSection />
+
+
 
       <div className="section-divider" />
 
-      {/* Info Cards – chuyển động động qua Blog */}
       <section className="info-section">
         {infoSections.map((item, index) => (
           <div
@@ -100,7 +102,6 @@ const Home = () => {
         ))}
       </section>
 
-      {/* Learn More Section */}
       <section className="grid-section">
         <h2 className="section-title text-center">Tìm hiểu thêm</h2>
         <div className="grid-cards">
@@ -130,7 +131,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Testimonials */}
       <section className="testimonial-section">
         <h2 className="section-title">Chia sẻ từ người hiến máu</h2>
         <div className="testimonial-cards">
@@ -145,7 +145,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Blog Preview */}
       <section className="blog-preview-section">
         <h2 className="section-title">Từ Blog của chúng tôi</h2>
         <div className="grid-cards">
@@ -167,10 +166,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="footer">
-        <p>© 2025 Sáng kiến Hiến Máu Việt Nam | Chung tay cứu người với lòng nhân ái.</p>
-      </footer>
+      <Footer />
     </div>
   );
 };
