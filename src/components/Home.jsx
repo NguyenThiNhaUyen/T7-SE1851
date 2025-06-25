@@ -74,7 +74,10 @@ const Home = () => {
         <h1>Hiến máu - Cứu người</h1>
         <p>Mỗi giọt máu cho đi là một cuộc đời ở lại</p>
         <div className="cta-buttons-vertical">
-          <button className="cta-button donate" onClick={() => navigate("/login")}>
+          <button
+            className="cta-button donate"
+            onClick={() => navigate("/donation-intent")}
+          >
             Hiến máu ngay
           </button>
         </div>

@@ -61,6 +61,8 @@ import NotificationForm from "./components/NotificationForm";
 import VnPayForm from "./components/VnPayForm";
 import Activities from "./components/Activities";
 import AuthService from "./services/auth.service";
+import DonationIntentSelection from "./components/DonationIntentSelection";
+import DonationTermsPage from "./components/DonationTermsPage";
 
 const App = () => {
   const [currentUser, setCurrentUser] = useState(undefined);
@@ -103,6 +105,7 @@ const App = () => {
     setShowStaffBoard(false);
     navigate("/login");
   };
+  
   const showUserBoard =
     currentUser &&
     currentUser.role !== "ADMIN" &&
@@ -124,6 +127,8 @@ const App = () => {
           <Route path="/" element={<Home />} />
           <Route path="/home" element={<Home />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/donation-intent" element={<DonationIntentSelection />} />
+          <Route path="/agree-terms" element={<DonationTermsPage />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/forgot" element={<Forgot />} />
           <Route path="/change-password" element={<ChangePassword />} />
