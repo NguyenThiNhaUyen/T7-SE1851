@@ -2,7 +2,7 @@ import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import "../styles/Navbar.css";
 
-const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, logOut }) => {
+const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, showUserBoard, logOut }) => {
   const navigate = useNavigate();
 
   const handleLogout = (e) => {
@@ -32,10 +32,7 @@ const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, logOut }) => {
         {/* Admin */}
         {showAdminBoard && (
           <>
-            <NavLink to="/admin" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Admin</NavLink>
-            <NavLink to="/notifications" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Thông báo</NavLink>
             <NavLink to="/notifications/send" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Gửi thông báo</NavLink>
-            <NavLink to="/blog" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Bài viết</NavLink>
           </>
         )}
 
@@ -54,23 +51,56 @@ const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, logOut }) => {
 
       {/* Phải - tài khoản */}
       <div className="navbar-right">
-        {currentUser ? (
-          <>
-
-            <NavLink to="/profile" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
-              {currentUser.username}
-            </NavLink>
-
-            <a href="/" onClick={handleLogout} className="nav-link">Đăng xuất</a>
-          </>
-        ) : (
-          <>
-            <NavLink to="/login" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Đăng nhập</NavLink>
-            <NavLink to="/register/information" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Đăng ký</NavLink>
-          </>
+        {/* Chỉ user thường mới thấy link profile */}
+        {showUserBoard && !showAdminBoard && !showStaffBoard && currentUser && (
+          <NavLink
+            to="/profile"
+            className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
+          >
+            {currentUser.username}
+          </NavLink>
         )}
-      </div>
-    </nav>
+
+        {/* Hiển thị username cho admin hoặc staff, không phải link */}
+        {!showUserBoard && currentUser && (
+          <span
+            className="text"
+            style={{
+              fontWeight: "bold",
+              color: "white",
+              fontSize: "1rem",
+              transition: "0.2s ease",
+              padding: "8px",
+            }}
+          >
+        {currentUser.username}
+      </span>
+        )}
+
+
+      {/* Nếu đã đăng nhập, ai cũng thấy nút Đăng xuất */}
+      {currentUser ? (
+        <span onClick={handleLogout} className="nav-link" style={{ cursor: "pointer" }}>
+          Đăng xuất
+        </span>
+      ) : (
+        <>
+          <NavLink
+            to="/login"
+            className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
+          >
+            Đăng nhập
+          </NavLink>
+          <NavLink
+            to="/register/information"
+            className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
+          >
+            Đăng ký
+          </NavLink>
+        </>
+      )}
+    </div>
+    </nav >
   );
 };
 

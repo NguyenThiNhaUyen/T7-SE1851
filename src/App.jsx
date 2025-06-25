@@ -24,6 +24,12 @@ import OtpVerify from "./components/OtpVerify";
 
 // Quản trị viên
 import BoardAdmin from "./components/BoardAdmin";
+import AdminLayout from "./layouts/AdminLayout";
+import AdminDashboard from "./components/AdminDashboard";
+// import UserManagement from "./components/UserManagement";
+// import BloodManagement from "./components/BloodManagement";
+// import CompatibilityRules from "./components/CompatibilityRules";
+// import ReportPage from "./components/ReportPage";
 
 // Nhân viên
 import BoardStaff from "./components/BoardStaff";
@@ -61,6 +67,7 @@ const App = () => {
   const [showAdminBoard, setShowAdminBoard] = useState(false);
   const [showStaffBoard, setShowStaffBoard] = useState(false);
 
+
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -96,13 +103,18 @@ const App = () => {
     setShowStaffBoard(false);
     navigate("/login");
   };
-  
+  const showUserBoard =
+    currentUser &&
+    currentUser.role !== "ADMIN" &&
+    currentUser.role !== "STAFF";
+
   return (
     <div>
       <Navbar
         currentUser={currentUser}
         showAdminBoard={showAdminBoard}
         showStaffBoard={showStaffBoard}
+        showUserBoard={showUserBoard}
         logOut={logOut}
       />
 
@@ -123,10 +135,17 @@ const App = () => {
           <Route path="/register/account" element={<RegisterAccount />} />
           <Route path="/register/confirm" element={<RegisterConfirm />} />
 
-
-
           {/* Admin */}
-          <Route path="/admin" element={<BoardAdmin />} />
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<BoardAdmin />} />
+            <Route path="dashboard" element={<AdminDashboard />} />
+            {/* <Route path="users" element={<UserManagement />} />
+            <Route path="blood" element={<BloodManagement />} />
+            <Route path="compatibility" element={<CompatibilityRules />} />
+            <Route path="urgent" element={<UrgentRequests />} />
+            <Route path="report" element={<ReportPage />} /> */}
+            {/* <Route path="/admin/blog" element={<BlogList />} /> */}
+          </Route>
 
           {/* Staff */}
           <Route path="/staff" element={<StaffLayout />}>

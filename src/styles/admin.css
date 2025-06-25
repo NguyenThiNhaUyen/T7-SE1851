@@ -1,14 +1,20 @@
 .admin-layout {
   display: flex;
-  min-height: fit-content;
+  min-height: 100vh;
   font-family: Arial, sans-serif;
 }
 
 .admin-sidebar {
+  position: fixed;
+  top: 64px; /* Điều chỉnh theo chiều cao navbar của bạn */
+  left: 0;
   width: 240px;
+  height: calc(100vh - 64px); /* Trừ đi chiều cao navbar */
   background-color: #b91c1c;
   color: white;
   padding: 20px;
+  overflow-y: auto; /* Cho phép scroll nếu nội dung sidebar quá dài */
+  z-index: 100; /* Thấp hơn navbar nhưng cao hơn content */
 }
 
 .admin-sidebar h2 {
@@ -41,8 +47,10 @@
 
 .admin-main {
   flex: 1;
+  margin-left: 240px; /* Tạo khoảng trống cho sidebar cố định */
   padding: 24px;
   background-color: #f9fafb;
+  min-height: calc(100vh - 64px); /* Trừ đi chiều cao navbar */
 }
 
 .dashboard-stats {
@@ -155,4 +163,36 @@ thead {
 
 .badge.fulfilled {
   background-color: #16a34a;
+}
+
+/* Responsive design cho màn hình nhỏ */
+@media (max-width: 768px) {
+  .admin-sidebar {
+    width: 200px;
+    top: 64px; /* Giữ nguyên khoảng cách với navbar */
+    height: calc(100vh - 64px);
+  }
+  
+  .admin-main {
+    margin-left: 200px;
+    margin-top: 64px;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    top: 64px;
+    height: calc(100vh - 64px);
+  }
+  
+  .admin-sidebar.mobile-open {
+    transform: translateX(0);
+  }
+  
+  .admin-main {
+    margin-left: 0;
+    margin-top: 64px;
+  }
 }
