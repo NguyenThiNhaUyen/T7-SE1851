@@ -20,7 +20,6 @@ const AdminLayout = () => {
     { key: "staff", label: "Nhân viên y tế" },
     { key: "blood", label: "Nhóm máu & Thành phần" },
     { key: "compatibility", label: "Quy tắc tương thích" },
-    { key: "notification", label: "Thông báo" },
     { key: "urgent", label: "Yêu cầu khẩn cấp" },
     { key: "history", label: "Lịch sử hiến máu" },
     { key: "report", label: "Báo cáo & Thống kê" },
