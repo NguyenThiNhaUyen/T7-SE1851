@@ -26,6 +26,10 @@ import OtpVerify from "./components/OtpVerify";
 import BoardAdmin from "./components/BoardAdmin";
 import AdminLayout from "./layouts/AdminLayout";
 import AdminDashboard from "./components/AdminDashboard";
+import UrgentRequests from "./components/UrgentRequests";
+import DonationHistory from "./components/DonationHistory";
+import TransfusionHistory from "./components/TransfusionHistory";
+
 // import UserManagement from "./components/UserManagement";
 // import BloodManagement from "./components/BloodManagement";
 // import CompatibilityRules from "./components/CompatibilityRules";
@@ -38,16 +42,13 @@ import BloodRequestForm from "./components/BloodRequestForm";
 import DonationConfirm from "./components/DonationConfirm";
 import InventoryChart from "./components/InventoryChart";
 import StaffStatistics from "./components/StaffStatistics";
-import UrgentRequests from "./components/UrgentRequests";
 
 // Người dùng
 import BoardUser from "./components/BoardUser";
 import UserLayout from "./layouts/UserLayout";
 import DonationRegister from "./components/DonationRegister";
-import DonationHistory from "./components/DonationHistory";
 import DonationAftercare from "./components/DonationAftercare";
 import RequestHistory from "./components/RequestHistory";
-import TransfusionHistory from "./components/TransfusionHistory";
 import BloodTypes from "./components/BloodTypes";
 import BloodReceive from "./components/BloodReceive";
 import BloodRoles from "./components/BloodRoles";
@@ -103,7 +104,7 @@ const App = () => {
     setShowStaffBoard(false);
     navigate("/login");
   };
-  
+
   const showUserBoard =
     currentUser &&
     currentUser.role !== "ADMIN" &&
@@ -142,10 +143,13 @@ const App = () => {
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<BoardAdmin />} />
             <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="urgent-requests" element={<UrgentRequests />} />
+            <Route path="donation-history" element={<DonationHistory />} />
+            <Route path="transfusion-history" element={<TransfusionHistory />} />
+
             {/* <Route path="users" element={<UserManagement />} />
             <Route path="blood" element={<BloodManagement />} />
             <Route path="compatibility" element={<CompatibilityRules />} />
-            <Route path="urgent" element={<UrgentRequests />} />
             <Route path="report" element={<ReportPage />} /> */}
             {/* <Route path="/admin/blog" element={<BlogList />} /> */}
           </Route>
@@ -157,17 +161,14 @@ const App = () => {
             <Route path="donation" element={<DonationConfirm />} />
             <Route path="inventory" element={<InventoryChart />} />
             <Route path="statistics" element={<StaffStatistics />} />
-            <Route path="urgent-requests" element={<UrgentRequests />} />
           </Route>
 
           {/* User */}
           <Route path="/user/:id" element={<UserLayout />}>
             <Route index element={<BoardUser />} />
             <Route path="register" element={<DonationRegister />} />
-            <Route path="donation-history" element={<DonationHistory />} />
             <Route path="aftercare" element={<DonationAftercare />} />
             <Route path="request-history" element={<RequestHistory />} />
-            <Route path="transfusion-history" element={<TransfusionHistory />} />
             <Route path="types" element={<BloodTypes />} />
             <Route path="receive" element={<BloodReceive />} />
             <Route path="roles" element={<BloodRoles />} />

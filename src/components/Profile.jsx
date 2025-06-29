@@ -1,24 +1,49 @@
 import React, { useState, useEffect } from "react";
+import { 
+  Form, 
+  Input, 
+  Select, 
+  DatePicker, 
+  Button, 
+  Card, 
+  Row, 
+  Col, 
+  Avatar, 
+  Typography, 
+  Space,
+  Empty,
+  List,
+  Tag,
+  Divider,
+  message
+} from "antd";
+import { 
+  UserOutlined, 
+  MailOutlined, 
+  PhoneOutlined, 
+  HomeOutlined,
+  CalendarOutlined,
+  HeartOutlined,
+  ClockCircleOutlined,
+  HistoryOutlined
+} from "@ant-design/icons";
+import dayjs from 'dayjs';
+
+const { Title, Text } = Typography;
+const { Option } = Select;
 
 const Profile = () => {
-  const [profile, setProfile] = useState({
-    username: "",
-    email: "",
-    firstName: "",
-    lastName: "",
-    dob: "",
-    gender: "",
-    bloodType: "",
-    phone: "",
-    address: "",
-    lastDonation: "",
-    recoveryTime: ""
-  });
+  const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
+  const [initialValues, setInitialValues] = useState(null);
+  const [history, setHistory] = useState([]);
 
-  const [initialProfile, setInitialProfile] = useState(null);
-  const [message, setMessage] = useState("");
-  const today = new Date().toISOString().split("T")[0];
- const [history, setHistory] = useState([]);
+  // Mock data for history
+  const mockHistory = [
+    { id: 1, date: '2024-01-15', location: 'Bệnh viện Chợ Rẫy', status: 'completed' },
+    { id: 2, date: '2023-10-20', location: 'Trung tâm Huyết học', status: 'completed' },
+    { id: 3, date: '2023-07-12', location: 'Bệnh viện Đại học Y Dược', status: 'completed' }
+  ];
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -28,162 +53,356 @@ const Profile = () => {
         email: storedUser.email,
         firstName: "",
         lastName: "",
-        dob: "",
+        dob: null,
         gender: "",
         bloodType: "",
         phone: "",
         address: "",
-        lastDonation: "",
+        lastDonation: null,
         recoveryTime: ""
       };
-      setProfile(initData);
-      setInitialProfile(initData);
+      
+      form.setFieldsValue(initData);
+      setInitialValues(initData);
+      // Simulate loading history
+      setHistory(mockHistory);
     }
-  }, []);
+  }, [form]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setProfile({ ...profile, [name]: value });
-  };
+  const handleSubmit = async (values) => {
+    // Convert dayjs objects to strings for comparison
+    const processedValues = {
+      ...values,
+      dob: values.dob ? values.dob.format('YYYY-MM-DD') : null,
+      lastDonation: values.lastDonation ? values.lastDonation.format('YYYY-MM-DD') : null
+    };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (JSON.stringify(profile) === JSON.stringify(initialProfile)) {
-      setMessage("Không có thay đổi để lưu");
+    const processedInitial = {
+      ...initialValues,
+      dob: initialValues.dob ? dayjs(initialValues.dob).format('YYYY-MM-DD') : null,
+      lastDonation: initialValues.lastDonation ? dayjs(initialValues.lastDonation).format('YYYY-MM-DD') : null
+    };
+
+    if (JSON.stringify(processedValues) === JSON.stringify(processedInitial)) {
+      message.warning("Không có thay đổi để lưu");
       return;
     }
 
-    setMessage("Hồ sơ đã được cập nhật");
+    setLoading(true);
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      message.success("Hồ sơ đã được cập nhật thành công!");
+      setInitialValues(processedValues);
+    } catch (error) {
+      message.error("Có lỗi xảy ra khi cập nhật hồ sơ");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const bloodTypeOptions = [
+    { value: 'A+', label: 'A+', color: '#f50' },
+    { value: 'A-', label: 'A-', color: '#2db7f5' },
+    { value: 'B+', label: 'B+', color: '#87d068' },
+    { value: 'B-', label: 'B-', color: '#108ee9' },
+    { value: 'AB+', label: 'AB+', color: '#f50' },
+    { value: 'AB-', label: 'AB-', color: '#2db7f5' },
+    { value: 'O+', label: 'O+', color: '#87d068' },
+    { value: 'O-', label: 'O-', color: '#108ee9' }
+  ];
+
+  const getStatusColor = (status) => {
+    switch(status) {
+      case 'completed': return 'success';
+      case 'pending': return 'processing';
+      case 'cancelled': return 'error';
+      default: return 'default';
+    }
+  };
+
+  const getStatusText = (status) => {
+    switch(status) {
+      case 'completed': return 'Hoàn thành';
+      case 'pending': return 'Đang chờ';
+      case 'cancelled': return 'Đã hủy';
+      default: return 'Không xác định';
+    }
   };
 
   return (
-    <div className="regis-fullpage">
-      <div className="profile-left">
-        <div className="change-box">
-          <img
-            src="/donor.png"
-            alt="profile-img"
-            className="profile-img-card"
-          />
-          <h4 className="text-center mb-3">Hồ sơ cá nhân</h4>
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label>Username</label>
-              <input className="form-control" value={profile.username} disabled />
-            </div>
-
-            <div className="form-group mt-2">
-              <label>Email</label>
-              <input className="form-control" value={profile.email} disabled />
-            </div>
-
-            <div className="form-group mt-2">
-              <label>Họ</label>
-              <input className="form-control" name="lastName" value={profile.lastName} onChange={handleChange} />
-            </div>
-
-            <div className="form-group mt-2">
-              <label>Tên</label>
-              <input className="form-control" name="firstName" value={profile.firstName} onChange={handleChange} />
-            </div>
-
-            <div className="form-group mt-2">
-              <label>Ngày sinh</label>
-              <input
-                type="date"
-                className="form-control"
-                name="dob"
-                value={profile.dob}
-                onChange={handleChange}
-                min="1900-01-01"
-                max={today}
-              />
-            </div>
-
-            <div className="form-group mt-2">
-              <label>Giới tính</label>
-              <select className="form-control" name="gender" value={profile.gender} onChange={handleChange}>
-                <option value="">Chọn</option>
-                <option value="Male">Nam</option>
-                <option value="Female">Nữ</option>
-              </select>
-            </div>
-
-            <div className="form-group mt-2">
-              <label>Nhóm máu</label>
-              <select className="form-control" name="bloodType" value={profile.bloodType} onChange={handleChange}>
-                <option value="">Chọn</option>
-                <option value="A+">A+</option>
-                <option value="A-">A-</option>
-                <option value="B+">B+</option>
-                <option value="B-">B-</option>
-                <option value="AB+">AB+</option>
-                <option value="AB-">AB-</option>
-                <option value="O+">O+</option>
-                <option value="O-">O-</option>
-              </select>
-            </div>
-
-            <div className="form-group mt-2">
-              <label>Số điện thoại</label>
-              <input className="form-control" name="phone" value={profile.phone} onChange={handleChange} />
-            </div>
-
-            <div className="form-group mt-2">
-              <label>Địa chỉ</label>
-              <input className="form-control" name="address" value={profile.address} onChange={handleChange} />
-            </div>
-
-            <div className="form-group mt-2">
-              <label>Ngày hiến máu gần nhất</label>
-              <input
-                type="date"
-                className="form-control"
-                name="lastDonation"
-                value={profile.lastDonation}
-                onChange={handleChange}
-                min="1900-01-01"
-                max={today}
-              />
-            </div>
-
-            <div className="form-group mt-2">
-              <label>Thời gian hồi phục (ngày)</label>
-              <input
-                type="number"
-                className="form-control"
-                name="recoveryTime"
-                value={profile.recoveryTime}
-                onChange={handleChange}
-                min={0}
-              />
-            </div>
-
-            {message && (
-              <div className="form-group mt-3">
-                <div className="alert-custom-red" role="alert">{message}</div>
+    <div className="regis-fullpage" style={{ padding: '20px', minHeight: '100vh' }}>
+      <Row gutter={[32, 32]} justify="center">
+        {/* Profile Form */}
+        <Col xs={24} lg={12} xl={10}>
+          <Card
+            style={{ 
+              borderRadius: '16px',
+              boxShadow: '0 8px 32px rgba(119, 24, 19, 0.15)'
+            }}
+          >
+            <Space direction="vertical" size="large" style={{ width: '100%' }}>
+              <div style={{ textAlign: 'center' }}>
+                <Avatar
+                  src="/donor.png"
+                  icon={<UserOutlined />}
+                  className="profile-img-card"
+                />
+                <Title level={3} style={{ color: '#771813', margin: 0 }}>
+                  Hồ sơ cá nhân
+                </Title>
               </div>
-            )}
 
-            <button className="btn btn-block btn-gradient-red mt-3" type="submit">Lưu</button>
-          </form>
-        </div>
-      </div>
-      <div className="profile-right">
-  <h4 className="mb-3">Lịch sử đăng ký hiến máu</h4>
-  {history.length === 0 ? (
-    <div>
-      <p>Chưa có lịch sử hiến máu.</p>
-      <a href="/user/register" className="btn btn-gradient-red mt-2">Đăng ký ngay</a>
+              <Form
+                form={form}
+                layout="vertical"
+                onFinish={handleSubmit}
+                size="large"
+              >
+                <Row gutter={16}>
+                  <Col span={24}>
+                    <Form.Item
+                      name="username"
+                      label="Username"
+                    >
+                      <Input
+                        prefix={<UserOutlined style={{ color: '#999' }} />}
+                        disabled
+                        style={{ backgroundColor: '#f5f5f5' }}
+                      />
+                    </Form.Item>
+                  </Col>
+
+                  <Col span={24}>
+                    <Form.Item
+                      name="email"
+                      label="Email"
+                    >
+                      <Input
+                        prefix={<MailOutlined style={{ color: '#999' }} />}
+                        disabled
+                        style={{ backgroundColor: '#f5f5f5' }}
+                      />
+                    </Form.Item>
+                  </Col>
+
+                  <Col span={12}>
+                    <Form.Item
+                      name="lastName"
+                      label="Họ"
+                    >
+                      <Input placeholder="Nhập họ" />
+                    </Form.Item>
+                  </Col>
+
+                  <Col span={12}>
+                    <Form.Item
+                      name="firstName"
+                      label="Tên"
+                    >
+                      <Input placeholder="Nhập tên" />
+                    </Form.Item>
+                  </Col>
+
+                  <Col span={12}>
+                    <Form.Item
+                      name="dob"
+                      label="Ngày sinh"
+                    >
+                      <DatePicker
+                        placeholder="Chọn ngày sinh"
+                        style={{ width: '100%' }}
+                        disabledDate={(current) => 
+                          current && (current > dayjs() || current < dayjs('1900-01-01'))
+                        }
+                        format="DD/MM/YYYY"
+                      />
+                    </Form.Item>
+                  </Col>
+
+                  <Col span={12}>
+                    <Form.Item
+                      name="gender"
+                      label="Giới tính"
+                    >
+                      <Select placeholder="Chọn giới tính">
+                        <Option value="Male">Nam</Option>
+                        <Option value="Female">Nữ</Option>
+                      </Select>
+                    </Form.Item>
+                  </Col>
+
+                  <Col span={12}>
+                    <Form.Item
+                      name="bloodType"
+                      label="Nhóm máu"
+                    >
+                      <Select placeholder="Chọn nhóm máu">
+                        {bloodTypeOptions.map(option => (
+                          <Option key={option.value} value={option.value}>
+                            <Space>
+                              <Tag color={option.color}>{option.label}</Tag>
+                            </Space>
+                          </Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </Col>
+
+                  <Col span={12}>
+                    <Form.Item
+                      name="phone"
+                      label="Số điện thoại"
+                      rules={[
+                        { pattern: /^[0-9]{10,11}$/, message: 'Số điện thoại không hợp lệ' }
+                      ]}
+                    >
+                      <Input
+                        prefix={<PhoneOutlined style={{ color: '#999' }} />}
+                        placeholder="Nhập số điện thoại"
+                      />
+                    </Form.Item>
+                  </Col>
+
+                  <Col span={24}>
+                    <Form.Item
+                      name="address"
+                      label="Địa chỉ"
+                    >
+                      <Input
+                        prefix={<HomeOutlined style={{ color: '#999' }} />}
+                        placeholder="Nhập địa chỉ"
+                      />
+                    </Form.Item>
+                  </Col>
+
+                  <Col span={12}>
+                    <Form.Item
+                      name="lastDonation"
+                      label="Ngày hiến máu gần nhất"
+                    >
+                      <DatePicker
+                        placeholder="Chọn ngày"
+                        style={{ width: '100%' }}
+                        disabledDate={(current) => 
+                          current && (current > dayjs() || current < dayjs('1900-01-01'))
+                        }
+                        format="DD/MM/YYYY"
+                      />
+                    </Form.Item>
+                  </Col>
+
+                  <Col span={12}>
+                    <Form.Item
+                      name="recoveryTime"
+                      label="Thời gian hồi phục (ngày)"
+                    >
+                      <Input
+                        type="number"
+                        min={0}
+                        max={365}
+                        placeholder="Số ngày"
+                        suffix="ngày"
+                      />
+                    </Form.Item>
+                  </Col>
+                </Row>
+
+                <Form.Item>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    loading={loading}
+                    block
+                    size="large"
+                    style={{
+                      height: '48px',
+                      background: 'linear-gradient(to right, #771813, #DD2D24)',
+                      border: 'none',
+                      borderRadius: '8px',
+                      fontSize: '16px',
+                      fontWeight: '500'
+                    }}
+                  >
+                    Cập nhật hồ sơ
+                  </Button>
+                </Form.Item>
+              </Form>
+            </Space>
+          </Card>
+        </Col>
+
+        {/* History Section */}
+        <Col xs={24} lg={12} xl={10}>
+          <Card
+            title={
+              <Space>
+                <HistoryOutlined style={{ color: '#771813' }} />
+                <span style={{ color: '#771813' }}>Lịch sử đăng ký hiến máu</span>
+              </Space>
+            }
+            style={{ 
+              borderRadius: '16px',
+              boxShadow: '0 8px 32px rgba(119, 24, 19, 0.15)'
+            }}
+          >
+            {history.length === 0 ? (
+              <Empty
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                description={
+                  <Space direction="vertical">
+                    <Text type="secondary">Chưa có lịch sử hiến máu</Text>
+                    <Button
+                      type="primary"
+                      icon={<HeartOutlined />}
+                      style={{
+                        background: 'linear-gradient(to right, #771813, #DD2D24)',
+                        border: 'none'
+                      }}
+                      onClick={() => window.location.href = '/user/register'}
+                    >
+                      Đăng ký ngay
+                    </Button>
+                  </Space>
+                }
+              />
+            ) : (
+              <List
+                dataSource={history}
+                renderItem={(item) => (
+                  <List.Item>
+                    <List.Item.Meta
+                      avatar={
+                        <Avatar
+                          style={{ backgroundColor: '#771813' }}
+                          icon={<CalendarOutlined />}
+                        />
+                      }
+                      title={
+                        <Space>
+                          <Text strong>{item.location}</Text>
+                          <Tag color={getStatusColor(item.status)}>
+                            {getStatusText(item.status)}
+                          </Tag>
+                        </Space>
+                      }
+                      description={
+                        <Space>
+                          <ClockCircleOutlined style={{ color: '#999' }} />
+                          <Text type="secondary">
+                            {dayjs(item.date).format('DD/MM/YYYY')}
+                          </Text>
+                        </Space>
+                      }
+                    />
+                  </List.Item>
+                )}
+              />
+            )}
+          </Card>
+        </Col>
+      </Row>
     </div>
-  ) : (
-    <ul className="history-list">
-      {history.map((item, index) => (
-        <li key={index}>{item}</li>
-      ))}
-    </ul>
-  )}
-    </div> </div> 
   );
 };
 

@@ -1,183 +1,288 @@
 /* === src/pages/register/RegisterAccount.jsx === */
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { 
+  Form, 
+  Input, 
+  Button, 
+  Card,
+  Typography,
+  message,
+  Space,
+  Progress,
+  Alert
+} from "antd";
+import { 
+  UserOutlined, 
+  LockOutlined, 
+  SafetyOutlined, 
+  ArrowLeftOutlined,
+  EyeInvisibleOutlined,
+  EyeOutlined
+} from "@ant-design/icons";
 import RegisterProgress from "../components/RegisterProgress";
 import { FaUser, FaEnvelope, FaAddressCard, FaLock } from "react-icons/fa";
 
+const { Title, Text } = Typography;
+
 const RegisterAccount = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = React.useState(() => {
-    const saved = localStorage.getItem("registerForm");
-    return saved
-      ? JSON.parse(saved)
-      : {
-        username: "",
-        password: "",
-        confirmPassword: "",
-        otp: ""
-      };
-  });
-  const [errors, setErrors] = React.useState({});
-  const [showPassword, setShowPassword] = React.useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
+  const [form] = Form.useForm();
+  const [passwordStrength, setPasswordStrength] = useState(0);
+  const [passwordStatus, setPasswordStatus] = useState('');
 
   useEffect(() => {
-    localStorage.setItem("registerForm", JSON.stringify(formData));
-  }, [formData]);
+    const saved = localStorage.getItem("registerForm");
+    if (saved) {
+      try {
+        const parsedData = JSON.parse(saved);
+        form.setFieldsValue(parsedData);
+      } catch (error) {
+        console.error("Error parsing saved data:", error);
+      }
+    }
+  }, [form]);
 
-  const setField = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-    setErrors((prev) => ({ ...prev, [field]: null }));
+  const calculatePasswordStrength = (password) => {
+    if (!password) return 0;
+    
+    let strength = 0;
+    const checks = [
+      { regex: /.{8,}/, points: 25 }, // Length >= 8
+      { regex: /[a-z]/, points: 25 }, // Lowercase
+      { regex: /[A-Z]/, points: 25 }, // Uppercase
+      { regex: /[0-9]/, points: 25 }, // Numbers
+      { regex: /[^A-Za-z0-9]/, points: 25 } // Special chars
+    ];
+
+    checks.forEach(check => {
+      if (check.regex.test(password)) {
+        strength += check.points;
+      }
+    });
+
+    return Math.min(strength, 100);
   };
 
-  const validate = () => {
-    const newErrors = {};
-
-    if (!formData.username.trim()) {
-      newErrors.username = "Vui lòng nhập username";
-    } else if (formData.username.length < 3) {
-      newErrors.username = "Username phải có ít nhất 3 ký tự";
-    }
-
-    if (!formData.password) {
-      newErrors.password = "Vui lòng nhập mật khẩu";
-    } else if (formData.password.length < 6) {
-      newErrors.password = "Mật khẩu phải có ít nhất 6 ký tự";
-    }
-
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = "Vui lòng xác nhận mật khẩu";
-    } else if (formData.confirmPassword !== formData.password) {
-      newErrors.confirmPassword = "Mật khẩu không khớp";
-    }
-
-    if (!formData.otp) {
-      newErrors.otp = "Vui lòng nhập mã OTP";
-    } else if (!/^\d{6}$/.test(formData.otp)) {
-      newErrors.otp = "Mã OTP phải gồm 6 chữ số";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const getPasswordStatus = (strength) => {
+    if (strength < 25) return { status: 'exception', text: 'Rất yếu' };
+    if (strength < 50) return { status: 'normal', text: 'Yếu' };
+    if (strength < 75) return { status: 'active', text: 'Trung bình' };
+    if (strength < 100) return { status: 'success', text: 'Mạnh' };
+    return { status: 'success', text: 'Rất mạnh' };
   };
 
-
-  const handleNext = () => {
-    if (validate()) {
-      localStorage.setItem("registerForm", JSON.stringify(formData));
+  const onFinish = (values) => {
+    try {
+      const saved = localStorage.getItem("registerForm");
+      const existingData = saved ? JSON.parse(saved) : {};
+      const updatedData = { ...existingData, ...values };
+      
+      localStorage.setItem("registerForm", JSON.stringify(updatedData));
+      message.success("Thông tin tài khoản đã được lưu!");
       navigate("/register/confirm");
+    } catch (error) {
+      message.error("Có lỗi xảy ra khi lưu thông tin!");
     }
   };
 
-  const handleBack = () => {
-    navigate("/register/contact");
+  const onValuesChange = (changedValues, allValues) => {
+    if (changedValues.password) {
+      const strength = calculatePasswordStrength(changedValues.password);
+      setPasswordStrength(strength);
+      setPasswordStatus(getPasswordStatus(strength));
+    }
+
+    try {
+      const saved = localStorage.getItem("registerForm");
+      const existingData = saved ? JSON.parse(saved) : {};
+      const updatedData = { ...existingData, ...allValues };
+      localStorage.setItem("registerForm", JSON.stringify(updatedData));
+    } catch (error) {
+      console.error("Error saving form data:", error);
+    }
+  };
+
+  const handleBack = () => navigate("/register/contact");
+
+  const validateMessages = {
+    required: "${label} là bắt buộc!",
+    pattern: {
+      mismatch: "${label} không đúng định dạng!",
+    },
   };
 
   return (
     <div className="regis-fullpage">
-      <div className="change-box">
-        <RegisterProgress
-          currentStep={2}
-          steps={["Thông tin cá nhân", "Liên hệ", "Tài khoản", "Xác nhận"]}
-          icons={[<FaUser />, <FaEnvelope />, <FaAddressCard />, <FaLock />]}
-        />
-        <h3 className="text-center mb-4">Tạo tài khoản</h3>
-
-        <div className="form-group">
-          <label>Tên đăng nhập<span style={{ color: "red" }}>*</span>
-          </label>
-          <input
-            type="text"
-            className={`form-control ${errors.username ? "is-invalid" : ""}`}
-            value={formData.username}
-            onChange={(e) => setField("username", e.target.value)}
+      <div className="regis-container">
+        <Card className="register-card" style={{ maxWidth: 800, margin: '0 auto' }}>
+          <RegisterProgress
+            currentStep={2}
+            steps={["Thông tin cá nhân", "Liên hệ", "Tài khoản", "Xác nhận"]}
+            icons={[<FaUser />, <FaEnvelope />, <FaAddressCard />, <FaLock />]}
           />
-          {errors.username && <div className="invalid-feedback d-block">{errors.username}</div>}
-        </div>
+          
+          <Title level={3} style={{ textAlign: 'center', marginBottom: 32 }}>
+            <LockOutlined style={{ marginRight: 8 }} />
+            Tạo tài khoản
+          </Title>
 
-        <div className="form-group" style={{ position: "relative" }}>
-          <label>Mật khẩu<span style={{ color: "red" }}>*</span>
-          </label>
-          <input
-            type={showPassword ? "text" : "password"}
-            className={`form-control ${errors.password ? "is-invalid" : ""}`}
-            value={formData.password}
-            onChange={(e) => setField("password", e.target.value)}
-            style={{ paddingRight: "40px" }}
-          />
-
-          <span
-            onClick={() => setShowPassword(!showPassword)}
-            style={{
-              position: "absolute",
-              top: "70%",
-              right: "10px",
-              transform: "translateY(-50%)",
-              cursor: "pointer"
-            }}
+          <Form
+            form={form}
+            layout="vertical"
+            onFinish={onFinish}
+            onValuesChange={onValuesChange}
+            validateMessages={validateMessages}
           >
-            <img
-              src={showPassword ? "/eye-open.png" : "/eye-close.png"}
-              alt="toggle"
-              width={20}
+            <Form.Item
+              label="Tên đăng nhập"
+              name="username"
+              rules={[
+                { required: true },
+                { min: 3, message: 'Tên đăng nhập phải có ít nhất 3 ký tự' },
+                { max: 20, message: 'Tên đăng nhập không được quá 20 ký tự' },
+                {
+                  pattern: /^[a-zA-Z0-9_]+$/,
+                  message: 'Chỉ được sử dụng chữ cái, số và dấu gạch dưới'
+                }
+              ]}
+              extra={<Text type="secondary">Chỉ được sử dụng chữ cái, số và dấu gạch dưới (_)</Text>}
+              hasFeedback
+            >
+              <Input
+                size="large"
+                placeholder="Nhập tên đăng nhập"
+                prefix={<UserOutlined />}
+                maxLength={20}
+              />
+            </Form.Item>
+
+            <Form.Item
+              label="Mật khẩu"
+              name="password"
+              rules={[
+                { required: true },
+                { min: 6, message: 'Mật khẩu phải có ít nhất 6 ký tự' }
+              ]}
+              hasFeedback
+            >
+              <Input.Password
+                size="large"
+                placeholder="Nhập mật khẩu"
+                prefix={<LockOutlined />}
+                iconRender={(visible) => (visible ? <EyeOutlined /> : <EyeInvisibleOutlined />)}
+              />
+            </Form.Item>
+
+            {passwordStrength > 0 && (
+              <div style={{ marginBottom: 16 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                  <Text type="secondary">Độ mạnh mật khẩu:</Text>
+                  <Text type={passwordStatus.status === 'exception' ? 'danger' : 'success'}>
+                    {passwordStatus.text}
+                  </Text>
+                </div>
+                <Progress 
+                  percent={passwordStrength} 
+                  status={passwordStatus.status}
+                  showInfo={false}
+                  size="small"
+                />
+              </div>
+            )}
+
+            <Form.Item
+              label="Nhập lại mật khẩu"
+              name="confirmPassword"
+              dependencies={['password']}
+              rules={[
+                { required: true },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value || getFieldValue('password') === value) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(new Error('Mật khẩu xác nhận không khớp!'));
+                  },
+                }),
+              ]}
+              hasFeedback
+            >
+              <Input.Password
+                size="large"
+                placeholder="Nhập lại mật khẩu"
+                prefix={<LockOutlined />}
+                iconRender={(visible) => (visible ? <EyeOutlined /> : <EyeInvisibleOutlined />)}
+              />
+            </Form.Item>
+
+            <Form.Item
+              label="Mã OTP xác thực"
+              name="otp"
+              rules={[
+                { required: true },
+                {
+                  pattern: /^\d{6}$/,
+                  message: 'Mã OTP phải gồm đúng 6 chữ số'
+                }
+              ]}
+              extra={
+                <Space>
+                  <Text type="secondary">Mã OTP đã được gửi đến số điện thoại của bạn</Text>
+                  <Button type="link" size="small" style={{ padding: 0 }}>
+                    Gửi lại mã
+                  </Button>
+                </Space>
+              }
+              hasFeedback
+            >
+              <Input
+                size="large"
+                placeholder="Nhập mã OTP gồm 6 chữ số"
+                prefix={<SafetyOutlined />}
+                maxLength={6}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/\D/g, '');
+                  form.setFieldsValue({ otp: value });
+                }}
+              />
+            </Form.Item>
+
+            <Alert
+              message="Bảo mật tài khoản"
+              description="Vui lòng tạo mật khẩu mạnh và bảo mật thông tin đăng nhập của bạn. Không chia sẻ thông tin tài khoản với người khác."
+              type="info"
+              showIcon
+              style={{ marginBottom: 24 }}
             />
-          </span>
-          {errors.password && <div className="invalid-feedback d-block">{errors.password}</div>}
-        </div>
 
-        <div className="form-group" style={{ position: "relative" }}>
-          <label>Nhập lại mật khẩu<span style={{ color: "red" }}>*</span>
-          </label>
-          <input
-            type={showConfirmPassword ? "text" : "password"}
-            className={`form-control ${errors.confirmPassword ? "is-invalid" : ""}`}
-            value={formData.confirmPassword}
-            onChange={(e) => setField("confirmPassword", e.target.value)}
-            style={{ paddingRight: "40px" }}
-          />
-          <span
-            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            style={{
-              position: "absolute",
-              top: "70%",
-              right: "10px",
-              transform: "translateY(-50%)",
-              cursor: "pointer"
-            }}
-          >
-            <img
-              src={showConfirmPassword ? "/eye-open.png" : "/eye-close.png"}
-              alt="toggle"
-              width={20}
-            />
-          </span>
-          {errors.confirmPassword && (
-            <div className="invalid-feedback d-block">{errors.confirmPassword}</div>
-          )}
-        </div>
-
-        <div className="form-group">
-          <label>Nhập mã OTP<span style={{ color: "red" }}>*</span>
-          </label>
-          <input
-            type="text"
-            className={`form-control ${errors.otp ? "is-invalid" : ""}`}
-            value={formData.otp}
-            onChange={(e) => setField("otp", e.target.value.replace(/\D/g, ""))}
-            maxLength={6}
-            placeholder="Nhập mã gồm 6 chữ số"
-          />
-          {errors.otp && <div className="invalid-feedback d-block">{errors.otp}</div>}
-        </div>
-
-        <div className="mt-4 d-flex justify-content-between">
-          <button className="btn btn-secondary" onClick={handleBack}>
-            Quay lại
-          </button>
-          <button className="btn btn-gradient-red" onClick={handleNext}>
-            Tiếp theo
-          </button>
-        </div>
+            <Form.Item style={{ marginBottom: 0 }}>
+              <Space style={{ width: '100%', justifyContent: 'space-between' }}>
+                <Button
+                  size="large"
+                  onClick={handleBack}
+                  icon={<ArrowLeftOutlined />}
+                  style={{ minWidth: 120 }}
+                >
+                  Quay lại
+                </Button>
+                
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  size="large"
+                  style={{
+                    minWidth: 120,
+                    background: 'linear-gradient(45deg, #ff6b6b, #ee5a52)',
+                    border: 'none'
+                  }}
+                >
+                  Tiếp theo
+                </Button>
+              </Space>
+            </Form.Item>
+          </Form>
+        </Card>
       </div>
     </div>
   );

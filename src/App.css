@@ -84,36 +84,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-right: 80px;
 }
-
-.login-box {
-  background: rgb(255, 255, 255);
-  padding: 60px 80px 60px 80px;
-  border-radius: 12px;
-  max-width: 600px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  width: 100%;
-}
-
-.login-left {
-  flex: 1;
-  padding-left: 60px;
-  color: white;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.login-left-content {
-  max-width: 640px;
-  padding: 24px 28px;
-  background: rgba(0, 0, 0, 0.35);
-  border-radius: 12px;
-  color: white;
-  backdrop-filter: blur(5px);
-}
-
 
 .change-fullpage {
   background-image: url("/public/9069379.jpg");
@@ -170,6 +141,7 @@
 
 @media (max-width: 768px) {
   .regis-fullpage {
+    background: rgba(0, 0, 0, 0.5);
     flex-direction: column;
     align-items: center;
     gap: 20px;
@@ -211,14 +183,14 @@ label {
 
 .profile-img-card {
   background-color: #fff;
-  width: 96px;
-  height: 96px;
+  width: 80px;
+  height: 80px;
   margin: 0 auto 20px;
   display: block;
   border-radius: 50%;
   padding: 10px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .text-danger {
@@ -260,9 +232,4 @@ label {
 
 .navbar-custom .nav-link:hover {
   opacity: 0.85;
-}
-
-/* Giúp đẩy nội dung chính xuống dưới để không bị Navbar (đang fixed) che mất. */
-.page-content {
-  padding-top: 60px;
 }

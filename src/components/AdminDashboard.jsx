@@ -52,36 +52,6 @@ const AdminDashboard = () => {
         <h3>Phân bố nhóm máu</h3>
         <Bar data={chartData} options={chartOptions} />
       </div>
-
-      <div className="chart-container">
-        <h3>Lịch sử truyền máu gần đây</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Người nhận</th>
-              <th>Nhóm máu</th>
-              <th>Đơn vị</th>
-              <th>Ngày</th>
-              <th>Trạng thái</th>
-            </tr>
-          </thead>
-          <tbody>
-            {transfusions.length > 0 ? (
-              transfusions.map((t, i) => (
-                <tr key={i}>
-                  <td>{t.recipientName}</td>
-                  <td>{t.bloodType}</td>
-                  <td>{t.units}</td>
-                  <td>{t.confirmedAt ? new Date(t.confirmedAt).toLocaleDateString() : "—"}</td>
-                  <td>{t.status}</td>
-                </tr>
-              ))
-            ) : (
-              <tr><td colSpan="5">Không có dữ liệu truyền máu.</td></tr>
-            )}
-          </tbody>
-        </table>
-      </div>
     </div>
   );
 };
