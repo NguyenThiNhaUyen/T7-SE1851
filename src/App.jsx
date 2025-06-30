@@ -3,6 +3,7 @@ import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import 'antd/dist/reset.css'; // Ant Design v5
 import "./App.css";
 
 import eventBus from "./common/EventBus";
@@ -45,12 +46,15 @@ import BoardUser from "./components/BoardUser";
 import UserLayout from "./layouts/UserLayout";
 import DonationRegister from "./components/DonationRegister";
 import DonationHistory from "./components/DonationHistory";
-import DonationAftercare from "./components/DonationAftercare";
 import RequestHistory from "./components/RequestHistory";
 import TransfusionHistory from "./components/TransfusionHistory";
 import BloodTypes from "./components/BloodTypes";
 import BloodReceive from "./components/BloodReceive";
 import BloodRoles from "./components/BloodRoles";
+import UrgentDonationRegister from "./components/UrgentDonationRegister";
+import UrgentDonationWrapper from "./components/UrgentDonationWrapper";
+
+
 
 // Khác
 import BlogList from "./components/BlogList";
@@ -158,6 +162,7 @@ const App = () => {
             <Route path="inventory" element={<InventoryChart />} />
             <Route path="statistics" element={<StaffStatistics />} />
             <Route path="urgent-requests" element={<UrgentRequests />} />
+            
           </Route>
 
           {/* User */}
@@ -165,12 +170,13 @@ const App = () => {
             <Route index element={<BoardUser />} />
             <Route path="register" element={<DonationRegister />} />
             <Route path="donation-history" element={<DonationHistory />} />
-            <Route path="aftercare" element={<DonationAftercare />} />
             <Route path="request-history" element={<RequestHistory />} />
             <Route path="transfusion-history" element={<TransfusionHistory />} />
             <Route path="types" element={<BloodTypes />} />
             <Route path="receive" element={<BloodReceive />} />
             <Route path="roles" element={<BloodRoles />} />
+            <Route path="urgent-register" element={<UrgentDonationRegister />} />
+          
           </Route>
 
           {/* Blog - Notification - Thanh toán */}
@@ -179,6 +185,7 @@ const App = () => {
           <Route path="/faq" element={<BlogAccordion />} />
           <Route path="/activities" element={<Activities />} />
           <Route path="/vnpay" element={<VnPayForm />} />
+         <Route path="/donate/urgent" element={<UrgentDonationWrapper />} />
 
           {/* Nếu không khớp */}
           <Route path="*" element={<Navigate to="/" />} />
