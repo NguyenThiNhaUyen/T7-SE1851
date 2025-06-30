@@ -8,10 +8,10 @@ import "./App.css";
 
 import eventBus from "./common/EventBus";
 
-// Giao diện chung
+// 🌐 Giao diện chung
 import Navbar from "./components/Navbar";
 
-// Các trang chính
+// 🏠 Các trang chính
 import Home from "./components/Home";
 import Login from "./components/Login";
 import RegisterInformation from "./components/RegisterInformation";
@@ -23,33 +23,11 @@ import Forgot from "./components/Forgot";
 import ChangePassword from "./components/ChangePassword";
 import OtpVerify from "./components/OtpVerify";
 
-// Quản trị viên
-import BoardAdmin from "./components/BoardAdmin";
-import AdminLayout from "./layouts/AdminLayout";
-import AdminDashboard from "./components/AdminDashboard";
-import UrgentRequests from "./components/UrgentRequests";
-import DonationHistory from "./components/DonationHistory";
-import TransfusionHistory from "./components/TransfusionHistory";
-
-// import UserManagement from "./components/UserManagement";
-// import BloodManagement from "./components/BloodManagement";
-// import CompatibilityRules from "./components/CompatibilityRules";
-// import ReportPage from "./components/ReportPage";
-
-// Nhân viên
-import BoardStaff from "./components/BoardStaff";
-import StaffLayout from "./layouts/StaffLayout";
-import BloodRequestForm from "./components/BloodRequestForm";
-import DonationConfirm from "./components/DonationConfirm";
-import InventoryChart from "./components/InventoryChart";
-import StaffStatistics from "./components/StaffStatistics";
-
-// Người dùng
+// 👤 Người dùng
 import BoardUser from "./components/BoardUser";
 import UserLayout from "./layouts/UserLayout";
 import DonationRegister from "./components/DonationRegister";
 import DonationHistory from "./components/DonationHistory";
-import DonationAftercare from "./components/DonationAftercare";
 import RequestHistory from "./components/RequestHistory";
 import BloodTypes from "./components/BloodTypes";
 import BloodReceive from "./components/BloodReceive";
@@ -57,17 +35,33 @@ import BloodRoles from "./components/BloodRoles";
 import UrgentDonationRegister from "./components/UrgentDonationRegister";
 import UrgentDonationWrapper from "./components/UrgentDonationWrapper";
 
+// 👨‍⚕️ Nhân viên
+import BoardStaff from "./components/BoardStaff";
+import StaffLayout from "./layouts/StaffLayout";
+import BloodRequestForm from "./components/BloodRequestForm";
+import DonationConfirm from "./components/DonationConfirm";
+import InventoryChart from "./components/InventoryChart";
+import StaffStatistics from "./components/StaffStatistics";
+import UrgentRequests from "./components/UrgentRequests"; // chỉ import 1 lần
 
+// 👑 Quản trị viên
+import BoardAdmin from "./components/BoardAdmin";
+import AdminLayout from "./layouts/AdminLayout";
+import AdminDashboard from "./components/AdminDashboard";
+import TransfusionHistory from "./components/TransfusionHistory";
 
-// Khác
+// 📢 Khác
 import BlogList from "./components/BlogList";
 import BlogDetail from "./components/BlogDetail";
 import BlogAccordion from './components/BlogAccordion';
 import VnPayForm from "./components/VnPayForm";
 import Activities from "./components/Activities";
-import AuthService from "./services/auth.service";
 import DonationIntentSelection from "./components/DonationIntentSelection";
 import DonationTermsPage from "./components/DonationTermsPage";
+
+// 🔐 Dịch vụ
+import AuthService from "./services/auth.service";
+
 
 const App = () => {
   const [currentUser, setCurrentUser] = useState(undefined);
@@ -175,7 +169,6 @@ const App = () => {
             <Route index element={<BoardUser />} />
             <Route path="register" element={<DonationRegister />} />
             <Route path="donation-history" element={<DonationHistory />} />
-            <Route path="aftercare" element={<DonationAftercare />} />
             <Route path="request-history" element={<RequestHistory />} />
             <Route path="types" element={<BloodTypes />} />
             <Route path="receive" element={<BloodReceive />} />
