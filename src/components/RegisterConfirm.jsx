@@ -1,10 +1,29 @@
+/* === src/pages/register/RegisterConfirm.jsx === */
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { 
+  Card, 
+  Button, 
+  Typography, 
+  Space, 
+  Row, 
+  Col, 
+  Descriptions, 
+  Alert,
+  Spin,
+  message,
+  Divider
+} from "antd";
+import { 
+  CheckCircleOutlined, 
+  ArrowLeftOutlined, 
+  LoadingOutlined,
+  SafetyOutlined
+} from "@ant-design/icons";
 import RegisterProgress from "../components/RegisterProgress";
 import { FaUser, FaEnvelope, FaAddressCard, FaLock } from "react-icons/fa";
 
-const steps = ["Thông tin cá nhân", "Liên hệ", "Tài khoản", "Xác nhận"];
-const icons = [<FaUser />, <FaEnvelope />, <FaAddressCard />, <FaLock />];
+const { Title, Text } = Typography;
 
 const RegisterConfirm = () => {
   const navigate = useNavigate();
@@ -15,89 +34,172 @@ const RegisterConfirm = () => {
     const saved = localStorage.getItem("registerForm");
     if (saved) {
       try {
-        setFormData(JSON.parse(saved));
-      } catch {
+        const parsedData = JSON.parse(saved);
+        setFormData(parsedData);
+      } catch (error) {
+        console.error("Error parsing saved data:", error);
+        message.error("Có lỗi xảy ra khi tải thông tin!");
         navigate("/register/information");
       }
     } else {
+      message.warning("Không tìm thấy thông tin đăng ký!");
       navigate("/register/information");
     }
   }, [navigate]);
 
   const handleBack = () => navigate("/register/account");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     setLoading(true);
     try {
-      await new Promise((res) => setTimeout(res, 1500));
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      
       localStorage.removeItem("registerForm");
-      alert("Đăng ký thành công! Vui lòng kiểm tra email.");
+      message.success({
+        content: "Đăng ký thành công! Vui lòng kiểm tra email để kích hoạt tài khoản.",
+        duration: 4,
+      });
       navigate("/login");
-    } catch {
-      alert("Có lỗi xảy ra. Vui lòng thử lại.");
+    } catch (error) {
+      message.error("Có lỗi xảy ra trong quá trình đăng ký. Vui lòng thử lại!");
     } finally {
       setLoading(false);
     }
   };
 
+  const getGenderText = (gender) => {
+    const genderMap = {
+      'male': 'Nam',
+      'female': 'Nữ',
+      'other': 'Khác'
+    };
+    return genderMap[gender] || gender;
+  };
+
+  const getDocTypeText = (docType) => {
+    const docTypeMap = {
+      'cccd': 'Căn cước công dân',
+      'cmnd': 'Chứng minh nhân dân',
+      'passport': 'Hộ chiếu'
+    };
+    return docTypeMap[docType] || docType;
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('vi-VN');
+  };
+
   return (
     <div className="regis-fullpage">
-      <div className="change-box">
-        <RegisterProgress currentStep={3} steps={steps} icons={icons} />
-        <h3 className="text-center mb-4">Xác nhận thông tin đăng ký</h3>
+      <div className="regis-container">
+        <Card className="register-card" style={{ maxWidth: 800, margin: '0 auto' }}>
+          <RegisterProgress
+            currentStep={3}
+            steps={["Thông tin cá nhân", "Liên hệ", "Tài khoản", "Xác nhận"]}
+            icons={[<FaUser />, <FaEnvelope />, <FaAddressCard />, <FaLock />]}
+          />
+          
+          <Title level={3} style={{ textAlign: 'center', marginBottom: 32 }}>
+            <CheckCircleOutlined style={{ marginRight: 8, color: '#52c41a' }} />
+            Xác nhận thông tin đăng ký
+          </Title>
 
-        <form onSubmit={handleSubmit}>
-          <div className="row">
-            <div className="col-md-6">
-              <p><strong>Họ tên:</strong> {formData.fullName}</p>
-              <p><strong>Ngày sinh:</strong> {formData.dob}</p>
-              <p><strong>Giới tính:</strong> {formData.gender}</p>
-              <p><strong>{formData.docType}:</strong> {formData.docNumber}</p>
-              <p><strong>Nghề nghiệp:</strong> {formData.occupation}</p>
-            </div>
-            <div className="col-md-6">
-              <p><strong>Email:</strong> {formData.email}</p>
-              <p><strong>SĐT:</strong> {formData.phone}</p>
-              <p><strong>Username:</strong> {formData.username}</p>
-            </div>
-          </div>
+          <Alert
+            message="Kiểm tra thông tin"
+            description="Vui lòng kiểm tra kỹ thông tin trước khi hoàn tất đăng ký. Một số thông tin có thể không thể thay đổi sau khi đăng ký."
+            type="info"
+            showIcon
+            icon={<SafetyOutlined />}
+            style={{ marginBottom: 24 }}
+          />
 
-          <div className="mt-3">
-            <p><strong>Địa chỉ:</strong> {formData.address}</p>
-          </div>
+          <Card 
+            type="inner" 
+            title={<Text strong>Thông tin cá nhân</Text>}
+            style={{ marginBottom: 16 }}
+          >
+            <Descriptions column={{ xs: 1, sm: 2, md: 2 }} size="small">
+              <Descriptions.Item label="Họ và tên">
+                <Text strong>{formData.fullName || '---'}</Text>
+              </Descriptions.Item>
+              <Descriptions.Item label="Ngày sinh">
+                {formatDate(formData.dob) || '---'}
+              </Descriptions.Item>
+              <Descriptions.Item label="Giới tính">
+                {getGenderText(formData.gender) || '---'}
+              </Descriptions.Item>
+              <Descriptions.Item label="Nghề nghiệp">
+                {formData.occupation || '---'}
+              </Descriptions.Item>
+              <Descriptions.Item label={getDocTypeText(formData.docType) || 'Giấy tờ'}>
+                {formData.docNumber || '---'}
+              </Descriptions.Item>
+            </Descriptions>
+          </Card>
 
-          <div className="alert alert-info">
-            <small>
-              <strong>Lưu ý:</strong> Vui lòng kiểm tra kỹ thông tin trước khi hoàn tất đăng ký.
-              Một số thông tin có thể không thể thay đổi sau khi đăng ký.
-            </small>
-          </div>
+          <Card 
+            type="inner" 
+            title={<Text strong>Thông tin liên hệ</Text>}
+            style={{ marginBottom: 16 }}
+          >
+            <Descriptions column={{ xs: 1, sm: 2, md: 2 }} size="small">
+              <Descriptions.Item label="Email">
+                <Text copyable>{formData.email || '---'}</Text>
+              </Descriptions.Item>
+              <Descriptions.Item label="Số điện thoại">
+                <Text copyable>{formData.phone || '---'}</Text>
+              </Descriptions.Item>
+              <Descriptions.Item label="Địa chỉ" span={2}>
+                {formData.address || '---'}
+              </Descriptions.Item>
+            </Descriptions>
+          </Card>
 
-          <div className="mt-4 d-flex justify-content-between">
-            <button
-              type="button"
-              className="btn btn-secondary"
+          <Card 
+            type="inner" 
+            title={<Text strong>Thông tin tài khoản</Text>}
+            style={{ marginBottom: 24 }}
+          >
+            <Descriptions column={{ xs: 1, sm: 2, md: 2 }} size="small">
+              <Descriptions.Item label="Tên đăng nhập">
+                <Text code copyable>{formData.username || '---'}</Text>
+              </Descriptions.Item>
+              <Descriptions.Item label="Mật khẩu">
+                <Text type="secondary">••••••••</Text>
+              </Descriptions.Item>
+            </Descriptions>
+          </Card>
+
+          <Space style={{ width: '100%', justifyContent: 'space-between' }}>
+            <Button
+              size="large"
               onClick={handleBack}
+              icon={<ArrowLeftOutlined />}
               disabled={loading}
+              style={{ minWidth: 120 }}
             >
               Quay lại
-            </button>
-
-            <button
-              type="submit" className="btn btn-gradient-red" disabled={loading}
+            </Button>
+            
+            <Button
+              type="primary"
+              size="large"
+              onClick={handleSubmit}
+              loading={loading}
+              icon={!loading && <CheckCircleOutlined />}
+              style={{
+                minWidth: 160,
+                background: 'linear-gradient(45deg, #ff6b6b, #ee5a52)',
+                border: 'none'
+              }}
             >
-              {loading ? (
-                <>
-                  <span className="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>
-                  Đang xử lý...
-                </>
-              ) : (
-                "Hoàn tất đăng ký"
-              )}
-            </button>
-          </div>
-        </form>
+              {loading ? 'Đang xử lý...' : 'Hoàn tất đăng ký'}
+            </Button>
+          </Space>
+        </Card>
       </div>
     </div>
   );

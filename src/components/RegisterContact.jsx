@@ -1,116 +1,202 @@
 /* === src/pages/register/RegisterContact.jsx === */
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { 
+  Form, 
+  Input, 
+  Button, 
+  Card,
+  Typography,
+  message,
+  Space,
+  Alert
+} from "antd";
+import { 
+  MailOutlined, 
+  PhoneOutlined, 
+  HomeOutlined, 
+  ArrowLeftOutlined 
+} from "@ant-design/icons";
 import RegisterProgress from "../components/RegisterProgress";
 import { FaUser, FaEnvelope, FaAddressCard, FaLock } from "react-icons/fa";
 
+const { Title, Text } = Typography;
+const { TextArea } = Input;
+
 const RegisterContact = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = React.useState(() => {
-    const saved = localStorage.getItem("registerForm");
-    return saved ? JSON.parse(saved) : { email: "", phone: "", address: "" };
-  });
-  const [errors, setErrors] = React.useState({});
+  const [form] = Form.useForm();
 
   useEffect(() => {
-    localStorage.setItem("registerForm", JSON.stringify(formData));
-  }, [formData]);
-
-  const setField = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-    setErrors((prev) => ({ ...prev, [field]: null }));
-  };
-
-  const validate = () => {
-    const newErrors = {};
-
-    if (!formData.email.trim()) newErrors.email = "Vui lòng nhập email";
-    else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Email không hợp lệ";
+    const saved = localStorage.getItem("registerForm");
+    if (saved) {
+      try {
+        const parsedData = JSON.parse(saved);
+        form.setFieldsValue(parsedData);
+      } catch (error) {
+        console.error("Error parsing saved data:", error);
+      }
     }
+  }, [form]);
 
-    if (!formData.phone.trim()) newErrors.phone = "Vui lòng nhập số điện thoại";
-    else if (!/^[0-9]{10,11}$/.test(formData.phone.replace(/[\s-]/g, ""))) {
-      newErrors.phone = "Số điện thoại không hợp lệ";
-    }
-
-    if (!formData.address.trim()) newErrors.address = "Vui lòng nhập địa chỉ";
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-
-  const handleNext = () => {
-    if (validate()) {
-      localStorage.setItem("registerForm", JSON.stringify(formData));
+  const onFinish = (values) => {
+    try {
+      const saved = localStorage.getItem("registerForm");
+      const existingData = saved ? JSON.parse(saved) : {};
+      const updatedData = { ...existingData, ...values };
+      
+      localStorage.setItem("registerForm", JSON.stringify(updatedData));
+      message.success("Thông tin liên hệ đã được lưu!");
       navigate("/register/account");
+    } catch (error) {
+      message.error("Có lỗi xảy ra khi lưu thông tin!");
+    }
+  };
+
+  const onValuesChange = (changedValues, allValues) => {
+    try {
+      const saved = localStorage.getItem("registerForm");
+      const existingData = saved ? JSON.parse(saved) : {};
+      const updatedData = { ...existingData, ...allValues };
+      localStorage.setItem("registerForm", JSON.stringify(updatedData));
+    } catch (error) {
+      console.error("Error saving form data:", error);
     }
   };
 
   const handleBack = () => navigate("/register/information");
 
+  const validateMessages = {
+    required: "${label} là bắt buộc!",
+    types: {
+      email: "${label} không hợp lệ!",
+    },
+    pattern: {
+      mismatch: "${label} không đúng định dạng!",
+    },
+  };
+
   return (
     <div className="regis-fullpage">
-      <div className="change-box">
-        <RegisterProgress
-          currentStep={1}
-          steps={["Thông tin cá nhân", "Liên hệ", "Tài khoản", "Xác nhận"]}
-          icons={[<FaUser />, <FaEnvelope />, <FaAddressCard />, <FaLock />]}
-        />
-        <h3 className="text-center mb-4">Thông tin liên hệ</h3>
-        <div className="form-group">
-          <label>Email<span style={{ color: "red" }}>*</span>
-          </label>
-          <input
-            type="email"
-            className={`form-control ${errors.email ? 'is-invalid' : ''}`}
-            value={formData.email}
-            onChange={e => setField("email", e.target.value)}
-
-            required
+      <div className="regis-container">
+        <Card className="register-card" style={{ maxWidth: 800, margin: '0 auto' }}>
+          <RegisterProgress
+            currentStep={1}
+            steps={["Thông tin cá nhân", "Liên hệ", "Tài khoản", "Xác nhận"]}
+            icons={[<FaUser />, <FaEnvelope />, <FaAddressCard />, <FaLock />]}
           />
-          {errors.email && <div className="invalid-feedback d-block">{errors.email}</div>}
-        </div>
+          
+          <Title level={3} style={{ textAlign: 'center', marginBottom: 32 }}>
+            <MailOutlined style={{ marginRight: 8 }} />
+            Thông tin liên hệ
+          </Title>
 
-        <div className="form-group">
-          <label>Số điện thoại<span style={{ color: "red" }}>*</span>
-          </label>
-          <input
-            type="tel"
-            className={`form-control ${errors.phone ? 'is-invalid' : ''}`}
-            value={formData.phone}
-            onChange={e => setField("phone", e.target.value)}
+          <Form
+            form={form}
+            layout="vertical"
+            onFinish={onFinish}
+            onValuesChange={onValuesChange}
+            validateMessages={validateMessages}
+          >
+            <Form.Item
+              label="Email"
+              name="email"
+              rules={[
+                { required: true },
+                { type: 'email' }
+              ]}
+              hasFeedback
+            >
+              <Input
+                size="large"
+                placeholder="Nhập địa chỉ email"
+                prefix={<MailOutlined />}
+                type="email"
+              />
+            </Form.Item>
 
-            placeholder="0123456789"
-            required
-          />
-          {errors.phone && <div className="invalid-feedback d-block">{errors.phone}</div>}
-        </div>
+            <Form.Item
+              label="Số điện thoại"
+              name="phone"
+              rules={[
+                { required: true },
+                {
+                  pattern: /^(0[3-9])[0-9]{8,9}$/,
+                  message: 'Số điện thoại không hợp lệ (VD: 0912345678)'
+                }
+              ]}
+              extra={<Text type="secondary">Nhập số điện thoại di động 10-11 chữ số</Text>}
+              hasFeedback
+            >
+              <Input
+                size="large"
+                placeholder="Nhập số điện thoại (VD: 0912345678)"
+                prefix={<PhoneOutlined />}
+                maxLength={11}
+                onChange={(e) => {
+                  // Only allow numbers
+                  const value = e.target.value.replace(/[^\d]/g, '');
+                  form.setFieldsValue({ phone: value });
+                }}
+              />
+            </Form.Item>
 
-        <div className="form-group">
-          <label>Địa chỉ liên hệ<span style={{ color: "red" }}>*</span>
-          </label>
-          <textarea
-            className={`form-control ${errors.address ? 'is-invalid' : ''}`}
-            value={formData.address || ""}
-            onChange={e => setField("address", e.target.value)}
+            <Form.Item
+              label="Địa chỉ liên hệ"
+              name="address"
+              rules={[
+                { required: true },
+                { min: 10, message: 'Địa chỉ phải có ít nhất 10 ký tự' },
+                { max: 200, message: 'Địa chỉ không được quá 200 ký tự' }
+              ]}
+              extra={<Text type="secondary">Có thể khác với địa chỉ trên giấy tờ</Text>}
+              hasFeedback
+            >
+              <TextArea
+                size="large"
+                placeholder="Nhập địa chỉ liên hệ chi tiết"
+                rows={4}
+                showCount
+                maxLength={200}
+                style={{ resize: 'none' }}
+              />
+            </Form.Item>
 
-            rows="4"
-            required
-          />
-          <small className="form-text text-muted">Có thể khác với địa chỉ trên giấy tờ</small>
-          {errors.address && <div className="invalid-feedback d-block">{errors.address}</div>}
-        </div>
+            <Alert
+              message="Thông tin liên hệ"
+              description="Vui lòng cung cấp thông tin liên hệ chính xác. Chúng tôi sẽ sử dụng thông tin này để xác thực tài khoản và liên hệ khi cần thiết."
+              type="info"
+              showIcon
+              style={{ marginBottom: 24 }}
+            />
 
-        <div className="mt-4 d-flex justify-content-between">
-          <button className="btn btn-secondary" onClick={handleBack}>
-            Quay lại
-          </button>
-          <button className="btn btn-gradient-red" onClick={handleNext}>
-            Tiếp theo
-          </button>
-        </div>
+            <Form.Item style={{ marginBottom: 0 }}>
+              <Space style={{ width: '100%', justifyContent: 'space-between' }}>
+                <Button
+                  size="large"
+                  onClick={handleBack}
+                  icon={<ArrowLeftOutlined />}
+                  style={{ minWidth: 120 }}
+                >
+                  Quay lại
+                </Button>
+                
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  size="large"
+                  style={{
+                    minWidth: 120,
+                    background: 'linear-gradient(45deg, #ff6b6b, #ee5a52)',
+                    border: 'none'
+                  }}
+                >
+                  Tiếp theo
+                </Button>
+              </Space>
+            </Form.Item>
+          </Form>
+        </Card>
       </div>
     </div>
   );

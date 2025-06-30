@@ -1,256 +1,364 @@
 /* === src/pages/register/RegisterInformation.jsx === */
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { 
+  Form, 
+  Input, 
+  Select, 
+  DatePicker, 
+  Radio, 
+  Button, 
+  Row, 
+  Col, 
+  Card,
+  Typography,
+  message,
+  Alert
+} from "antd";
+import { 
+  UserOutlined, 
+  IdcardOutlined, 
+  HomeOutlined,
+  CalendarOutlined 
+} from "@ant-design/icons";
 import RegisterProgress from "../components/RegisterProgress";
 import { FaUser, FaEnvelope, FaAddressCard, FaLock } from "react-icons/fa";
+import dayjs from "dayjs";
 
-const steps = ["Thông tin cá nhân", "Liên hệ", "Tài khoản", "Xác nhận"];
-const icons = [<FaUser />, <FaEnvelope />, <FaAddressCard />, <FaLock />];
+const { Title, Text } = Typography;
+const { Option } = Select;
 
 const RegisterInformation = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = React.useState(() => {
-    const saved = localStorage.getItem("registerForm");
-    return saved
-      ? JSON.parse(saved)
-      : {
-        fullName: "",
-        dob: "",
-        gender: "",
-        docType: "CCCD",
-        docNumber: "",
-        province: "",
-        district: "",
-        ward: "",
-        street: "",
-        occupation: ""
-      };
-  });
-  const [errors, setErrors] = React.useState({});
-
-  const today = new Date().toISOString().split("T")[0];
+  const [form] = Form.useForm();
 
   useEffect(() => {
-    localStorage.setItem("registerForm", JSON.stringify(formData));
-  }, [formData]);
-
-  const setField = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-    // Clear error when user starts typing
-    if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: null }));
+    const saved = localStorage.getItem("registerForm");
+    if (saved) {
+      try {
+        const parsedData = JSON.parse(saved);
+        // Convert date string back to dayjs object for DatePicker
+        if (parsedData.dob) {
+          parsedData.dob = dayjs(parsedData.dob);
+        }
+        form.setFieldsValue(parsedData);
+      } catch (error) {
+        console.error("Error parsing saved data:", error);
+      }
     }
-  };
+  }, [form]);
 
-  const validate = () => {
-    const newErrors = {};
-
-    if (!formData.docNumber.trim()) newErrors.docNumber = "Vui lòng nhập số giấy tờ";
-    else if (formData.docType === "CCCD" && formData.docNumber.length !== 12) {
-      newErrors.docNumber = "Số CCCD phải có 12 chữ số";
-    }
-    if (!formData.fullName.trim()) newErrors.fullName = "Vui lòng nhập họ tên";
-    if (!formData.dob) newErrors.dob = "Vui lòng chọn ngày sinh";
-    else if (new Date(formData.dob) >= new Date()) {
-      newErrors.dob = "Ngày sinh không hợp lệ";
-    }
-    if (!formData.gender) newErrors.gender = "Vui lòng chọn giới tính";
-    if (!formData.province.trim()) newErrors.province = "Vui lòng nhập tỉnh/thành phố";
-    if (!formData.district.trim()) newErrors.district = "Vui lòng nhập quận/huyện";
-    if (!formData.ward.trim()) newErrors.ward = "Vui lòng nhập phường/xã";
-    if (!formData.street.trim()) newErrors.street = "Vui lòng nhập số nhà, tên đường";
-    if (!formData.occupation.trim()) newErrors.occupation = "Vui lòng nhập nghề nghiệp";
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleNext = () => {
-    if (validate()) {
-      // Auto-generate full address
-      const address = `${formData.street}, ${formData.ward}, ${formData.district}, ${formData.province}`;
-      const updated = { ...formData, address };
-      localStorage.setItem("registerForm", JSON.stringify(updated));
+  const onFinish = (values) => {
+    try {
+      // Convert dayjs object to string for storage
+      const formData = {
+        ...values,
+        dob: values.dob ? values.dob.format('YYYY-MM-DD') : '',
+        // Auto-generate full address
+        address: `${values.street}, ${values.ward}, ${values.district}, ${values.province}`
+      };
+      
+      localStorage.setItem("registerForm", JSON.stringify(formData));
+      message.success("Thông tin đã được lưu!");
       navigate("/register/contact");
+    } catch (error) {
+      message.error("Có lỗi xảy ra khi lưu thông tin!");
     }
+  };
+
+  const onValuesChange = (changedValues, allValues) => {
+    // Save form data on every change
+    try {
+      const formData = {
+        ...allValues,
+        dob: allValues.dob ? allValues.dob.format('YYYY-MM-DD') : ''
+      };
+      localStorage.setItem("registerForm", JSON.stringify(formData));
+    } catch (error) {
+      console.error("Error saving form data:", error);
+    }
+  };
+
+  const validateMessages = {
+    required: "${label} là bắt buộc!",
+    types: {
+      email: "${label} không hợp lệ!",
+    },
+    pattern: {
+      mismatch: "${label} không đúng định dạng!",
+    },
   };
 
   return (
     <div className="regis-fullpage">
       <div className="regis-container">
-        <div className="change-box">
-          <RegisterProgress currentStep={0} steps={steps} icons={icons} />
-          <h3 className="text-center mb-4">Thông tin cá nhân</h3>
+        <Card className="register-card" style={{ maxWidth: 800, margin: '0 auto' }}>
+          <RegisterProgress 
+            currentStep={0} 
+            steps={["Thông tin cá nhân", "Liên hệ", "Tài khoản", "Xác nhận"]} 
+            icons={[<FaUser />, <FaEnvelope />, <FaAddressCard />, <FaLock />]} 
+          />
+          
+          <Title level={3} style={{ textAlign: 'center', marginBottom: 32 }}>
+            <UserOutlined style={{ marginRight: 8 }} />
+            Thông tin cá nhân
+          </Title>
 
-          <div className="form-group">
-            <label>Chọn loại giấy tờ<span style={{ color: "red" }}>*</span>
-            </label>
-            <select
-              className="form-control"
-              value={formData.docType}
-              onChange={(e) => setField("docType", e.target.value)}
-              required
+          <Form
+            form={form}
+            layout="vertical"
+            onFinish={onFinish}
+            onValuesChange={onValuesChange}
+            validateMessages={validateMessages}
+            initialValues={{
+              docType: "CCCD",
+              gender: "Nam"
+            }}
+          >
+            <Form.Item
+              label="Chọn loại giấy tờ"
+              name="docType"
+              rules={[{ required: true }]}
+              hasFeedback
             >
-              <option value="CCCD">Căn cước công dân</option>
-              <option value="CMND">Chứng minh nhân dân</option>
-              <option value="hộ chiếu">Hộ chiếu</option>
-            </select>
-          </div>
+              <Select
+                size="large"
+                placeholder="Chọn loại giấy tờ"
+                suffixIcon={<IdcardOutlined />}
+              >
+                <Option value="CCCD">Căn cước công dân</Option>
+                <Option value="CMND">Chứng minh nhân dân</Option>
+                <Option value="hộ chiếu">Hộ chiếu</Option>
+              </Select>
+            </Form.Item>
 
-          <div className="form-group">
-            <label>Số {formData.docType}<span style={{ color: "red" }}>*</span>
-            </label>
-            <input
-              type="text"
-              className={`form-control ${errors.docNumber ? "is-invalid" : ""}`}
-              value={formData.docNumber}
-              onChange={(e) => setField("docNumber", e.target.value.replace(/\D/g, ""))}
-              required
-            />
-            <small className="form-text text-muted">
-              {formData.docType === "CCCD" ? "Nhập đầy đủ 12 chữ số" : "Nhập số trên giấy tờ"}
-            </small>
-            {errors.docNumber && <div className="invalid-feedback d-block">{errors.docNumber}</div>}
-          </div>
-
-          <div className="form-group">
-            <label>Họ và tên<span style={{ color: "red" }}>*</span>
-            </label>
-            <input
-              type="text"
-              className={`form-control ${errors.fullName ? "is-invalid" : ""}`}
-              value={formData.fullName}
-              onChange={(e) => setField("fullName", e.target.value)}
-              required
-            />
-            <small className="form-text text-muted">Theo giấy tờ tùy thân</small>
-            {errors.fullName && <div className="invalid-feedback d-block">{errors.fullName}</div>}
-          </div>
-
-          <div className="form-group">
-            <label>Ngày sinh<span style={{ color: "red" }}>*</span>
-            </label>
-            <input
-              type="date"
-              className={`form-control ${errors.dob ? "is-invalid" : ""}`}
-              value={formData.dob}
-              onChange={(e) => setField("dob", e.target.value)}
-              max={today}
-              required
-            />
-            {errors.dob && <div className="invalid-feedback d-block">{errors.dob}</div>}
-          </div>
-
-          <div className="form-group">
-            <label>Giới tính<span style={{ color: "red" }}>*</span>
-            </label>
-            <div className="form-check-container mt-2">
-              <div className="form-check form-check-inline">
-                <input
-                  className="form-check-input"
-                  type="radio"
-                  name="gender"
-                  value="Nam"
-                  checked={formData.gender === "Nam"}
-                  onChange={(e) => setField("gender", e.target.value)}
-                />
-                <label className="form-check-label">Nam</label>
-              </div>
-              <div className="form-check form-check-inline">
-                <input
-                  className="form-check-input"
-                  type="radio"
-                  name="gender"
-                  value="Nữ"
-                  checked={formData.gender === "Nữ"}
-                  onChange={(e) => setField("gender", e.target.value)}
-                />
-                <label className="form-check-label">Nữ</label>
-              </div>
-            </div>
-            {errors.gender && <div className="text-danger small mt-1">{errors.gender}</div>}
-          </div>
-
-          <div className="form-group">
-            <label>Nghề nghiệp<span style={{ color: "red" }}>*</span>
-            </label>
-            <input
-              type="text"
-              className={`form-control ${errors.occupation ? "is-invalid" : ""}`}
-              value={formData.occupation}
-              onChange={(e) => setField("occupation", e.target.value)}
-            />
-            {errors.occupation && <div className="invalid-feedback d-block">{errors.occupation}</div>}
-          </div>
-
-          <div className="form-group">
-            <label>Tỉnh/Thành phố<span style={{ color: "red" }}>*</span>
-            </label>
-            <input
-              type="text"
-              className={`form-control ${errors.province ? "is-invalid" : ""}`}
-              value={formData.province}
-              onChange={(e) => setField("province", e.target.value)}
-              required
-            />
-            {errors.province && <div className="invalid-feedback d-block">{errors.province}</div>}
-          </div>
-
-          <div className="form-row">
-            <div className="form-group col-md-6">
-              <label>Quận/Huyện<span style={{ color: "red" }}>*</span>
-              </label>
-              <input
-                type="text"
-                className={`form-control ${errors.district ? "is-invalid" : ""}`}
-                value={formData.district}
-                onChange={(e) => setField("district", e.target.value)}
-                required
+            <Form.Item
+              label="Số giấy tờ"
+              name="docNumber"
+              rules={[
+                { required: true },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value) return Promise.resolve();
+                    
+                    const docType = getFieldValue('docType');
+                    if (docType === 'CCCD' && value.length !== 12) {
+                      return Promise.reject(new Error('Số CCCD phải có đúng 12 chữ số'));
+                    }
+                    if (!/^\d+$/.test(value)) {
+                      return Promise.reject(new Error('Chỉ được nhập số'));
+                    }
+                    return Promise.resolve();
+                  },
+                }),
+              ]}
+              extra={
+                <Form.Item noStyle shouldUpdate={(prevValues, currentValues) => 
+                  prevValues.docType !== currentValues.docType
+                }>
+                  {({ getFieldValue }) => (
+                    <Text type="secondary">
+                      {getFieldValue('docType') === 'CCCD' 
+                        ? 'Nhập đầy đủ 12 chữ số' 
+                        : 'Nhập số trên giấy tờ'
+                      }
+                    </Text>
+                  )}
+                </Form.Item>
+              }
+              hasFeedback
+            >
+              <Input
+                size="large"
+                placeholder="Nhập số giấy tờ"
+                prefix={<IdcardOutlined />}
+                maxLength={12}
+                onChange={(e) => {
+                  // Only allow numbers
+                  const value = e.target.value.replace(/\D/g, '');
+                  form.setFieldsValue({ docNumber: value });
+                }}
               />
-              {errors.district && <div className="invalid-feedback d-block">{errors.district}</div>}
-            </div>
-            <div className="form-group col-md-6">
-              <label>Phường/Xã<span style={{ color: "red" }}>*</span>
-              </label>
-              <input
-                type="text"
-                className={`form-control ${errors.ward ? "is-invalid" : ""}`}
-                value={formData.ward}
-                onChange={(e) => setField("ward", e.target.value)}
-                required
+            </Form.Item>
+
+            <Form.Item
+              label="Họ và tên"
+              name="fullName"
+              rules={[
+                { required: true },
+                { min: 2, message: 'Họ tên phải có ít nhất 2 ký tự' },
+                { max: 50, message: 'Họ tên không được quá 50 ký tự' }
+              ]}
+              extra={<Text type="secondary">Theo giấy tờ tùy thân</Text>}
+              hasFeedback
+            >
+              <Input
+                size="large"
+                placeholder="Nhập họ và tên đầy đủ"
+                prefix={<UserOutlined />}
+                maxLength={50}
               />
-              {errors.ward && <div className="invalid-feedback d-block">{errors.ward}</div>}
-            </div>
-          </div>
+            </Form.Item>
 
-          <div className="form-group">
-            <label>Số nhà, tên đường<span style={{ color: "red" }}>*</span>
-            </label>
-            <input
-              type="text"
-              className={`form-control ${errors.street ? "is-invalid" : ""}`}
-              value={formData.street}
-              onChange={(e) => setField("street", e.target.value)}
-              required
+            <Row gutter={16}>
+              <Col xs={24} md={12}>
+                <Form.Item
+                  label="Ngày sinh"
+                  name="dob"
+                  rules={[{ required: true }]}
+                  hasFeedback
+                >
+                  <DatePicker
+                    size="large"
+                    placeholder="Chọn ngày sinh"
+                    style={{ width: '100%' }}
+                    format="DD/MM/YYYY"
+                    suffixIcon={<CalendarOutlined />}
+                    disabledDate={(current) => current && current >= dayjs().endOf('day')}
+                  />
+                </Form.Item>
+              </Col>
+              <Col xs={24} md={12}>
+                <Form.Item
+                  label="Giới tính"
+                  name="gender"
+                  rules={[{ required: true }]}
+                >
+                  <Radio.Group size="large">
+                    <Radio value="Nam">Nam</Radio>
+                    <Radio value="Nữ">Nữ</Radio>
+                  </Radio.Group>
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Form.Item
+              label="Nghề nghiệp"
+              name="occupation"
+              rules={[
+                { required: true },
+                { min: 2, message: 'Nghề nghiệp phải có ít nhất 2 ký tự' },
+                { max: 30, message: 'Nghề nghiệp không được quá 30 ký tự' }
+              ]}
+              hasFeedback
+            >
+              <Input
+                size="large"
+                placeholder="Nhập nghề nghiệp hiện tại"
+                prefix={<UserOutlined />}
+                maxLength={30}
+              />
+            </Form.Item>
+
+            <Title level={5} style={{ marginTop: 24, marginBottom: 16 }}>
+              <HomeOutlined style={{ marginRight: 8 }} />
+              Địa chỉ thường trú
+            </Title>
+
+            <Form.Item
+              label="Tỉnh/Thành phố"
+              name="province"
+              rules={[{ required: true }]}
+              hasFeedback
+            >
+              <Input
+                size="large"
+                placeholder="Nhập tỉnh/thành phố"
+                prefix={<HomeOutlined />}
+              />
+            </Form.Item>
+
+            <Row gutter={16}>
+              <Col xs={24} md={12}>
+                <Form.Item
+                  label="Quận/Huyện"
+                  name="district"
+                  rules={[{ required: true }]}
+                  hasFeedback
+                >
+                  <Input
+                    size="large"
+                    placeholder="Nhập quận/huyện"
+                    prefix={<HomeOutlined />}
+                  />
+                </Form.Item>
+              </Col>
+              <Col xs={24} md={12}>
+                <Form.Item
+                  label="Phường/Xã"
+                  name="ward"
+                  rules={[{ required: true }]}
+                  hasFeedback
+                >
+                  <Input
+                    size="large"
+                    placeholder="Nhập phường/xã"
+                    prefix={<HomeOutlined />}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Form.Item
+              label="Số nhà, tên đường"
+              name="street"
+              rules={[{ required: true }]}
+              hasFeedback
+            >
+              <Input
+                size="large"
+                placeholder="Nhập số nhà, tên đường"
+                prefix={<HomeOutlined />}
+              />
+            </Form.Item>
+
+            <Form.Item
+              label="Địa chỉ đầy đủ"
+              style={{ marginBottom: 24 }}
+            >
+              <Form.Item noStyle shouldUpdate>
+                {({ getFieldsValue }) => {
+                  const { street, ward, district, province } = getFieldsValue();
+                  const fullAddress = [street, ward, district, province]
+                    .filter(Boolean)
+                    .join(', ');
+                  return (
+                    <Input
+                      size="large"
+                      value={fullAddress}
+                      disabled
+                      style={{ backgroundColor: '#f5f5f5' }}
+                      prefix={<HomeOutlined />}
+                    />
+                  );
+                }}
+              </Form.Item>
+            </Form.Item>
+
+            <Alert
+              message="Thông tin cá nhân"
+              description="Vui lòng nhập thông tin chính xác theo giấy tờ tùy thân. Thông tin này sẽ được sử dụng để xác minh danh tính của bạn."
+              type="info"
+              showIcon
+              style={{ marginBottom: 24 }}
             />
-            {errors.street && <div className="invalid-feedback d-block">{errors.street}</div>}
-          </div>
 
-          <div className="form-group">
-            <label>Địa chỉ đầy đủ</label>
-            <input
-              className="form-control"
-              value={`${formData.street}${formData.street && formData.ward ? ', ' : ''}${formData.ward}${formData.ward && formData.district ? ', ' : ''}${formData.district}${formData.district && formData.province ? ', ' : ''}${formData.province}`}
-              disabled
-            />
-          </div>
-
-          <div className="mt-4 d-flex justify-content-end">
-            <button className="btn btn-gradient-red" onClick={handleNext}>
-              Tiếp theo
-            </button>
-          </div>
-        </div>
+            <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
+              <Button
+                type="primary"
+                htmlType="submit"
+                size="large"
+                style={{
+                  minWidth: 120,
+                  background: 'linear-gradient(45deg, #ff6b6b, #ee5a52)',
+                  border: 'none'
+                }}
+              >
+                Tiếp theo
+              </Button>
+            </Form.Item>
+          </Form>
+        </Card>
       </div>
     </div>
   );

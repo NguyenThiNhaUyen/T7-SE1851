@@ -1,114 +1,214 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { BellOutlined } from "@ant-design/icons";
+import {
+  Layout,
+  Menu,
+  Avatar,
+  Dropdown,
+  Badge,
+  Button,
+  Space,
+  Popover,
+  List,
+  Typography
+} from "antd";
+import {
+  BellOutlined,
+  UserOutlined,
+  LogoutOutlined,
+  LoginOutlined,
+  UserAddOutlined,
+  HomeOutlined,
+  ReadOutlined,
+  QuestionCircleOutlined,
+  CalendarOutlined
+} from "@ant-design/icons";
 import "../styles/Navbar.css";
 
+const { Header } = Layout;
+const { Text } = Typography;
+
 const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, showUserBoard, logOut }) => {
-  const navigate = useNavigate();
-  const [showPopup, setShowPopup] = useState(false);
-  const popupRef = useRef(null);
+    const navigate = useNavigate();
+    const [notificationCount] = useState(2); // Mock notification count
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (popupRef.current && !popupRef.current.contains(event.target)) {
-        setShowPopup(false);
-      }
+    const handleLogout = () => {
+        logOut();
+        navigate("/login");
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
 
-  const handleLogout = (e) => {
-    e.preventDefault();
-    logOut();
-    navigate("/login");
-  };
+    // Menu items cho navigation chính
+    const navigationItems = [
+        {
+            key: 'home',
+            icon: <HomeOutlined />,
+            label: <NavLink to="/home">Trang chủ</NavLink>,
+        },
+        {
+            key: 'blog',
+            icon: <ReadOutlined />,
+            label: <NavLink to="/blog">Tin tức</NavLink>,
+        },
+        {
+            key: 'faq',
+            icon: <QuestionCircleOutlined />,
+            label: <NavLink to="/faq">Hỏi - Đáp</NavLink>,
+        },
+        {
+            key: 'activities',
+            icon: <CalendarOutlined />,
+            label: <NavLink to="/activities">Hoạt động</NavLink>,
+        }
+    ];
 
-  return (
-    <nav className="navbar-custom">
-      {/* Bên trái - logo */}
-      <div className="navbar-left">
-        <img src="/Logo-Blood-Donation.jpg" alt="Logo" className="navbar-logo" />
-      </div>
-
-      {/* Giữa - điều hướng chính */}
-      <div className="navbar-center">
-        <NavLink to="/home" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Trang chủ</NavLink>
-        <NavLink to="/blog" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Tin tức</NavLink>
-        <NavLink to="/faq" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Hỏi - Đáp</NavLink>
-        <NavLink to="/activities" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Hoạt động</NavLink>
-
-        {showAdminBoard && (
-          <NavLink to="/notifications/send" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Gửi thông báo</NavLink>
-        )}
-      </div>
-
-      {/* Phải - tài khoản */}
-      <div className="navbar-right" style={{ position: "relative" }}>
-        {currentUser && (
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <BellOutlined
-              style={{ fontSize: "20px", color: "#fff", cursor: "pointer" }}
-              onClick={() => setShowPopup(!showPopup)}
+    // Notification content
+    const notificationContent = (
+        <div style={{ width: 300 }}>
+            <Text strong style={{ fontSize: '16px', display: 'block', marginBottom: '12px' }}>
+                Thông báo
+            </Text>
+            <List
+                size="small"
+                dataSource={[
+                    'Đây là thông báo 1',
+                    'Thông báo 2 sẽ ở đây',
+                    'Thông báo quan trọng khác'
+                ]}
+                renderItem={(item, index) => (
+                    <List.Item style={{ padding: '8px 0', borderBottom: index < 2 ? '1px solid #f0f0f0' : 'none' }}>
+                        <Text>{item}</Text>
+                    </List.Item>
+                )}
             />
-          </div>
-        )}
+        </div>
+    );
 
-        {showPopup && (
-          <div
-            ref={popupRef}
-            style={{
-              position: "absolute",
-              top: "40px",
-              right: "10px",
-              background: "#fff",
-              color: "#000",
-              padding: "10px",
-              borderRadius: "8px",
-              boxShadow: "0 2px 10px rgba(0,0,0,0.15)",
-              zIndex: 1000,
-              width: "250px"
+    // User menu items
+    const userMenuItems = [
+        ...(showUserBoard && !showAdminBoard && !showStaffBoard ? [{
+            key: 'profile',
+            icon: <UserOutlined />,
+            label: <NavLink to="/profile">Hồ sơ cá nhân</NavLink>,
+        }] : []),
+        {
+            key: 'logout',
+            icon: <LogoutOutlined />,
+            label: 'Đăng xuất',
+            onClick: handleLogout,
+        }
+    ];
+
+    return (
+        <Header 
+            style={{ 
+                background: '#d32f2f', // Blood red theme
+                padding: '0 24px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                position: 'sticky',
+                top: 0,
+                zIndex: 1000
             }}
-          >
-            <p><strong>Thông báo</strong></p>
-            <ul style={{ paddingLeft: "16px" }}>
-              <li>Đây là thông báo 1</li>
-              <li>Thông báo 2 sẽ ở đây</li>
-            </ul>
-          </div>
-        )}
+        >
+            {/* Logo section */}
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+                <img 
+                    src="/Logo-Blood-Donation.jpg" 
+                    alt="Logo" 
+                    style={{ 
+                        height: '40px', 
+                        marginRight: '24px',
+                        borderRadius: '4px'
+                    }} 
+                />
+            </div>
 
-        {showUserBoard && !showAdminBoard && !showStaffBoard && currentUser && (
-          <NavLink to="/profile" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
-            {currentUser.username}
-          </NavLink>
-        )}
+            {/* Navigation menu */}
+            <Menu
+                mode="horizontal"
+                items={navigationItems}
+                style={{
+                    background: 'transparent',
+                    border: 'none',
+                    flex: 1,
+                    justifyContent: 'center'
+                }}
+                theme="dark"
+            />
 
-        {!showUserBoard && currentUser && (
-          <span className="text" style={{ fontWeight: "bold", color: "white", fontSize: "1rem", padding: "8px" }}>
-            {currentUser.username}
-          </span>
-        )}
+            {/* User section */}
+            <Space size="large">
+                {currentUser && (
+                    <Popover
+                        content={notificationContent}
+                        title={null}
+                        trigger="click"
+                        placement="bottomRight"
+                    >
+                        <Badge count={notificationCount} size="small">
+                            <Button
+                                type="text"
+                                icon={<BellOutlined />}
+                                style={{ 
+                                    color: 'white',
+                                    fontSize: '18px',
+                                    display: 'flex',
+                                    alignItems: 'center'
+                                }}
+                            />
+                        </Badge>
+                    </Popover>
+                )}
 
-        {currentUser ? (
-          <span onClick={handleLogout} className="nav-link" style={{ cursor: "pointer" }}>
-            Đăng xuất
-          </span>
-        ) : (
-          <>
-            <NavLink to="/login" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
-              Đăng nhập
-            </NavLink>
-            <NavLink to="/register/information" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
-              Đăng ký
-            </NavLink>
-          </>
-        )}
-      </div>
-    </nav>
-  );
+                {currentUser ? (
+                    <Dropdown
+                        menu={{ items: userMenuItems }}
+                        placement="bottomRight"
+                        trigger={['click']}
+                    >
+                        <Space style={{ cursor: 'pointer', color: 'white' }}>
+                            <Avatar 
+                                icon={<UserOutlined />} 
+                                size="small"
+                                style={{ backgroundColor: '#fff', color: '#d32f2f' }}
+                            />
+                            <Text style={{ color: 'white', fontWeight: 500 }}>
+                                {currentUser.username}
+                            </Text>
+                        </Space>
+                    </Dropdown>
+                ) : (
+                    <Space>
+                        <Button
+                            type="ghost"
+                            icon={<LoginOutlined />}
+                            onClick={() => navigate('/login')}
+                            style={{ 
+                                borderColor: 'white',
+                                color: 'white'
+                            }}
+                        >
+                            Đăng nhập
+                        </Button>
+                        <Button
+                            type="primary"
+                            icon={<UserAddOutlined />}
+                            onClick={() => navigate('/register/information')}
+                            style={{ 
+                                backgroundColor: 'white',
+                                borderColor: 'white',
+                                color: '#d32f2f'
+                            }}
+                        >
+                            Đăng ký
+                        </Button>
+                    </Space>
+                )}
+            </Space>
+        </Header>
+    );
 };
 
 export default Navbar;
