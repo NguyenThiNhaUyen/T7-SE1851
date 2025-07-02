@@ -9,14 +9,14 @@ const login = (username, password) => {
   return axios.post(`${API_URL}/login`, { username, password }, {
     headers: {
       'Content-Type': 'application/json'
-    },
-    withCredentials: true
-  }).then((response) => {
-    if (response.data?.accessToken) {
-      localStorage.setItem('user', JSON.stringify(response.data));
-      localStorage.setItem('token', response.data.accessToken); // 🔐 lưu token nếu dùng JWT
     }
-    return response.data;
+  }).then((response) => {
+    const userData = response.data?.data;
+    if (userData?.accessToken) {
+      localStorage.setItem('user', JSON.stringify(userData));
+      localStorage.setItem('token', userData.accessToken);
+    }
+    return userData;
   });
 };
 

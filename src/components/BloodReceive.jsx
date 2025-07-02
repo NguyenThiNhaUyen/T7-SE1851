@@ -1,4 +1,8 @@
 import React, { useEffect, useState } from "react";
+import { Collapse, List, Typography, Alert, Spin, Card, Divider } from "antd";
+
+const { Title, Paragraph, Text, Link } = Typography;
+const { Panel } = Collapse;
 
 const BloodReceive = () => {
   const [receiveMethods, setReceiveMethods] = useState([]);
@@ -6,11 +10,10 @@ const BloodReceive = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Dữ liệu dựa trên hình ảnh, có thể thay bằng API /users/blood/receive
     const sampleData = [
       { 
         id: 1, 
-        method_name: "Đăng ký trực tuyến", 
+        method_name: "📱 Đăng ký trực tuyến", 
         steps: [
           "Truy cập mục 'Gửi yêu cầu nhận máu' trên website.",
           "Chọn nhóm máu và số lượng cần.",
@@ -20,7 +23,7 @@ const BloodReceive = () => {
       },
       { 
         id: 2, 
-        method_name: "Liên hệ hotline", 
+        method_name: "📞 Liên hệ hotline", 
         steps: [
           "Gọi số 1900-123-456 (24/7).",
           "Cung cấp thông tin cá nhân và yêu cầu khẩn cấp.",
@@ -30,7 +33,7 @@ const BloodReceive = () => {
       },
       { 
         id: 3, 
-        method_name: "Đến trung tâm y tế", 
+        method_name: "🏥 Đến trung tâm y tế", 
         steps: [
           "Mang CMND/CCCD đến trung tâm y tế gần nhất.",
           "Điền biểu mẫu yêu cầu.",
@@ -42,34 +45,55 @@ const BloodReceive = () => {
     setTimeout(() => {
       setReceiveMethods(sampleData);
       setLoading(false);
-    }, 500); // Mô phỏng delay API
+    }, 500);
   }, []);
 
-  if (loading) return <div className="loading-spinner">Đang tải dữ liệu...</div>;
-  if (error) return <div className="alert alert-danger">{error}</div>;
+  if (loading) return <Spin tip="Đang tải dữ liệu..." size="large" style={{ display: "block", marginTop: 80 }} />;
+  if (error) return <Alert message={error} type="error" showIcon style={{ margin: 16 }} />;
 
   return (
-    <div className="education-section">
-      <h2>Cách nhận máu</h2>
-      <div className="education-content">
+    <div style={{ padding: 24 }}>
+      <Title level={2}>🩸 Cách nhận máu</Title>
+
+      <Collapse accordion>
         {receiveMethods.map((method) => (
-          <div key={method.id} className="education-item">
-            <h4>{method.method_name}</h4>
-            <ul>
-              {method.steps.map((step, index) => (
-                <li key={index}>{step}</li>
-              ))}
-            </ul>
-            {method.note && <p className="note">{method.note}</p>}
-          </div>
+          <Panel header={method.method_name} key={method.id}>
+            <List
+              size="small"
+              dataSource={method.steps}
+              renderItem={(item, idx) => (
+                <List.Item>
+                  <Text>{idx + 1}. {item}</Text>
+                </List.Item>
+              )}
+            />
+            {method.note && (
+              <Paragraph type="secondary" style={{ marginTop: 12 }}>
+                <Text strong>Ghi chú:</Text> {method.note}
+              </Paragraph>
+            )}
+          </Panel>
         ))}
-      </div>
-      <div className="contact-info">
-        <p><strong>Liên hệ hỗ trợ:</strong></p>
-        <p>Hotline: <a href="tel:1900123456">1900-123-456</a></p>
-        <p>Email: <a href="mailto:support@bloodbank.com">support@bloodbank.com</a></p>
-        <p>Website: <a href="https://bloodbank.com" target="_blank" rel="noopener noreferrer">https://bloodbank.com</a></p>
-      </div>
+      </Collapse>
+
+      <Divider />
+
+      <Card title="📞 Thông tin liên hệ hỗ trợ" bordered style={{ marginTop: 24 }}>
+        <Paragraph>
+          <Text strong>Hotline:</Text>{" "}
+          <Link href="tel:1900123456">1900-123-456</Link>
+        </Paragraph>
+        <Paragraph>
+          <Text strong>Email:</Text>{" "}
+          <Link href="mailto:support@bloodbank.com">support@bloodbank.com</Link>
+        </Paragraph>
+        <Paragraph>
+          <Text strong>Website:</Text>{" "}
+          <Link href="https://bloodbank.com" target="_blank" rel="noopener noreferrer">
+            https://bloodbank.com
+          </Link>
+        </Paragraph>
+      </Card>
     </div>
   );
 };
