@@ -26,7 +26,7 @@ import OtpVerify from "./components/OtpVerify";
 import BoardAdmin from "./components/BoardAdmin";
 import AdminLayout from "./layouts/AdminLayout";
 import AdminDashboard from "./components/AdminDashboard";
-import UrgentRequests from "./components/UrgentRequests";
+import AdminBloodRequests from "./components/AdminBloodRequests";
 import DonationHistory from "./components/DonationHistory";
 import TransfusionHistory from "./components/TransfusionHistory";
 
@@ -143,7 +143,7 @@ const App = () => {
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<BoardAdmin />} />
             <Route path="dashboard" element={<AdminDashboard />} />
-            <Route path="urgent-requests" element={<UrgentRequests />} />
+            <Route path="adblood-requests" element={<AdminBloodRequests />} />
             <Route path="donation-history" element={<DonationHistory />} />
             <Route path="transfusion-history" element={<TransfusionHistory />} />
 

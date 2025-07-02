@@ -26,6 +26,7 @@ import {
   HeartOutlined,
   AlertOutlined,
   CheckCircleOutlined,
+  ExclamationCircleOutlined,
   StarOutlined,
   WarningOutlined
 } from '@ant-design/icons';
@@ -35,7 +36,7 @@ const { Title, Text } = Typography;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
-const TransfusionHistory = () => {
+const AdminBloodRequests = () => {
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [searchText, setSearchText] = useState('');
@@ -43,7 +44,7 @@ const TransfusionHistory = () => {
   const [dateRange, setDateRange] = useState(null);
   const [timePeriod, setTimePeriod] = useState('custom');
 
-  // Dữ liệu mẫu - sẽ được thay thế bằng API call
+  // Dữ liệu sẽ được lấy từ API
   const mockData = [];
 
   // Hàm xử lý chọn khoảng thời gian nhanh
@@ -91,25 +92,17 @@ const TransfusionHistory = () => {
     setStatusFilter('all');
     setDateRange(null);
     setTimePeriod('custom');
-    setDataSource(mockData);
   };
 
   // Hàm xử lý tìm kiếm
   const handleSearch = () => {
-    const filtered = mockData.filter(item => {
-      // 1) searchText
-      const matchName = item.patientName.toLowerCase().includes(searchText.toLowerCase());
-      // 2) statusFilter
-      const matchStatus = statusFilter === 'all' || item.status === statusFilter;
-      // 3) dateRange: giả sử item.createdDate có format 'DD/MM/YYYY'
-      let matchDate = true;
-      if (dateRange) {
-        const created = dayjs(item.createdDate, 'DD/MM/YYYY');
-        matchDate = created.isBetween(dateRange[0], dateRange[1], 'day', '[]');
-      }
-      return matchName && matchStatus && matchDate;
+    console.log({
+      searchText,
+      statusFilter,
+      dateRange,
+      timePeriod
     });
-    setDataSource(filtered);
+    // Thực hiện logic tìm kiếm ở đây
   };
 
   const columns = [
@@ -183,7 +176,27 @@ const TransfusionHistory = () => {
         );
       },
     },
-
+    {
+      title: 'Trạng thái',
+      dataIndex: 'status',
+      key: 'status',
+      width: 120,
+      filteredValue: statusFilter === 'all' ? null : [statusFilter],
+      onFilter: (value, record) => record.status === value,
+      render: (status) => {
+        const config = {
+          APPROVED: { color: 'success', text: 'ĐÃ DUYỆT', icon: <CheckCircleOutlined /> },
+          PENDING: { color: 'warning', text: 'CHỜ DUYỆT', icon: <ExclamationCircleOutlined /> },
+          REJECTED: { color: 'error', text: 'TỪ CHỐI', icon: <ExclamationCircleOutlined /> }
+        };
+        const { color, text, icon } = config[status] || config.PENDING;
+        return (
+          <Tag color={color} icon={icon} className="font-semibold">
+            {text}
+          </Tag>
+        );
+      },
+    },
     {
       title: 'Ngày tạo',
       dataIndex: 'createdDate',
@@ -215,8 +228,6 @@ const TransfusionHistory = () => {
     },
   ];
 
-  const [dataSource, setDataSource] = useState(mockData);
-
   const handleViewDetail = (record) => {
     setSelectedRecord(record);
     setModalVisible(true);
@@ -230,7 +241,7 @@ const TransfusionHistory = () => {
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       {/* Header */}
-      <div className="mb-8">
+      <div className="mb-6">
         <Title level={2} className="mb-2 text-gray-800">
           <HeartOutlined className="mr-3 text-red-500" />
           Quản lý lịch sử truyền máu
@@ -239,90 +250,107 @@ const TransfusionHistory = () => {
           Theo dõi và quản lý các yêu cầu truyền máu trong hệ thống
         </Text>
       </div>
-      <Divider className="my-8" />
-      
+
       {/* Filters */}
       <Card className="mb-6 shadow-sm">
-        <Row gutter={16} align="middle">
-          <Col span={8}>
-            <Input
-              placeholder="Tìm kiếm theo tên bệnh nhân..."
-              prefix={<SearchOutlined />}
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-              allowClear
-            />
-          </Col>
-          <Col span={3}>
-            <Select
-              placeholder="Lọc theo thời gian"
-              value={timePeriod}
-              onChange={handleTimePeriodChange}
-              className="w-full"
-              suffixIcon={<CalendarOutlined />}
-            >
-              <Option value="custom">Tùy chỉnh</Option>
-              <Option value="1week">1 tuần qua</Option>
-              <Option value="1month">1 tháng qua</Option>
-              <Option value="1year">1 năm qua</Option>
-            </Select>
-          </Col>
-
-          <Col span={7}>
-            <RangePicker
-              placeholder={['Từ ngày', 'Đến ngày']}
-              className="w-full"
-              value={dateRange}
-              onChange={handleDateRangeChange}
-              format="DD/MM/YYYY"
-              allowClear
-            />
-          </Col>
-
-          <Col span={4}>
-            <Button type="primary" icon={<SearchOutlined />} className="w-full" onClick={handleSearch}>
-              Tìm kiếm
-            </Button>
-          </Col>
-          <Col span={2}>
-            <Button
-              onClick={handleReset}
-              className="w-full"
-            >
-              Đặt lại
-            </Button>
-          </Col>
-        </Row>
-
-        {/* Hiển thị khoảng thời gian đã chọn */}
-        {dateRange && (
-          <Row>
-            <Col span={24}>
-              <div className="text-sm text-gray-600 bg-blue-50 p-3 rounded-lg border-l-4 border-blue-400">
-                <CalendarOutlined className="mr-2 text-blue-600" />
-                <Text strong>Lọc từ ngày:</Text> {dateRange[0].format('DD/MM/YYYY')}
-                <Text strong className="mx-2">đến</Text> {dateRange[1].format('DD/MM/YYYY')}
-                {timePeriod !== 'custom' && (
-                  <Tag color="blue" className="ml-3">
-                    {timePeriod === '1week' ? '1 tuần qua' :
-                      timePeriod === '1month' ? '1 tháng qua' :
-                        timePeriod === '1year' ? '1 năm qua' : ''}
-                  </Tag>
-                )}
-              </div>
+          <Row gutter={16} align="middle">
+            <Col span={8}>
+              <Input
+                placeholder="Tìm kiếm theo tên bệnh nhân..."
+                prefix={<SearchOutlined />}
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                allowClear
+              />
+            </Col>
+            <Col span={4}>
+              <Select
+                placeholder="Lọc theo trạng thái"
+                value={statusFilter}
+                onChange={setStatusFilter}
+                className="w-full"
+                suffixIcon={<FilterOutlined />}
+              >
+                <Option value="all">Tất cả trạng thái</Option>
+                <Option value="APPROVED">Đã duyệt</Option>
+                <Option value="PENDING">Chờ duyệt</Option>
+                <Option value="REJECTED">Từ chối</Option>
+              </Select>
+            </Col>
+            <Col span={4}>
+              <Select
+                placeholder="Lọc theo thời gian"
+                value={timePeriod}
+                onChange={handleTimePeriodChange}
+                className="w-full"
+                suffixIcon={<CalendarOutlined />}
+              >
+                <Option value="custom">Tùy chỉnh</Option>
+                <Option value="1week">1 tuần qua</Option>
+                <Option value="1month">1 tháng qua</Option>
+                <Option value="1year">1 năm qua</Option>
+              </Select>
+            </Col>
+            <Col span={4}>
+              <DatePicker placeholder="Chọn ngày" className="w-full" />
+            </Col>
+            <Col span={2}>
+              <Button type="primary" icon={<SearchOutlined />} className="w-full">
+                Tìm kiếm
+              </Button>
             </Col>
           </Row>
-        )}
+          {/* Hàng thứ hai - Date Range Picker */}
+          <Row gutter={16} align="middle" className="mt-2">
+            <Col span={7}>
+              <RangePicker
+                placeholder={['Từ ngày', 'Đến ngày']}
+                className="w-full"
+                value={dateRange}
+                onChange={handleDateRangeChange}
+                format="DD/MM/YYYY"
+                allowClear
+              />
+            </Col>
+            <Col span={5}>
+              <Button 
+                onClick={handleReset}
+                className="w-full"
+              >
+                Đặt lại
+              </Button>
+            </Col>
+          </Row>
+
+          {/* Hiển thị khoảng thời gian đã chọn */}
+          {dateRange && (
+            <Row>
+              <Col span={24}>
+                <div className="text-sm text-gray-600 bg-blue-50 p-3 rounded-lg border-l-4 border-blue-400">
+                  <CalendarOutlined className="mr-2 text-blue-600" />
+                  <Text strong>Lọc từ ngày:</Text> {dateRange[0].format('DD/MM/YYYY')}
+                  <Text strong className="mx-2">đến</Text> {dateRange[1].format('DD/MM/YYYY')}
+                  {timePeriod !== 'custom' && (
+                    <Tag color="blue" className="ml-3">
+                      {timePeriod === '1week' ? '1 tuần qua' :
+                        timePeriod === '1month' ? '1 tháng qua' :
+                          timePeriod === '1year' ? '1 năm qua' : ''}
+                    </Tag>
+                  )}
+                </div>
+              </Col>
+            </Row>
+          )}
       </Card>
 
       {/* Table */}
       <Card className="shadow-sm">
         <Table
           columns={columns}
-          dataSource={dataSource}
+          dataSource={mockData}
           rowKey="id"
           pagination={{
-            total: dataSource.length,
+            total: mockData.length,
             pageSize: 10,
             showSizeChanger: true,
             showQuickJumper: true,
@@ -569,4 +597,4 @@ const TransfusionHistory = () => {
   );
 };
 
-export default TransfusionHistory;
+export default AdminBloodRequests;
