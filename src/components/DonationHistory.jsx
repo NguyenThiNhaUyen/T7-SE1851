@@ -12,9 +12,9 @@ import {
 } from "antd";
 import { DownloadOutlined } from "@ant-design/icons";
 import axios from "axios";
-import { useCurrentUser } from "../hooks/useCurrentUser";
 import dayjs from "dayjs";
 import * as XLSX from "xlsx";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 
 const { Title } = Typography;
 
@@ -26,6 +26,7 @@ const DonationHistory = () => {
 
   useEffect(() => {
     if (!isLoggedIn) return;
+
     axios
       .get(`/users/donations/history/${user.id}`)
       .then((res) => {
@@ -75,7 +76,9 @@ const DonationHistory = () => {
       title: "📦 Trạng thái",
       dataIndex: "status",
       render: (status) => (
-        <Tag color={status === "Đã tách" ? "green" : "orange"}>{status}</Tag>
+        <Tag color={status === "Đã tách" || status === "DONATED" ? "green" : "orange"}>
+          {status === "DONATED" ? "Đã hiến" : status}
+        </Tag>
       ),
     },
   ];
@@ -112,7 +115,6 @@ const DonationHistory = () => {
         locale={{ emptyText: "Không có lịch sử hiến máu." }}
       />
 
-      {/* Modal chi tiết */}
       <Modal
         title="📋 Chi tiết lần hiến máu"
         open={modalVisible}

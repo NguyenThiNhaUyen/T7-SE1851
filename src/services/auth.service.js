@@ -5,19 +5,22 @@ axios.defaults.withCredentials = true;
 const API_URL = 'http://localhost:8080/api/auth';
 
 // ✅ Đăng nhập
-const login = (username, password) => {
-  return axios.post(`${API_URL}/login`, { username, password }, {
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  }).then((response) => {
-    const userData = response.data?.data;
-    if (userData?.accessToken) {
-      localStorage.setItem('user', JSON.stringify(userData));
-      localStorage.setItem('token', userData.accessToken);
-    }
-    return userData;
+const login = async (username, password) => {
+  const response = await axios.post(`${API_URL}/login`, { username, password }, {
+    headers: { 'Content-Type': 'application/json' }
   });
+
+  const userData = response?.data; // 👈 CHỈ LẤY response.data
+  if (!userData || !userData.accessToken) {
+    throw new Error("Dữ liệu đăng nhập không hợp lệ.");
+  }
+
+  // Lưu token
+  localStorage.setItem("user", JSON.stringify(userData));
+  localStorage.setItem("token", userData.accessToken);
+  axios.defaults.headers.common["Authorization"] = `Bearer ${userData.accessToken}`;
+
+  return userData;
 };
 
 // ✅ Đăng ký
@@ -38,6 +41,7 @@ const register = (username, email, password, profile) => {
 const logout = () => {
   localStorage.removeItem('user');
   localStorage.removeItem('token');
+  delete axios.defaults.headers.common["Authorization"];
 };
 
 // ✅ Lấy user hiện tại
@@ -51,11 +55,18 @@ const getAuthHeader = () => {
   return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
-// ✅ Export tất cả
+// ✅ API mẫu có auth
+const getInventory = () => {
+  return axios.get("http://localhost:8080/api/blood/inventory", {
+    headers: getAuthHeader()
+  });
+};
+
 const AuthService = {
   login,
   register,
   logout,
+  getInventory,
   getCurrentUser,
   getAuthHeader
 };

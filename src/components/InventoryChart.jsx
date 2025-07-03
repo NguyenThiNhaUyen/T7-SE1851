@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { Bar, Line } from "react-chartjs-2";
 import {
   Chart,
@@ -14,6 +15,7 @@ import Modal from "react-modal";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import "../styles/staff.css";
+import { getAuthHeader } from "../services/user.service";
 
 Chart.register(
   CategoryScale,
@@ -28,7 +30,7 @@ Chart.register(
 Modal.setAppElement("#root");
 
 const InventoryChart = () => {
-  const [rawData, setRawData] = useState([]);
+  const [inventoryData, setInventoryData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [historyData, setHistoryData] = useState([]);
   const [bloodType, setBloodType] = useState("");
@@ -38,51 +40,53 @@ const InventoryChart = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState([]);
 
-  // Load data from API
+  // Load tồn kho từ API
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const inventoryRes = await fetch("/api/inventory");
-        const inventory = await inventoryRes.json();
-        setRawData(inventory);
-        setFilteredData(inventory);
-        updateSummary(inventory);
-      } catch (error) {
-        console.error("Lỗi khi tải kho máu:", error);
-      }
+    axios.get("http://localhost:8080/api/blood-inventory", {
+      headers: getAuthHeader(),
+    })
+      .then((res) => {
+        const data = Array.isArray(res.data) ? res.data : [];
+        setInventoryData(data);
+        setFilteredData(data);
+        updateSummary(data);
+      })
+      .catch((err) => {
+        console.error("Lỗi khi tải dữ liệu tồn kho:", err);
+        setInventoryData([]);
+      });
 
-      try {
-        const historyRes = await fetch("/api/inventory-history");
-        const history = await historyRes.json();
-        setHistoryData(history);
-      } catch (error) {
-        console.error("Lỗi khi tải lịch sử:", error);
-      }
-    };
-
-    fetchData();
+    // Load lịch sử tồn kho
+    axios.get("http://localhost:8080/api/blood-inventory", {
+      headers: getAuthHeader(),
+    })
+      .then((res) => {
+        setHistoryData(res.data || []);
+      })
+      .catch((err) => {
+        console.error("Lỗi khi tải lịch sử tồn kho:", err);
+      });
   }, []);
 
-  // Filter on change
+  // Lọc khi chọn nhóm máu hoặc thành phần
   useEffect(() => {
-    const filtered = rawData.filter(
+    const filtered = inventoryData.filter(
       (item) =>
-        (!bloodType || item.blood_type === bloodType) &&
-        (!component || item.component === component)
+        (!bloodType || item.bloodTypeName === bloodType) &&
+        (!component || item.componentName === component)
     );
     setFilteredData(filtered);
     updateSummary(filtered);
-  }, [bloodType, component, rawData]);
+  }, [bloodType, component, inventoryData]);
 
-  // Tổng hợp dữ liệu
   const updateSummary = (data) => {
     let total = 0;
     const lowStock = [];
 
     data.forEach((item) => {
-      if (item.total_quantity_ml != null) {
-        total += item.total_quantity_ml;
-        if (item.total_quantity_ml < 500) lowStock.push(item);
+      if (item.totalQuantityML != null) {
+        total += item.totalQuantityML;
+        if (item.totalQuantityML < 500) lowStock.push(item);
       }
     });
 
@@ -98,6 +102,8 @@ const InventoryChart = () => {
   };
 
   const openDetails = (data) => {
+    console.log("Chi tiết nhóm máu:", data);
+
     setModalContent(data || []);
     setModalOpen(true);
   };
@@ -106,68 +112,31 @@ const InventoryChart = () => {
 
   return (
     <div className="inventory-container">
-      <h2>🧪 Quản lý tồn kho máu</h2>
-
-      {/* Thông tin thành phần máu */}
-      <div className="blood-info-section">
-        <h3>🩺 Thông tin thành phần máu</h3>
-
-        <div className="blood-card">
-          <h4>1. Hồng cầu (Red Blood Cells – RBCs)</h4>
-          <ul>
-            <li><strong>Loại:</strong> Hồng cầu khối (PRC)</li>
-            <li><strong>Chức năng:</strong> Thiếu máu, xuất huyết, chấn thương</li>
-            <li><strong>Lưu trữ:</strong> 35–42 ngày ở 2–6°C</li>
-            <li><strong>Hệ thống:</strong> component = "Hồng cầu"</li>
-          </ul>
-        </div>
-
-        <div className="blood-card">
-          <h4>2. Huyết tương (Plasma)</h4>
-          <ul>
-            <li><strong>Loại:</strong> FFP hoặc Plasma</li>
-            <li><strong>Chức năng:</strong> Rối loạn đông máu, xơ gan</li>
-            <li><strong>Chiết tách:</strong> Albumin, globulin, yếu tố VIII</li>
-            <li><strong>Hệ thống:</strong> component = "Huyết tương"</li>
-          </ul>
-        </div>
-
-        <div className="blood-card">
-          <h4>3. Tiểu cầu (Platelets)</h4>
-          <ul>
-            <li><strong>Loại:</strong> Đậm đặc hoặc gạn tách</li>
-            <li><strong>Chức năng:</strong> Bệnh nhân ung thư, hóa trị, xuất huyết</li>
-            <li><strong>Lưu trữ:</strong> 3–5 ngày ở 20–24°C</li>
-            <li><strong>Hệ thống:</strong> component = "Tiểu cầu"</li>
-          </ul>
-        </div>
-      </div>
+      <h2>📋 Quản lý tồn kho máu</h2>
 
       {/* Bộ lọc */}
       <div className="filter-panel">
         <div className="filter-group">
-          <label htmlFor="bloodTypeSelect">Nhóm máu:</label>
-          <select id="bloodTypeSelect" value={bloodType} onChange={(e) => setBloodType(e.target.value)}>
+          <label>Nhóm máu:</label>
+          <select value={bloodType} onChange={(e) => setBloodType(e.target.value)}>
             <option value="">-- Tất cả --</option>
             {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map((type) => (
               <option key={type} value={type}>{type}</option>
             ))}
           </select>
         </div>
-
         <div className="filter-group">
-          <label htmlFor="componentSelect">Thành phần:</label>
-          <select id="componentSelect" value={component} onChange={(e) => setComponent(e.target.value)}>
+          <label>Thành phần:</label>
+          <select value={component} onChange={(e) => setComponent(e.target.value)}>
             <option value="">-- Tất cả --</option>
             {["Hồng cầu", "Tiểu cầu", "Huyết tương"].map((c) => (
               <option key={c} value={c}>{c}</option>
             ))}
           </select>
         </div>
-
         <div className="filter-group">
-          <label htmlFor="orientationSelect">Biểu đồ:</label>
-          <select id="orientationSelect" value={orientation} onChange={(e) => setOrientation(e.target.value)}>
+          <label>Biểu đồ:</label>
+          <select value={orientation} onChange={(e) => setOrientation(e.target.value)}>
             <option value="y">🔄 Ngang</option>
             <option value="x">⬆️ Dọc</option>
           </select>
@@ -178,7 +147,7 @@ const InventoryChart = () => {
       <div className="summary-section">
         <div className="card">
           🩸 <strong>Tổng lượng máu:</strong> {summary.totalBlood} ml
-          <button onClick={() => openDetails(rawData)}>Xem chi tiết</button>
+          <button onClick={() => openDetails(inventoryData)}>Xem chi tiết</button>
         </div>
         <div className="card warning">
           ⚠️ <strong>Thiếu hụt:</strong> {summary.lowStockTypes.length} nhóm
@@ -187,18 +156,18 @@ const InventoryChart = () => {
         <button onClick={exportToExcel} className="export-btn">📥 Xuất Excel</button>
       </div>
 
-      {/* Biểu đồ tồn kho */}
+      {/* Biểu đồ */}
       {filteredData.length > 0 ? (
         <div className="chart-section">
           <Bar
             data={{
-              labels: filteredData.map((item) => `${item.blood_type} - ${item.component}`),
+              labels: filteredData.map((item) => `${item.bloodTypeName} - ${item.componentName}`),
               datasets: [{
                 label: "Tồn kho (ml)",
-                data: filteredData.map((item) => item.total_quantity_ml),
+                data: filteredData.map((item) => item.totalQuantityML),
                 backgroundColor: filteredData.map((item) =>
-                  item.total_quantity_ml < 500 ? "#ef4444" :
-                  item.total_quantity_ml < 2000 ? "#f59e0b" : "#10b981"
+                  item.totalQuantityML < 500 ? "#ef4444" :
+                  item.totalQuantityML < 2000 ? "#f59e0b" : "#10b981"
                 )
               }]
             }}
@@ -264,6 +233,7 @@ const InventoryChart = () => {
         <table className="details-table">
           <thead>
             <tr>
+              <th>ID</th>
               <th>Nhóm máu</th>
               <th>Thành phần</th>
               <th>Lượng (ml)</th>
@@ -271,12 +241,14 @@ const InventoryChart = () => {
           </thead>
           <tbody>
             {modalContent
-              .sort((a, b) => a.total_quantity_ml - b.total_quantity_ml)
+              .sort((a, b) => a.totalQuantityML - b.totalQuantityML)
               .map((item, idx) => (
-                <tr key={idx} className={item.total_quantity_ml < 500 ? "status-critical" : ""}>
-                  <td>{item.blood_type}</td>
-                  <td>{item.component}</td>
-                  <td>{item.total_quantity_ml}</td>
+                <tr key={idx} className={item.totalQuantityML < 500 ? "status-critical" : ""}>
+                  <td>{item.bloodInventoryId}</td>
+                  <td>{item.bloodTypeName}</td>
+                  <td>{item.componentName}</td>
+                  <td>{item.totalQuantityMl}</td>
+
                 </tr>
               ))}
           </tbody>

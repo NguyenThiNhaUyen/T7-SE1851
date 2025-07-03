@@ -21,60 +21,73 @@ import {
 } from "@ant-design/icons";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-
+import axios from 'axios';
+import AuthService from '../services/auth.service';
+const currentUser = AuthService.getCurrentUser();
 const { Option } = Select;
 const { TextArea } = Input;
 const { Title, Text } = Typography;
+const token = localStorage.getItem('token');
+
+
 
 const BloodRequestForm = () => {
   const [form] = Form.useForm();
   const [formData, setFormData] = useState({
-    patient_name: "",
+    // requesterId: currentUser.userId, // giả lập user đang đăng nhập, bạn có thể cập nhật động sau
+    doctorId: 11, // ✅ Gán mặc định bác sĩ ID 11
+    patientName: "",
+    patientPhone: "",
+    patientAge: "",
+    patientGender: "",
+    patientWeight: "",
+    patientBloodGroup: "",
+    bloodTypeId: null,
+    componentId: null,
+    quantityBag: "",
+    quantityMl: "",
+    urgencyLevel: "",
+    triageLevel: "RED", // Có thể cho phép chọn RED/YELLOW/GREEN
+    reason: "",
+    neededAt: "",
+    crossmatchRequired: false,
+    hasTransfusionHistory: false,
+    hasReactionHistory: false,
+    isPregnant: false,
+    hasAntibodyIssue: false,
+    warningNote: "",
+    specialNote: "",
+    isUnmatched: false,
+    codeRedId: null,
+
+    // Thông tin hiển thị nhưng không gửi API
     medical_record_id: "",
-    age: "",
-    gender: "",
-    weight: "",
-    blood_type: "",
-    blood_component: "",
-    quantity_ml: "",
-    unit_count: "",
-    urgency_level: "",
-    crossmatch_required: false,
-    previous_transfusion: false,
-    previous_reaction: false,
-    is_pregnant: false,
-    abnormal_antibody: false,
-    clinical_indication: "",
-    warning_factor: "",
-    required_time: "",
-    special_notes: "",
-    requester_name: "",
-    contact: "",
     hospital_name: "BỆNH VIỆN NGỌC HUYẾT",
     department: "KHOA TRUYỀN MÁU - HÓA SINH",
     doctor_signature: "",
-    lab_signature: ""
+    lab_signature: "",
+    requester_name: ""
   });
 
-  useEffect(() => {
-    // Simulate getting user data
-    const mockUser = {
-      name: "BS. Nguyễn Văn A",
-      patientCode: "BN2025001234",
-      department: "Khoa Nội Tổng Hợp"
-    };
 
+useEffect(() => {
+  const currentUser = AuthService.getCurrentUser();
+
+  if (currentUser) {
+    const generatedCode = `BA${new Date().getFullYear()}${currentUser.userId.toString().padStart(4, '0')}`;
+    
     setFormData(prev => ({
       ...prev,
-      requester_name: mockUser.name,
-      medical_record_id: mockUser.patientCode
+      requesterId: currentUser.userId,
+      medical_record_id: generatedCode
     }));
 
     form.setFieldsValue({
-      requester_name: mockUser.name,
-      medical_record_id: mockUser.patientCode
+      medical_record_id: generatedCode
     });
-  }, [form]);
+  }
+}, [form]);
+
 
   const handleFormChange = (changedValues, allValues) => {
     setFormData(prev => ({ ...prev, ...allValues }));
@@ -94,22 +107,63 @@ const BloodRequestForm = () => {
     return null;
   };
 
-  const handleSubmit = async (values) => {
-    const error = validateForm(values);
-    if (error) {
-      message.error(error);
-      return;
-    }
+const handleSubmit = async (values) => {
+  const error = validateForm(values);
+  if (error) {
+    message.error(error);
+    return;
+  }
 
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      message.success("Gửi yêu cầu máu thành công!");
-      setFormData(prev => ({ ...prev, ...values, submitted_at: new Date() }));
-    } catch (err) {
-      message.error("Lỗi khi gửi yêu cầu.");
-    }
-  };
+  try {
+    const payload = {
+      requesterId: formData.requesterId,
+      doctorId: formData.doctorId,
+      patientName: values.patient_name,
+      patientPhone: values.contact,
+      patientAge: Number(values.age),
+      patientGender: values.gender,
+      patientWeight: Number(values.weight),
+      patientBloodGroup: values.blood_type || "", // nếu có tên nhóm máu
+      bloodTypeId: values.bloodTypeId,
+      componentId: values.bloodComponentId,
+      quantityBag: Number(values.unit_count),
+      quantityMl: Number(values.quantity_ml),
+      urgencyLevel: values.urgency_level?.toUpperCase(),
+      triageLevel: formData.triageLevel || "RED",
+      reason: values.clinical_indication,
+      neededAt: values.required_time?.toISOString?.() || values.required_time,
+      crossmatchRequired: values.crossmatch_required || false,
+      hasTransfusionHistory: values.previous_transfusion || false,
+      hasReactionHistory: values.previous_reaction || false,
+      isPregnant: values.is_pregnant || false,
+      hasAntibodyIssue: values.abnormal_antibody || false,
+      warningNote: values.warning_factor,
+      specialNote: values.special_notes,
+      isUnmatched: false,
+      codeRedId: null
+    };
+
+    const token = localStorage.getItem("token");
+
+    const response = await axios.post(
+      "http://localhost:8080/api/blood-requests",
+      payload,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    message.success("✅ Gửi yêu cầu máu thành công!");
+    setFormData(prev => ({ ...prev, ...values, submitted_at: new Date() }));
+  } catch (err) {
+    console.error(err);
+    message.error("❌ Lỗi khi gửi yêu cầu máu.");
+  }
+};
+
 
   const requiredMessage = (label) => [{ required: true, message: `Vui lòng nhập ${label}` }];
 
@@ -191,7 +245,7 @@ const BloodRequestForm = () => {
           <Row gutter={16}>
             <Col span={8}>
               <Form.Item label="Mã bệnh án" name="medical_record_id" rules={[{ required: true }]}>
-                <Input readOnly />
+                <Input />
               </Form.Item>
             </Col>
 
@@ -236,24 +290,28 @@ const BloodRequestForm = () => {
             </Col>
 
             <Col span={6}>
-              <Form.Item label="Nhóm máu" name="blood_type" rules={requiredMessage('nhóm máu')}>
-                <Select>
-                  <Option value="Chưa biết">Chưa biết</Option>
-                  {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map(type => (
-                    <Option key={type} value={type}>{type}</Option>
-                  ))}
+              <Form.Item label="Nhóm máu" name="bloodTypeId" rules={requiredMessage('nhóm máu')}>
+                <Select placeholder="Chọn nhóm máu">
+                  <Option value={null}>Chưa biết</Option>
+                  <Option value={1}>A+</Option>
+                  <Option value={2}>A-</Option>
+                  <Option value={3}>B+</Option>
+                  <Option value={4}>B-</Option>
+                  <Option value={5}>AB+</Option>
+                  <Option value={6}>AB-</Option>
+                  <Option value={7}>O+</Option>
+                  <Option value={8}>O-</Option>
                 </Select>
+
               </Form.Item>
             </Col>
 
             <Col span={6}>
-              <Form.Item label="Loại chế phẩm" name="blood_component" rules={requiredMessage('loại chế phẩm')}>
-                <Select>
-                  <Option value="PRBC">Hồng cầu (PRBC)</Option>
-                  <Option value="Plasma">Huyết tương</Option>
-                  <Option value="Tiểu cầu">Tiểu cầu</Option>
-                  <Option value="Toàn phần">Toàn phần</Option>
-                  <Option value="Khác">Khác</Option>
+              <Form.Item label="Loại chế phẩm" name="bloodComponentId" rules={requiredMessage('loại chế phẩm')}>
+                <Select placeholder="Chọn chế phẩm máu" allowClear>
+                  <Option value={1}>Hồng cầu (PRBC)</Option>
+                  <Option value={2}>Huyết tương</Option>
+                  <Option value={3}>Tiểu cầu</Option>
                 </Select>
               </Form.Item>
             </Col>
@@ -403,7 +461,10 @@ const BloodRequestForm = () => {
             <div className="field"><strong>Loại chế phẩm máu:</strong> {formData.blood_component}</div>
             <div className="field"><strong>Số lượng:</strong> {formData.unit_count} túi - {formData.quantity_ml} ml</div>
             <div className="field"><strong>Mức độ yêu cầu:</strong> {formData.urgency_level}</div>
-            <div className="field"><strong>Thời gian cần máu:</strong> {formData.required_time}</div>
+            <div className="field">
+              <strong>Thời gian cần máu:</strong>{" "}
+              {formData.required_time ? new Date(formData.required_time).toLocaleString("vi-VN") : ""}
+            </div>
           </div>
 
           <Divider />

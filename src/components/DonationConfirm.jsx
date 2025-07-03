@@ -14,7 +14,7 @@ const DonationConfirm = () => {
         headers: getAuthHeader(),
       })
       .then((res) => {
-        console.log("📦 Dữ liệu nhận được:", res.data); 
+        console.log("📦 Dữ liệu nhận được:", res.data);
         setDonations(res.data);
         console.log("✅ Tải danh sách hiến máu thành công");
       })
@@ -25,9 +25,7 @@ const DonationConfirm = () => {
           } else if (err.response.status === 403) {
             console.error("❌ Lỗi: Không có quyền truy cập (403 Forbidden)");
           } else {
-           // console.error(`❌ Lỗi máy chủ: ${err.response.status}`);
-            console.error(`❌ Lỗi máy chủ: 9`);
-
+            console.error(`❌ Lỗi máy chủ: ${err.response.status}`);
           }
         } else {
           console.error("❌ Lỗi mạng hoặc không kết nối được đến server");
@@ -65,9 +63,26 @@ const DonationConfirm = () => {
   });
 
   const handleStatusChange = (id, newStatus) => {
-    const updated = { ...statusMap, [id]: newStatus };
-    setStatusMap(updated);
-    localStorage.setItem("statusMap", JSON.stringify(updated));
+    let statusEnum;
+    if (newStatus === "Đang xử lý...") statusEnum = "CONFIRMED";
+    else if (newStatus === "Đã hủy") statusEnum = "CANCELLED";
+    else if (newStatus === "Chưa nhập dữ liệu") statusEnum = "DONATED";
+
+    if (statusEnum === "CONFIRMED") {
+      axios.put(`${API_BASE}/api/donation/confirm?register_id=${id}`, null, {
+        headers: getAuthHeader(),
+      })
+      .then(() => {
+        window.location.reload();
+      })
+      .catch((err) => {
+        console.error("❌ Không thể cập nhật trạng thái:", err);
+      });
+    } else {
+      const updated = { ...statusMap, [id]: newStatus };
+      setStatusMap(updated);
+      localStorage.setItem("statusMap", JSON.stringify(updated));
+    }
   };
 
   const handleOpenModal = (item, mode = "edit") => {
@@ -84,16 +99,42 @@ const DonationConfirm = () => {
   };
 
   const handleSaveVolume = () => {
-    if (!volume.total || !volume.bloodType) {
-      alert("Vui lòng nhập tổng lượng máu và nhóm máu.");
-      return;
+  if (!volume.total || !volume.bloodType) {
+    alert("Vui lòng nhập tổng lượng máu và nhóm máu.");
+    return;
+  }
+
+  const updated = { ...savedVolumes, [selectedDonation.registrationId]: volume };
+  setSavedVolumes(updated);
+  localStorage.setItem("savedVolumes", JSON.stringify(updated));
+  handleStatusChange(selectedDonation.registrationId, "Đã nhập dữ liệu");
+  setShowModal(false);
+
+  // 💉 Gọi API tách máu sau khi lưu
+  let method = "CENTRIFUGE"; // mặc định
+  if (suggestForm.method === "gạn tách") method = "MACHINE";
+  if (suggestForm.method === "li tâm") method = "CENTRIFUGE";
+
+  axios.post(
+    `${API_BASE}/api/separation-orders/create-manual`,
+    null,
+    {
+      headers: getAuthHeader(),
+      params: {
+        bloodBagId: 11,
+        operatorId: selectedDonation.userId,
+        machineId: 1,
+        type: method,
+        note: "Tách từ giao diện xác nhận hiến máu"
+      }
     }
-    const updated = { ...savedVolumes, [selectedDonation.registrationId]: volume };
-    setSavedVolumes(updated);
-    localStorage.setItem("savedVolumes", JSON.stringify(updated));
-    handleStatusChange(selectedDonation.registrationId, "Đã nhập dữ liệu");
-    setShowModal(false);
-  };
+  ).then(res => {
+    console.log("✅ Tạo lệnh tách máu thành công:", res.data);
+  }).catch(err => {
+    console.error("❌ Tạo lệnh tách máu thất bại:", err);
+  });
+};
+
 
   const handleResetAll = () => {
     localStorage.removeItem("savedVolumes");
@@ -137,7 +178,13 @@ const DonationConfirm = () => {
         </thead>
         <tbody>
           {donations.map((item) => {
-            const status = statusMap[item.registrationId] || "Đang chờ...";
+            let status = statusMap[item.registrationId] || "Đang chờ...";
+            if (!statusMap[item.registrationId]) {
+              if (item.status === "CONFIRMED") status = "Đang xử lý...";
+              else if (item.status === "CANCELLED") status = "Đã hủy";
+              else if (item.status === "DONATED") status = "Chưa nhập dữ liệu";
+            }
+
             const hasVolume = savedVolumes[item.registrationId];
             const isCancelled = status === "Đã hủy";
             const rowClass = isCancelled ? "text-muted bg-light" : "";
@@ -176,121 +223,121 @@ const DonationConfirm = () => {
         </tbody>
       </table>
 
-     {showModal && (
-  <div className="modal-backdrop">
-    <div className="modal-content">
-      <h5 className="mb-3">
-        {modalMode === "view" ? "Xem lượng máu truyền" : "Nhập lượng máu truyền"}
-      </h5>
-      {["Tổng", "Hồng cầu", "Tiểu cầu", "Huyết tương"].map((label, idx) => {
-        const keys = ["total", "redCells", "platelets", "plasma"];
-        const key = keys[idx];
-        return (
-          <div className="input-group" key={key}>
-            <label>{label} (ml)</label>
-            <input
-              type="number"
-              className="input-clean"
-              value={volume[key]}
-              onChange={(e) => {
-                const value = Number(e.target.value);
-                if (e.target.value === "" || (value >= 0 && value <= 650)) {
-                  setVolume({ ...volume, [key]: e.target.value });
-                }
-              }}
-              readOnly={modalMode === "view"}
-            />
+      {showModal && (
+        <div className="modal-backdrop">
+          <div className="modal-content">
+            <h5 className="mb-3">
+              {modalMode === "view" ? "Xem lượng máu truyền" : "Nhập lượng máu truyền"}
+            </h5>
+            {["Tổng", "Hồng cầu", "Tiểu cầu", "Huyết tương"].map((label, idx) => {
+              const keys = ["total", "redCells", "platelets", "plasma"];
+              const key = keys[idx];
+              return (
+                <div className="input-group" key={key}>
+                  <label>{label} (ml)</label>
+                  <input
+                    type="number"
+                    className="input-clean"
+                    value={volume[key]}
+                    onChange={(e) => {
+                      const value = Number(e.target.value);
+                      if (e.target.value === "" || (value >= 0 && value <= 650)) {
+                        setVolume({ ...volume, [key]: e.target.value });
+                      }
+                    }}
+                    readOnly={modalMode === "view"}
+                  />
+                </div>
+              );
+            })}
+
+            <div className="input-group">
+              <label>Nhóm máu</label>
+              <input
+                className="input-clean"
+                list="bloodTypes"
+                value={volume.bloodType}
+                onChange={(e) => setVolume({ ...volume, bloodType: e.target.value })}
+                readOnly={modalMode === "view"}
+              />
+              <datalist id="bloodTypes">
+                {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map(b => (
+                  <option key={b} value={b} />
+                ))}
+              </datalist>
+            </div>
+
+            {modalMode === "edit" ? (
+              <div className="button-row">
+                <button className="btn btn-success flex-fill" onClick={handleSaveVolume}>Lưu</button>
+                <button className="btn btn-primary flex-fill" onClick={() => setShowSuggest(true)}>Gợi ý</button>
+                <button className="btn btn-secondary flex-fill" onClick={() => setShowModal(false)}>Đóng</button>
+              </div>
+            ) : (
+              <div className="button-row">
+                <button className="btn btn-secondary flex-fill" onClick={() => setShowModal(false)}>Đóng</button>
+              </div>
+            )}
           </div>
-        );
-      })}
-
-      <div className="input-group">
-        <label>Nhóm máu</label>
-        <input
-          className="input-clean"
-          list="bloodTypes"
-          value={volume.bloodType}
-          onChange={(e) => setVolume({ ...volume, bloodType: e.target.value })}
-          readOnly={modalMode === "view"}
-        />
-        <datalist id="bloodTypes">
-          {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map(b => (
-            <option key={b} value={b} />
-          ))}
-        </datalist>
-      </div>
-
-      {modalMode === "edit" ? (
-        <div className="button-row">
-          <button className="btn btn-success flex-fill" onClick={handleSaveVolume}>Lưu</button>
-          <button className="btn btn-primary flex-fill" onClick={() => setShowSuggest(true)}>Gợi ý</button>
-          <button className="btn btn-secondary flex-fill" onClick={() => setShowModal(false)}>Đóng</button>
-        </div>
-      ) : (
-        <div className="button-row">
-          <button className="btn btn-secondary flex-fill" onClick={() => setShowModal(false)}>Đóng</button>
         </div>
       )}
-    </div>
-  </div>
-)}
 
-{showSuggest && (
-  <div className="modal-backdrop">
-    <div className="modal-content">
-      <h5 className="mb-3">Gợi ý lượng máu</h5>
-      <div className="input-group-tip">
-        <label>Cân nặng (kg)</label>
-        <input
-          type="number"
-          className="input-clean"
-          value={suggestForm.weight}
-          onChange={(e) => {
-            const v = Number(e.target.value);
-            if (e.target.value === "" || (v >= 0 && v <= 200)) {
-              setSuggestForm({ ...suggestForm, weight: e.target.value });
-            }
-          }}
-        />
-      </div>
-      <div className="input-group-tip">
-        <label>Giới tính</label>
-        <select
-          className="input-clean"
-          value={suggestForm.gender}
-          onChange={(e) => setSuggestForm({ ...suggestForm, gender: e.target.value })}
-        >
-          <option value="">-- Chọn giới tính --</option>
-          <option value="Nam">Nam</option>
-          <option value="Nữ">Nữ</option>
-        </select>
-      </div>
-      <div className="input-group-tip">
-        <label>Tổng (ml)</label>
-        <input
-          type="number"
-          className="input-clean"
-          value={suggestForm.total}
-          onChange={(e) => setSuggestForm({ ...suggestForm, total: e.target.value })}
-        />
-      </div>
-      <div className="input-group-tip">
-        <label>Phương pháp</label>
-        <select
-          className="input-clean"
-          value={suggestForm.method}
-          onChange={(e) => setSuggestForm({ ...suggestForm, method: e.target.value })}
-        >
-          <option value="">-- Chọn phương pháp --</option>
-          <option value="gạn tách">Gạn tách</option>
-          <option value="li tâm">Li tâm</option>
-        </select>
-      </div>
-      <button className="btn btn-success btn-block mb-2" onClick={handleApplySuggestion}>Lưu</button>
-      <button className="btn btn-secondary btn-block" onClick={() => setShowSuggest(false)}>Đóng</button>
-    </div>
-  </div>
-)}
+      {showSuggest && (
+        <div className="modal-backdrop">
+          <div className="modal-content">
+            <h5 className="mb-3">Gợi ý lượng máu</h5>
+            <div className="input-group-tip">
+              <label>Cân nặng (kg)</label>
+              <input
+                type="number"
+                className="input-clean"
+                value={suggestForm.weight}
+                onChange={(e) => {
+                  const v = Number(e.target.value);
+                  if (e.target.value === "" || (v >= 0 && v <= 200)) {
+                    setSuggestForm({ ...suggestForm, weight: e.target.value });
+                  }
+                }}
+              />
+            </div>
+            <div className="input-group-tip">
+              <label>Giới tính</label>
+              <select
+                className="input-clean"
+                value={suggestForm.gender}
+                onChange={(e) => setSuggestForm({ ...suggestForm, gender: e.target.value })}
+              >
+                <option value="">-- Chọn giới tính --</option>
+                <option value="Nam">Nam</option>
+                <option value="Nữ">Nữ</option>
+              </select>
+            </div>
+            <div className="input-group-tip">
+              <label>Tổng (ml)</label>
+              <input
+                type="number"
+                className="input-clean"
+                value={suggestForm.total}
+                onChange={(e) => setSuggestForm({ ...suggestForm, total: e.target.value })}
+              />
+            </div>
+            <div className="input-group-tip">
+              <label>Phương pháp</label>
+              <select
+                className="input-clean"
+                value={suggestForm.method}
+                onChange={(e) => setSuggestForm({ ...suggestForm, method: e.target.value })}
+              >
+                <option value="">-- Chọn phương pháp --</option>
+                <option value="gạn tách">Gạn tách</option>
+                <option value="li tâm">Li tâm</option>
+              </select>
+            </div>
+            <button className="btn btn-success btn-block mb-2" onClick={handleApplySuggestion}>Lưu</button>
+            <button className="btn btn-secondary btn-block" onClick={() => setShowSuggest(false)}>Đóng</button>
+          </div>
+        </div>
+      )}
 
     </div>
   );

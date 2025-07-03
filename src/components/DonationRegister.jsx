@@ -14,9 +14,13 @@ import {
 import { ScheduleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import axios from "axios";
+import AuthService from "../services/auth.service";
+import { getAuthHeader } from "../services/user.service";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
+
+const API_BASE = "http://localhost:8080"; // Hoặc dùng proxy nếu có
 
 const generateSlots = () => {
   const slots = [];
@@ -32,8 +36,29 @@ const DonationRegister = () => {
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [loading, setLoading] = useState(false);
-
+  const [availableSlots, setAvailableSlots] = useState({});
+  const currentUser = AuthService.getCurrentUser();
   const slots = generateSlots();
+
+  // ✅ Fetch slot còn chỗ theo ngày (đúng API)
+  useEffect(() => {
+    if (selectedDate) {
+      axios
+        .get(`${API_BASE}/api/slots/by-date?date=${selectedDate.format("YYYY-MM-DD")}`, {
+          headers: getAuthHeader(),
+        })
+        .then((res) => {
+          const available = {};
+          res.data?.data?.forEach((slot) => {
+            available[slot.time] = slot.availableCapacity > 0;
+          });
+          setAvailableSlots(available);
+        })
+        .catch(() => {
+          setAvailableSlots({});
+        });
+    }
+  }, [selectedDate]);
 
   const handleSubmit = async () => {
     if (!selectedDate || !selectedSlot || !selectedLocation) {
@@ -41,20 +66,30 @@ const DonationRegister = () => {
       return;
     }
 
+    if (!currentUser || !currentUser.userId) {
+      message.error("Vui lòng đăng nhập trước khi đăng ký.");
+      return;
+    }
+
     try {
       setLoading(true);
       const payload = {
-        date: selectedDate.format("YYYY-MM-DD"),
-        time: selectedSlot,
+        scheduledDate: selectedDate.format("YYYY-MM-DD"),
         location: selectedLocation,
+        // 👇 Bổ sung thêm các trường nếu BE yêu cầu (vd: bloodType, fullName, phone,...)
       };
-      await axios.post("/api/registrations/create", payload);
+      await axios.post(
+        `${API_BASE}/api/slots/register/${currentUser.userId}`,
+        payload,
+        { headers: getAuthHeader() }
+      );
       message.success("✅ Đăng ký hiến máu thành công!");
       setSelectedDate(null);
       setSelectedSlot(null);
       setSelectedLocation(null);
     } catch (err) {
-      message.error("❌ Đăng ký thất bại.");
+      const errorMsg = err.response?.data?.message || "Đăng ký thất bại.";
+      message.error(`❌ ${errorMsg}`);
     } finally {
       setLoading(false);
     }
@@ -96,6 +131,9 @@ const DonationRegister = () => {
               style={{ width: "100%", marginTop: 8 }}
               value={selectedDate}
               onChange={setSelectedDate}
+              disabledDate={(current) =>
+                current && current < dayjs().startOf("day")
+              }
             />
           </div>
 
@@ -111,18 +149,23 @@ const DonationRegister = () => {
               }}
             >
               <Row gutter={[8, 8]} wrap>
-                {slots.map((slot) => (
-                  <Col key={slot} span={6} sm={4}>
-                    <Button
-                      block
-                      size="middle"
-                      type={selectedSlot === slot ? "primary" : "default"}
-                      onClick={() => setSelectedSlot(slot)}
-                    >
-                      {slot}
-                    </Button>
-                  </Col>
-                ))}
+                {slots.map((slot) => {
+                  const isAvailable =
+                    availableSlots?.[slot] === true || !selectedDate;
+                  return (
+                    <Col key={slot} span={6} sm={4}>
+                      <Button
+                        block
+                        size="middle"
+                        type={selectedSlot === slot ? "primary" : "default"}
+                        disabled={!isAvailable}
+                        onClick={() => setSelectedSlot(slot)}
+                      >
+                        {slot}
+                      </Button>
+                    </Col>
+                  );
+                })}
               </Row>
             </div>
           </div>

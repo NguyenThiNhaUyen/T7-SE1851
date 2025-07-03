@@ -74,21 +74,23 @@ const App = () => {
 
   useEffect(() => {
     const user = AuthService.getCurrentUser();
-
+if (user) {
+  console.log("🧠 Đăng nhập với vai trò:", user.role); // đảm bảo là ADMIN, STAFF, USER
+}
     if (user) {
       setCurrentUser(user);
       setShowAdminBoard(user.role === "ADMIN");
       setShowStaffBoard(user.role === "STAFF");
 
-      if (user.role === "STAFF" && ["/", "/home", "/login"].includes(location.pathname)) {
+      if (user?.role === "STAFF" && ["/", "/home", "/login"].includes(location.pathname)) {
         navigate("/staff");
       }
 
-      if (user.role === "ADMIN" && ["/", "/home", "/login"].includes(location.pathname)) {
+      if (user?.role === "ADMIN" && ["/", "/home", "/login"].includes(location.pathname)) {
         navigate("/admin");
       }
 
-      if (user.role === "USER" && ["/", "/home", "/login"].includes(location.pathname)) {
+      if (user?.role === "USER" && ["/", "/home", "/login"].includes(location.pathname)) {
         navigate(`/user/${user.id}`);
       }
     }

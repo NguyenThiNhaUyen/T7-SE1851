@@ -29,23 +29,29 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = async (values) => {
-    setLoading(true);
-    try {
-      const res = await AuthService.login(values.username, values.password);
-      localStorage.setItem("user", JSON.stringify(res));
-      message.success("Đăng nhập thành công!");
-      setTimeout(() => {
-        if (res.role === "ADMIN") navigate("/admin");
-        else if (res.role === "STAFF") navigate("/staff");
-        else navigate(`/user/${res.userId}`);
-      }, 800);
-    } catch (err) {
-      message.error(err.response?.data?.message || "Lỗi đăng nhập");
-    } finally {
-      setLoading(false);
+ const handleLogin = async (values) => {
+  setLoading(true);
+  try {
+    const res = await AuthService.login(values.username, values.password);
+
+    if (!res || !res.role) {
+      message.error("Dữ liệu phản hồi không hợp lệ.");
+      return;
     }
-  };
+
+    message.success("Đăng nhập thành công!");
+    setTimeout(() => {
+      if (res.role === "ADMIN") navigate("/admin");
+      else if (res.role === "STAFF") navigate("/staff");
+      else navigate(`/user/${res.userId}`);
+    }, 800);
+  } catch (err) {
+    console.error("Login failed", err);
+    message.error(err.response?.data?.message || "Lỗi đăng nhập");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="login-fullpage">

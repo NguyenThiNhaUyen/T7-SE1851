@@ -61,6 +61,9 @@ const getStaffDashboard = () => {
   });
 };
 
+// ✅ 🧪 API tồn kho máu
+
+
 // =======================
 // 🛠️ API admin
 // =======================
@@ -87,6 +90,14 @@ const getNotifications = () => {
     headers: getAuthHeader()
   });
 };
+const getInventory = () => {
+  return axios.get(`/api/blood-inventory`, {
+    headers: {
+      ...getAuthHeader(),
+      "Cache-Control": "no-cache"
+    }
+  });
+};
 
 // =======================
 // 📦 Export tất cả
@@ -103,6 +114,7 @@ const UserService = {
   getAllUsers,
   getAllRoles,
   getNotifications,
+  getInventory,         // ✅ THÊM DÒNG NÀY
   getAuthHeader
 };
 

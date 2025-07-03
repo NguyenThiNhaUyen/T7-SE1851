@@ -61,7 +61,7 @@ const UserLayout = () => {
     return match ? match.title : "Trang người dùng";
   };
 
-  const menuItems = [   
+  const menuItems = [
     { key: "register", icon: <HeartOutlined />, label: "Đăng ký hiến máu" },
     { key: "/donate/urgent", icon: <ExclamationCircleOutlined />, label: "Hiến máu khẩn cấp" },
     { key: "donation-history", icon: <HistoryOutlined />, label: "Lịch sử hiến máu" },
