@@ -1,0 +1,88 @@
+.blog-list-wrapper {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  padding: 60px 20px;
+  background-color: #fefefe;
+  color: #2E2E2E;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+/* Tiêu đề */
+.blog-list-wrapper h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: white;
+  background: linear-gradient(135deg, #771813, #dd2d24);
+  padding: 16px 24px;
+  text-align: center;
+  border-radius: 18px;
+  margin-bottom: 40px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+
+/* Container grid để hiển thị dạng cột linh hoạt */
+.blog-list-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: space-between;
+}
+
+/* Mỗi thẻ blog */
+.blog-list-card {
+  background-color: #fff9f9;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  width: calc(50% - 12px);
+  display: flex;
+  flex-direction: column;
+}
+
+.blog-list-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+}
+
+.blog-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.blog-thumbnail {
+  width: 100%;
+  height: 230px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+/* Tiêu đề bài viết */
+.blog-list-card h4 {
+  margin-bottom: 12px;
+  color: #771813;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+/* Tóm tắt */
+.blog-list-card p {
+  margin-bottom: 10px;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #444;
+}
+
+/* Ngày đăng */
+.blog-list-card small {
+  font-size: 0.9rem;
+  color: #888;
+}
+
+/* Responsive cho mobile */
+@media screen and (max-width: 768px) {
+  .blog-list-card {
+    width: 100%;
+  }
+}
