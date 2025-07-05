@@ -1,103 +1,66 @@
-/* TOÀN KHUNG NỀN NGOÀI */
-.blood-wrapper {
-  background-color: #073a7a;
+/* ✅ TOÀN BỘ PHẦN BÊN NGOÀI (nền trang) */
+.blood-antd-wrapper {
+  background-color: #0b4ea2; /* ✅ Màu nền chính mới */
   padding: 60px 20px;
   font-family: 'Segoe UI', sans-serif;
   color: white;
 }
 
-/* KHỐI CHỨA NỘI DUNG (DẠNG THẺ CARD) */
+/* ✅ KHỐI NỘI DUNG (thẻ card) */
 .section-card {
-  background-color: #002c5f;
-  border-radius: 16px;
-  padding: 40px 32px;
+  background-color: #003366 !important; /* ✅ Màu đồng bộ khối nội dung */
+  border-radius: 16px !important;
+  padding: 40px 32px !important;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
   max-width: 1100px;
-  margin: 0 auto 60px auto; /* căn giữa và cách xa khối tiếp theo */
+  margin: 0 auto 60px auto;
   transition: all 0.3s ease;
 }
 
-/* TIÊU ĐỀ CHÍNH */
-.section-title {
-  text-align: left;
-  font-size: 28px;
-  font-weight: bold;
-  margin-bottom: 20px;
-}
-
+/* ✅ TIÊU ĐỀ */
 .section-title.gold {
   color: #FFD700;
-}
-
-/* GỢI Ý NHỎ */
-.subtitle {
+  font-size: 28px;
+  margin-bottom: 24px;
   text-align: left;
-  font-size: 15px;
-  color: #c9d9ff;
-  margin-bottom: 25px;
 }
 
-/* GRID CHUNG */
-.eligibility-grid,
-.compatibility-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 24px;
-}
-
-/* THẺ TIÊU CHUẨN */
-.eligibility-card {
+/* ✅ HỘP ĐIỀU KIỆN (trắng bên trong khối) */
+.eligibility-box {
   background: white;
-  color: #002c5f;
   border-radius: 12px;
-  padding: 18px;
+  padding: 16px;
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  color: #003366; /* ✅ chữ đồng bộ với nền */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
   font-size: 14px;
   font-weight: 500;
 }
 
-.eligibility-icon {
-  font-size: 20px;
-  margin-top: 4px;
+.eligibility-box:hover {
+  transform: translateY(-3px);
 }
 
-/* THẺ NHÓM MÁU */
-.compatibility-card {
-  background: white;
-  color: #002c5f;
-  border-radius: 12px;
-  padding: 22px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+/* ✅ ICON bo tròn */
+.icon-circle {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 50%;
+  background-color: #0b4ea222; /* ✅ nền nhạt của màu chính */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: #0b4ea2; /* ✅ màu chính */
+  margin-top: 2px;
 }
 
-.compatibility-card:hover {
-  transform: translateY(-4px);
-}
-
-.compatibility-card.active {
-  background-color: #fff7d6;
-  color: #222;
-}
-
-.group-info {
-  font-size: 13px;
-  margin-top: 10px;
+/* ✅ TEXT điều kiện */
+.eligibility-text {
+  flex: 1;
   line-height: 1.5;
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(5px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* KHOẢNG TRẮNG TÁCH 2 KHỐI - DÙNG NỀN KHÁC HOẶC ẨN ĐI */
-.section-spacer {
-  height: 40px;
-  background-color: transparent; /* không tạo đường nối */
 }

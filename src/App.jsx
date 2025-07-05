@@ -173,8 +173,8 @@ const App = () => {
             <Route path="types" element={<BloodTypes />} />
             <Route path="receive" element={<BloodReceive />} />
             <Route path="roles" element={<BloodRoles />} />
+            <Route path="urgent" element={<UrgentDonationWrapper />} />
             <Route path="urgent-register" element={<UrgentDonationRegister />} />
-          
           </Route>
 
           {/* Blog - Notification - Thanh toán */}
@@ -183,7 +183,6 @@ const App = () => {
           <Route path="/faq" element={<BlogAccordion />} />
           <Route path="/activities" element={<Activities />} />
           <Route path="/vnpay" element={<VnPayForm />} />
-         <Route path="/donate/urgent" element={<UrgentDonationWrapper />} />
 
           {/* Nếu không khớp */}
           <Route path="*" element={<Navigate to="/" />} />

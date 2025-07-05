@@ -87,8 +87,6 @@ const Home = () => {
 
       <DonationInfoSection />
 
-
-
       <div className="section-divider" />
 
       <section className="info-section">
@@ -103,49 +101,6 @@ const Home = () => {
             <p>{item.summary}</p>
           </div>
         ))}
-      </section>
-
-      <section className="grid-section">
-        <h2 className="section-title text-center">Tìm hiểu thêm</h2>
-        <div className="grid-cards">
-          <div className="grid-card">
-            <h4>Câu hỏi thường gặp</h4>
-            <ul>
-              <li>Điều kiện hiến máu</li>
-              <li>Thời gian giữa các lần hiến</li>
-              <li>Hiến máu có an toàn?</li>
-            </ul>
-          </div>
-          <div className="grid-card">
-            <h4>Các hình thức hiến máu</h4>
-            <ul>
-              <li>Toàn phần</li>
-              <li>Tiểu cầu</li>
-              <li>Huyết tương</li>
-            </ul>
-          </div>
-          <div className="grid-card">
-            <h4>Chuẩn bị & phục hồi</h4>
-            <ul>
-              <li>Chuẩn bị kỹ trước khi hiến</li>
-              <li>Chăm sóc sau khi hiến</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section className="testimonial-section">
-        <h2 className="section-title">Chia sẻ từ người hiến máu</h2>
-        <div className="testimonial-cards">
-          <div className="testimonial-card">
-            <p>"Cảm giác sau khi hiến máu thật tuyệt. Tôi cảm thấy mình đã giúp được ai đó!"</p>
-            <span>— Anh Dũng, 28 tuổi</span>
-          </div>
-          <div className="testimonial-card">
-            <p>"Tôi hiến máu định kỳ 3 tháng 1 lần. Vừa khỏe mạnh, vừa có ích."</p>
-            <span>— Chị Linh, giáo viên</span>
-          </div>
-        </div>
       </section>
 
       <section className="blog-preview-section">

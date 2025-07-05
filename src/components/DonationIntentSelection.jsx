@@ -14,24 +14,14 @@ const donationOptions = [
   },
   {
     id: 2,
-    title: "Tôi muốn tham gia nhóm hiến máu khẩn cấp (ngoài bệnh viện)",
+    title: "Tôi sẵn sàng hiến máu khẩn cấp",
     details: [
-      "✓ Có thể phản hồi nhanh, nhưng không thường xuyên có mặt tại bệnh viện",
-      "✓ Có thể đến nơi cần máu (gần nhà, hoặc bệnh viện gần) trong thời gian ngắn",
+      "✓ Phản hồi nhanh và di chuyển trong thời gian ngắn, sẵn sàng tại hoặc gần bệnh viện",
     ],
-    terms: "Tôi cam kết phản hồi nhanh khi hệ thống gửi yêu cầu và đảm bảo có thể di chuyển trong thời gian ngắn.",
+    terms: "Tôi cam kết phản hồi nhanh và di chuyển kịp thời khi hệ thống gửi yêu cầu khẩn cấp.",
   },
   {
     id: 3,
-    title: "Tôi đang ở gần/ở trong bệnh viện và có thể hiến máu khẩn cấp ngay",
-    details: [
-      "✓ Luôn sẵn sàng tại bệnh viện hoặc khu vực lân cận",
-      "✓ Dành cho nhân viên y tế, sinh viên y, người sống gần viện",
-    ],
-    terms: "Tôi đồng ý cho phép hệ thống ưu tiên tôi trong các trường hợp khẩn cấp gần khu vực đang ở.",
-  },
-  {
-    id: 4,
     title: "Tôi chưa thể hiến máu hiện tại, nhưng sẽ cập nhật sau",
     details: [
       "→ Cho phép người dùng giữ hồ sơ nhưng chưa sẵn sàng",
@@ -59,9 +49,8 @@ const DonationIntentSelection = () => {
       {donationOptions.map((option) => (
         <div
           key={option.id}
-          className={`intent-option ${
-            selectedOption?.id === option.id ? "selected" : ""
-          }`}
+          className={`intent-option ${selectedOption?.id === option.id ? "selected" : ""
+            }`}
           onClick={() => {
             setSelectedOption(option);
             setAgreed(false);
@@ -72,7 +61,7 @@ const DonationIntentSelection = () => {
               <input
                 type="radio"
                 checked={selectedOption?.id === option.id}
-                onChange={() => {}}
+                onChange={() => { }}
                 style={{ marginRight: "10px" }}
               />
               {option.title}

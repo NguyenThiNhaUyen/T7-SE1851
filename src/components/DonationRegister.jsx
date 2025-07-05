@@ -61,12 +61,9 @@ const DonationRegister = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-      <Card
-        style={{ width: "100%", maxWidth: 800 }}
-        bordered={false}
-        className="shadow-md rounded-xl"
-      >
+  <div style={{ background: "#f5f5f5", padding: "24px 0", minHeight: "calc(100vh - 64px)" }}>
+    <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 16px" }}>
+      <Card bordered={false} className="shadow-md rounded-xl">
         <Title level={3}>
           <ScheduleOutlined /> Đăng ký hiến máu
         </Title>
@@ -139,7 +136,8 @@ const DonationRegister = () => {
         </Space>
       </Card>
     </div>
-  );
+  </div>
+);
 };
 
 export default DonationRegister;
