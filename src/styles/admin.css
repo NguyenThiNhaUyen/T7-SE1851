@@ -47,7 +47,6 @@
 
 .admin-main {
   flex: 1;
-  margin-left: 240px; /* Tạo khoảng trống cho sidebar cố định */
   padding: 24px;
   background-color: #f9fafb;
   min-height: calc(100vh - 64px); /* Trừ đi chiều cao navbar */

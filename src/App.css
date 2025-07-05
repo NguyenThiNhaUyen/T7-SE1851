@@ -114,6 +114,7 @@
   background-repeat: no-repeat;
   display: flex;
   gap: 40px;
+  min-height: 100vh;
   justify-content: center;
   padding: 30px 60px;
 }

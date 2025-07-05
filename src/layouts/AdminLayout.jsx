@@ -1,5 +1,3 @@
-// src/layouts/AdminLayout.jsx
-
 import React, { useEffect, useState, useMemo } from "react";
 import { useLocation, useNavigate, Outlet } from "react-router-dom";
 import {
@@ -49,17 +47,20 @@ const AdminLayout = () => {
   }, [pathname]);
 
   // build the items array for Menu, injecting Tooltip on icon when collapsed
-  const menuItems = useMemo(() => {
-    return adminMenuItems.map(({ key, icon, label }) => ({
-      key,
-      icon: collapsed
-        ? <Tooltip placement="right" title={label}>{icon}</Tooltip>
-        : icon,
-      label: !collapsed ? label : '',
-      onClick: () => navigate(adminMenuItems.find(i => i.key === key).path),
-    }));
-  }, [collapsed, navigate]);
-
+  const menuItems = adminMenuItems.map(({ key, icon, label, path }) => ({
+    key,
+    icon: collapsed
+      ? (
+        <Tooltip placement="right" title={label}>
+          {icon}
+        </Tooltip>
+      )
+      : icon,
+    label: !collapsed ? label : '',
+    // override title để Menu không tự gán tooltip
+    title: collapsed ? null : label,
+    onClick: () => navigate(path),
+  }));
   return (
     <ConfigProvider theme={{ token: { colorPrimary: '#1890ff' } }}>
       <Layout style={{ minHeight: '100vh' }}>
@@ -77,7 +78,7 @@ const AdminLayout = () => {
           )}
           style={{
             background: '#b91c1c',
-            position: 'fixed',
+            position: 'sticky',
             height: '100vh',
             left: 0,
             top: 0,
@@ -110,7 +111,6 @@ const AdminLayout = () => {
 
         <Layout
           style={{
-            marginLeft: collapsed ? 80 : 280,
             transition: 'margin-left 0.2s',
           }}
         >

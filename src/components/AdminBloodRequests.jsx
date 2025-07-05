@@ -27,6 +27,7 @@ import {
   AlertOutlined,
   CheckCircleOutlined,
   ExclamationCircleOutlined,
+  ClockCircleOutlined,
   StarOutlined,
   WarningOutlined
 } from '@ant-design/icons';
@@ -44,8 +45,117 @@ const AdminBloodRequests = () => {
   const [dateRange, setDateRange] = useState(null);
   const [timePeriod, setTimePeriod] = useState('custom');
 
-  // Dữ liệu sẽ được lấy từ API
-  const mockData = [];
+  // Cấu hình hiển thị trạng thái
+  const statusConfig = {
+    PENDING: { color: 'warning', text: 'CHỜ DUYỆT', icon: <ExclamationCircleOutlined /> },
+    APPROVED: { color: 'success', text: 'ĐÃ DUYỆT', icon: <CheckCircleOutlined /> },
+    REJECTED: { color: 'error', text: 'TỪ CHỐI', icon: <ExclamationCircleOutlined /> },
+    WAITING: { color: 'processing', text: 'CHỜ MÁU', icon: <ClockCircleOutlined /> }
+  };
+
+  // TODO: MOCK DATA -- XÓA KHI TÍCH HỢP API
+  // Dữ liệu mẫu: Đơn từ staff gửi lên, mặc định là CHỜ DUYỆT
+  const [mockData, setMockData] = useState([
+    {
+      id: 101,                              // ID yêu cầu
+      patientName: 'Nguyễn Văn A',         // Tên bệnh nhân
+      bloodType: 'A+',                     // Nhóm máu
+      age: 35,                             // Tuổi
+      volume: '400ml',                     // Lượng máu yêu cầu
+      priority: 'RED',                     // Mức ưu tiên: RED, YELLOW, GREEN
+      status: 'PENDING',                   // Trạng thái: PENDING (mặc định từ staff)
+      createdDate: '01/07/2025',           // Ngày tạo yêu cầu
+      requester: {
+        name: 'Bác sĩ Trần Thị B',         // Người gửi yêu cầu
+        phone: '0909123456',               // SĐT người gửi
+      },
+      reason: 'Mổ cấp cứu',                // Lý do yêu cầu
+      bagCount: 2,                         // Số túi
+      bloodComponent: 'Toàn phần',         // Thành phần máu
+      notes: {
+        warning: 'Không dị ứng thành phần nào',      // Ghi chú warning
+        special: 'Chuyển viện nội thành',           // Ghi chú đặc biệt
+        emergency: 'Ưu tiên đầu mối cấp cứu',        // Ghi chú khẩn cấp
+      },
+      processingTime: {
+        requestTime: '01/07/2025 08:30',  // Thời gian yêu cầu
+        createdTime: '01/07/2025 09:00',  // Thời gian hệ thống tạo
+        approvedTime: '',                 // Chưa duyệt
+        processingDuration: '—',          // Chưa xử lý xong
+      },
+      patientInfo: {
+        weight: 60,                       // Cân nặng (kg)
+        phone: '0912233445',              // SĐT bệnh nhân
+        donnorId: 555,                    // Mã bệnh nhân
+      }
+    },
+    {
+      id: 102,
+      patientName: 'Lê Thị C',
+      bloodType: 'B−',
+      age: 28,
+      volume: '200ml',
+      priority: 'YELLOW',
+      status: 'PENDING',                   // Mặc định chờ duyệt
+      createdDate: '30/06/2025',
+      requester: { name: 'BS. Nguyễn D', phone: '0918765432' },
+      reason: 'Thiếu máu mãn tính',
+      bagCount: 1,
+      bloodComponent: 'Hồng cầu',
+      notes: { warning: '', special: '', emergency: '' },
+      processingTime: {
+        requestTime: '30/06/2025 14:00',
+        createdTime: '30/06/2025 14:30',
+        approvedTime: '',
+        processingDuration: '—',
+      },
+      patientInfo: { weight: 52, phone: '0987654321', donnorId: 556 }
+    },
+    {
+      id: 103,
+      patientName: 'Phạm Văn E',
+      bloodType: 'O+',
+      age: 42,
+      volume: '300ml',
+      priority: 'GREEN',
+      status: 'PENDING',                   // Mặc định chờ duyệt
+      createdDate: '29/06/2025',
+      requester: { name: 'BS. Trần F', phone: '0903344556' },
+      reason: 'Theo dõi sau phẫu thuật',
+      bagCount: 1,
+      bloodComponent: 'Huyết tương',
+      notes: { warning: 'Tiền sử dị ứng thuốc', special: '', emergency: '' },
+      processingTime: {
+        requestTime: '29/06/2025 10:00',
+        createdTime: '29/06/2025 10:20',
+        approvedTime: '',
+        processingDuration: '—',
+      },
+      patientInfo: { weight: 70, phone: '0932123456', donnorId: 557 }
+    },
+    {
+      id: 104,
+      patientName: 'Trần Văn G',
+      bloodType: 'AB+',
+      age: 45,
+      volume: '500ml',
+      priority: 'RED',
+      status: 'PENDING',                   // Mặc định chờ duyệt
+      createdDate: '28/06/2025',
+      requester: { name: 'BS. Lê H', phone: '0901122334' },
+      reason: 'Phẫu thuật tim',
+      bagCount: 2,
+      bloodComponent: 'Toàn phần',
+      notes: { warning: 'Cần theo dõi huyết áp', special: 'Ca phẫu thuật phức tạp', emergency: 'Ưu tiên cấp 1' },
+      processingTime: {
+        requestTime: '28/06/2025 07:00',
+        createdTime: '28/06/2025 07:30',
+        approvedTime: '',
+        processingDuration: '—',
+      },
+      patientInfo: { weight: 75, phone: '0945678901', donnorId: 558 }
+    }
+  ]);
 
   // Hàm xử lý chọn khoảng thời gian nhanh
   const handleTimePeriodChange = (value) => {
@@ -105,6 +215,47 @@ const AdminBloodRequests = () => {
     // Thực hiện logic tìm kiếm ở đây
   };
 
+  // Hàm xử lý thay đổi trạng thái
+  const handleStatusChange = (recordId, newStatus) => {
+    const now = dayjs();
+    setMockData(prevData =>
+      prevData.map(record =>
+        record.id === recordId
+          ? {
+            ...record,
+            status: newStatus,
+            processingTime: {
+              ...record.processingTime,
+              approvedTime: newStatus === 'APPROVED' || newStatus === 'WAITING'
+                ? now.format('DD/MM/YYYY HH:mm')
+                : (newStatus === 'REJECTED' ? '' : record.processingTime.approvedTime),
+              processingDuration: newStatus !== 'PENDING'
+                ? now.diff(dayjs(record.processingTime.createdTime, 'DD/MM/YYYY HH:mm'), 'minute') + 'm'
+                : '—'
+            }
+          }
+          : record
+      )
+    );
+
+    // Cập nhật selectedRecord nếu đang xem chi tiết record này
+    if (selectedRecord?.id === recordId) {
+      setSelectedRecord(prev => ({
+        ...prev,
+        status: newStatus,
+        processingTime: {
+          ...prev.processingTime,
+          approvedTime: newStatus === 'APPROVED' || newStatus === 'WAITING'
+            ? now.format('DD/MM/YYYY HH:mm')
+            : (newStatus === 'REJECTED' ? '' : prev.processingTime.approvedTime),
+          processingDuration: newStatus !== 'PENDING'
+            ? now.diff(dayjs(prev.processingTime.createdTime, 'DD/MM/YYYY HH:mm'), 'minute') + 'm'
+            : '—'
+        }
+      }));
+    }
+  };
+
   const columns = [
     {
       title: 'ID',
@@ -133,8 +284,21 @@ const AdminBloodRequests = () => {
       dataIndex: 'bloodType',
       key: 'bloodType',
       width: 100,
+      align: 'center',
       render: (text) => (
         <Tag color="red" className="font-semibold">
+          {text}
+        </Tag>
+      ),
+    },
+    {
+      title: 'Thành phần máu',
+      dataIndex: 'bloodComponent',
+      key: 'bloodComponent',
+      width: 150,
+      align: 'center',
+      render: (text) => (
+        <Tag color="blue" className="font-semibold">
           {text}
         </Tag>
       ),
@@ -163,7 +327,7 @@ const AdminBloodRequests = () => {
       render: (priority) => {
         const config = {
           RED: { color: 'red', icon: <AlertOutlined />, text: 'KHẨN CẤP' },
-          YELLOW: { color: 'orange', icon: <WarningOutlined />, text: 'CAO' },
+          YELLOW: { color: 'orange', icon: <WarningOutlined />, text: 'GẤP' },
           GREEN: { color: 'green', icon: <CheckCircleOutlined />, text: 'BÌNH THƯỜNG' }
         };
         const { color, icon, text } = config[priority] || config.GREEN;
@@ -180,16 +344,71 @@ const AdminBloodRequests = () => {
       title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
-      width: 120,
+      width: 160,
       filteredValue: statusFilter === 'all' ? null : [statusFilter],
       onFilter: (value, record) => record.status === value,
-      render: (status) => {
-        const config = {
-          APPROVED: { color: 'success', text: 'ĐÃ DUYỆT', icon: <CheckCircleOutlined /> },
-          PENDING: { color: 'warning', text: 'CHỜ DUYỆT', icon: <ExclamationCircleOutlined /> },
-          REJECTED: { color: 'error', text: 'TỪ CHỐI', icon: <ExclamationCircleOutlined /> }
-        };
-        const { color, text, icon } = config[status] || config.PENDING;
+      render: (status, record) => {
+        const { color, text, icon } = statusConfig[status] || statusConfig.PENDING;
+
+        // Nếu trạng thái là PENDING, hiển thị dropdown để admin chọn
+        if (status === 'PENDING') {
+          return (
+            <Select
+              size="middle"
+              value={statusConfig[status].text}
+              onChange={(newStatus) => handleStatusChange(record.id, newStatus)}
+              className="w-full"
+              placeholder="Chọn trạng thái"
+            >
+              <Option value="PENDING" disabled>
+                <Tag color="warning" icon={<ClockCircleOutlined />} className="font-semibold m-0">
+                  CHỜ DUYỆT
+                </Tag>
+              </Option>
+              <Option value="APPROVED">
+                <Tag color="success" icon={<CheckCircleOutlined />} className="font-semibold m-0">
+                  ĐÃ DUYỆT
+                </Tag>
+              </Option>
+              <Option value="REJECTED">
+                <Tag color="error" icon={<ExclamationCircleOutlined />} className="font-semibold m-0">
+                  TỪ CHỐI
+                </Tag>
+              </Option>
+              <Option value="WAITING">
+                <Tag color="processing" icon={<ClockCircleOutlined />} className="font-semibold m-0">
+                  CHỜ MÁU
+                </Tag>
+              </Option>
+            </Select>
+          );
+        }
+
+        // Nếu trạng thái là WAITING, chỉ cho chọn APPROVED hoặc REJECTED
+        if (status === 'WAITING') {
+          return (
+            <Select
+              size="middle"
+              value={statusConfig[status].text}
+              onChange={newStatus => handleStatusChange(record.id, newStatus)}
+              className="w-full"
+              placeholder="Chọn hành động"
+            >
+              <Option value="APPROVED">
+                <Tag color="success" icon={<CheckCircleOutlined />} className="font-semibold m-0">
+                  ĐÃ DUYỆT
+                </Tag>
+              </Option>
+              <Option value="REJECTED">
+                <Tag color="error" icon={<ExclamationCircleOutlined />} className="font-semibold m-0">
+                  TỪ CHỐI
+                </Tag>
+              </Option>
+            </Select>
+          );
+        }
+
+        // Nếu đã có trạng thái khác PENDING, chỉ hiển thị tag
         return (
           <Tag color={color} icon={icon} className="font-semibold">
             {text}
@@ -238,6 +457,74 @@ const AdminBloodRequests = () => {
     setSelectedRecord(null);
   };
 
+  // Hàm render footer của modal
+  const renderModalFooter = () => {
+    if (!selectedRecord) return null;
+
+    const footerButtons = [
+      <Button key="close" onClick={handleCloseModal} className="ml-2">
+        Đóng
+      </Button>
+    ];
+
+    if (selectedRecord.status === 'PENDING') {
+      // Hiển thị 3 nút cho trạng thái PENDING
+      footerButtons.unshift(
+        <Button
+          key="approve"
+          type="primary"
+          icon={<CheckCircleOutlined />}
+          onClick={() => handleStatusChange(selectedRecord.id, 'APPROVED')}
+          className="bg-green-500 hover:bg-green-600 border-green-500"
+        >
+          Duyệt
+        </Button>,
+        <Button
+          key="waiting"
+          type="primary"
+          icon={<ClockCircleOutlined />}
+          onClick={() => handleStatusChange(selectedRecord.id, 'WAITING')}
+          className="bg-blue-500 hover:bg-blue-600 border-blue-500"
+        >
+          Chờ máu
+        </Button>,
+        <Button
+          key="reject"
+          type="primary"
+          danger
+          icon={<ExclamationCircleOutlined />}
+          onClick={() => handleStatusChange(selectedRecord.id, 'REJECTED')}
+        >
+          Từ chối
+        </Button>
+      );
+    } else if (selectedRecord.status === 'WAITING') {
+      // Hiển thị 2 nút cho trạng thái WAITING
+      footerButtons.unshift(
+        <Button
+          key="approve"
+          type="primary"
+          icon={<CheckCircleOutlined />}
+          onClick={() => handleStatusChange(selectedRecord.id, 'APPROVED')}
+          className="bg-green-500 hover:bg-green-600 border-green-500"
+        >
+          Duyệt
+        </Button>,
+        <Button
+          key="reject"
+          type="primary"
+          danger
+          icon={<ExclamationCircleOutlined />}
+          onClick={() => handleStatusChange(selectedRecord.id, 'REJECTED')}
+        >
+          Từ chối
+        </Button>
+      );
+    }
+
+    return footerButtons;
+  };
+
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       {/* Header */}
@@ -253,94 +540,95 @@ const AdminBloodRequests = () => {
 
       {/* Filters */}
       <Card className="mb-6 shadow-sm">
-          <Row gutter={16} align="middle">
-            <Col span={8}>
-              <Input
-                placeholder="Tìm kiếm theo tên bệnh nhân..."
-                prefix={<SearchOutlined />}
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-                allowClear
-              />
-            </Col>
-            <Col span={4}>
-              <Select
-                placeholder="Lọc theo trạng thái"
-                value={statusFilter}
-                onChange={setStatusFilter}
-                className="w-full"
-                suffixIcon={<FilterOutlined />}
-              >
-                <Option value="all">Tất cả trạng thái</Option>
-                <Option value="APPROVED">Đã duyệt</Option>
-                <Option value="PENDING">Chờ duyệt</Option>
-                <Option value="REJECTED">Từ chối</Option>
-              </Select>
-            </Col>
-            <Col span={4}>
-              <Select
-                placeholder="Lọc theo thời gian"
-                value={timePeriod}
-                onChange={handleTimePeriodChange}
-                className="w-full"
-                suffixIcon={<CalendarOutlined />}
-              >
-                <Option value="custom">Tùy chỉnh</Option>
-                <Option value="1week">1 tuần qua</Option>
-                <Option value="1month">1 tháng qua</Option>
-                <Option value="1year">1 năm qua</Option>
-              </Select>
-            </Col>
-            <Col span={4}>
-              <DatePicker placeholder="Chọn ngày" className="w-full" />
-            </Col>
-            <Col span={2}>
-              <Button type="primary" icon={<SearchOutlined />} className="w-full">
-                Tìm kiếm
-              </Button>
-            </Col>
-          </Row>
-          {/* Hàng thứ hai - Date Range Picker */}
-          <Row gutter={16} align="middle" className="mt-2">
-            <Col span={7}>
-              <RangePicker
-                placeholder={['Từ ngày', 'Đến ngày']}
-                className="w-full"
-                value={dateRange}
-                onChange={handleDateRangeChange}
-                format="DD/MM/YYYY"
-                allowClear
-              />
-            </Col>
-            <Col span={5}>
-              <Button 
-                onClick={handleReset}
-                className="w-full"
-              >
-                Đặt lại
-              </Button>
-            </Col>
-          </Row>
+        <Row gutter={16} align="middle">
+          <Col span={8}>
+            <Input
+              placeholder="Tìm kiếm theo tên bệnh nhân..."
+              prefix={<SearchOutlined />}
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              allowClear
+            />
+          </Col>
+          <Col span={4}>
+            <Select
+              placeholder="Lọc theo trạng thái"
+              value={statusFilter}
+              onChange={setStatusFilter}
+              className="w-full"
+              suffixIcon={<FilterOutlined />}
+            >
+              <Option value="all">Tất cả trạng thái</Option>
+              <Option value="PENDING">Chờ duyệt</Option>
+              <Option value="APPROVED">Đã duyệt</Option>
+              <Option value="REJECTED">Từ chối</Option>
+              <Option value="WAITING">Chờ máu</Option>
+            </Select>
+          </Col>
+          <Col span={4}>
+            <Select
+              placeholder="Lọc theo thời gian"
+              value={timePeriod}
+              onChange={handleTimePeriodChange}
+              className="w-full"
+              suffixIcon={<CalendarOutlined />}
+            >
+              <Option value="custom">Tùy chỉnh</Option>
+              <Option value="1week">1 tuần qua</Option>
+              <Option value="1month">1 tháng qua</Option>
+              <Option value="1year">1 năm qua</Option>
+            </Select>
+          </Col>
+          <Col span={4}>
+            <DatePicker placeholder="Chọn ngày" className="w-full" />
+          </Col>
+          <Col span={2}>
+            <Button type="primary" icon={<SearchOutlined />} className="w-full">
+              Tìm kiếm
+            </Button>
+          </Col>
+        </Row>
+        {/* Hàng thứ hai - Date Range Picker */}
+        <Row gutter={16} align="middle" className="mt-2">
+          <Col span={7}>
+            <RangePicker
+              placeholder={['Từ ngày', 'Đến ngày']}
+              className="w-full"
+              value={dateRange}
+              onChange={handleDateRangeChange}
+              format="DD/MM/YYYY"
+              allowClear
+            />
+          </Col>
+          <Col span={5}>
+            <Button
+              onClick={handleReset}
+              className="w-full"
+            >
+              Đặt lại
+            </Button>
+          </Col>
+        </Row>
 
-          {/* Hiển thị khoảng thời gian đã chọn */}
-          {dateRange && (
-            <Row>
-              <Col span={24}>
-                <div className="text-sm text-gray-600 bg-blue-50 p-3 rounded-lg border-l-4 border-blue-400">
-                  <CalendarOutlined className="mr-2 text-blue-600" />
-                  <Text strong>Lọc từ ngày:</Text> {dateRange[0].format('DD/MM/YYYY')}
-                  <Text strong className="mx-2">đến</Text> {dateRange[1].format('DD/MM/YYYY')}
-                  {timePeriod !== 'custom' && (
-                    <Tag color="blue" className="ml-3">
-                      {timePeriod === '1week' ? '1 tuần qua' :
-                        timePeriod === '1month' ? '1 tháng qua' :
-                          timePeriod === '1year' ? '1 năm qua' : ''}
-                    </Tag>
-                  )}
-                </div>
-              </Col>
-            </Row>
-          )}
+        {/* Hiển thị khoảng thời gian đã chọn */}
+        {dateRange && (
+          <Row>
+            <Col span={24}>
+              <div className="text-sm text-gray-600 bg-blue-50 p-3 rounded-lg border-l-4 border-blue-400">
+                <CalendarOutlined className="mr-2 text-blue-600" />
+                <Text strong>Lọc từ ngày:</Text> {dateRange[0].format('DD/MM/YYYY')}
+                <Text strong className="mx-2">đến</Text> {dateRange[1].format('DD/MM/YYYY')}
+                {timePeriod !== 'custom' && (
+                  <Tag color="blue" className="ml-3">
+                    {timePeriod === '1week' ? '1 tuần qua' :
+                      timePeriod === '1month' ? '1 tháng qua' :
+                        timePeriod === '1year' ? '1 năm qua' : ''}
+                  </Tag>
+                )}
+              </div>
+            </Col>
+          </Row>
+        )}
       </Card>
 
       {/* Table */}
@@ -368,20 +656,13 @@ const AdminBloodRequests = () => {
           <div className="flex items-center">
             <Badge status="processing" color="green" />
             <Text strong className="text-lg ml-2">
-              Yêu cầu #{selectedRecord?.id} - Trạng thái: {selectedRecord?.status}
+              Yêu cầu #{selectedRecord?.id} - Trạng thái: {statusConfig[selectedRecord?.status]?.text || selectedRecord?.status}
             </Text>
           </div>
         }
         open={modalVisible}
         onCancel={handleCloseModal}
-        footer={[
-          <Button key="close" onClick={handleCloseModal}>
-            Đóng
-          </Button>,
-          <Button key="edit" type="primary">
-            Chỉnh sửa
-          </Button>,
-        ]}
+        footer={renderModalFooter()}
         width={800}
         className="detail-modal"
       >
@@ -404,9 +685,14 @@ const AdminBloodRequests = () => {
                       <Text strong>#{selectedRecord.id}</Text>
                     </Descriptions.Item>
                     <Descriptions.Item label="Trạng thái">
-                      <Tag color="success" icon={<CheckCircleOutlined />}>
-                        {selectedRecord.status}
-                      </Tag>
+                      {(() => {
+                        const { color, text, icon } = statusConfig[selectedRecord.status] || statusConfig.PENDING;
+                        return (
+                          <Tag color={color} icon={icon}>
+                            {text}
+                          </Tag>
+                        );
+                      })()}
                     </Descriptions.Item>
                     <Descriptions.Item label="Mức độ khẩn cấp">
                       <Tag color="red" icon={<AlertOutlined />}>
@@ -462,7 +748,7 @@ const AdminBloodRequests = () => {
                 </Col>
                 <Col span={12}>
                   <Descriptions column={1} size="small">
-                    <Descriptions.Item label="SĐT bệnh nhân">
+                    <Descriptions.Item label="SĐT người phụ trách">
                       <Text copyable className="text-blue-600">
                         {selectedRecord.requester?.phone}
                       </Text>

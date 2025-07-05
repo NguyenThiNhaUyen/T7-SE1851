@@ -147,6 +147,18 @@ const TransfusionHistory = () => {
       ),
     },
     {
+      title: 'Thành phần máu',
+      dataIndex: 'bloodComponent',
+      key: 'bloodComponent',
+      width: 150,
+      align: 'center',
+      render: (text) => (
+        <Tag color="blue" className="font-semibold">
+          {text}
+        </Tag>
+      ),
+    },
+    {
       title: 'Tuổi',
       dataIndex: 'age',
       key: 'age',
@@ -240,7 +252,7 @@ const TransfusionHistory = () => {
         </Text>
       </div>
       <Divider className="my-8" />
-      
+
       {/* Filters */}
       <Card className="mb-6 shadow-sm">
         <Row gutter={16} align="middle">
