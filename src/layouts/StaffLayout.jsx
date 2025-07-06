@@ -1,64 +1,120 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useLocation, useNavigate, Outlet } from "react-router-dom";
-import "../styles/staff.css";
+import {
+  ConfigProvider,
+  Layout,
+  Menu,
+  Typography,
+  Tooltip,
+} from "antd";
+import {
+  ExclamationCircleOutlined,
+  HeartOutlined,
+  ExperimentOutlined,
+  BarChartOutlined,
+  AlertOutlined,
+  MenuOutlined,
+} from "@ant-design/icons";
+
+const { Sider, Content } = Layout;
+const { Title } = Typography;
 
 const StaffLayout = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-  const [active, setActive] = useState("");
+  const { pathname } = useLocation();
 
+  const [selectedKey, setSelectedKey] = useState("");
+  const [collapsed, setCollapsed] = useState(false);
+
+  const staffMenuItems = [
+    { key: 'requests', icon: <ExclamationCircleOutlined />, label: 'Yêu cầu truyền máu', path: '/staff/requests' },
+    { key: 'donation', icon: <HeartOutlined />, label: 'Xác nhận hiến máu', path: '/staff/donation' },
+    { key: 'inventory', icon: <ExperimentOutlined />, label: 'Quản lý kho máu', path: '/staff/inventory' },
+    { key: 'statistics', icon: <BarChartOutlined />, label: 'Thống kê', path: '/staff/statistics' },
+    { key: 'urgent-requests', icon: <AlertOutlined />, label: 'Yêu cầu khẩn cấp', path: '/staff/urgent-requests' },
+  ];
+
+  // keep selectedKey in sync with current URL
   useEffect(() => {
-    const path = location.pathname;
-    if (path === "/staff/requests") setActive("requests");
-    else if (path === "/staff/transfusions") setActive("transfusions");
-    else if (path === "/staff/inventory") setActive("inventory");
-    else if (path === "/staff/statistics") setActive("statistics");
-    else setActive("");
-  }, [location.pathname]);
+    const active = staffMenuItems.find(item => pathname.startsWith(item.path));
+    setSelectedKey(active?.key || '');
+  }, [pathname]);
 
-  const handleNavigate = (path) => navigate(path);
+  // build the items array for Menu, injecting Tooltip on icon when collapsed
+  const menuItems = staffMenuItems.map(({ key, icon, label, path }) => ({
+    key,
+    icon: collapsed
+      ? (
+        <Tooltip placement="right" title={label}>
+          {icon}
+        </Tooltip>
+      )
+      : icon,
+    label: !collapsed ? label : '',
+    // override title để Menu không tự gán tooltip
+    title: collapsed ? null : label,
+    onClick: () => navigate(path),
+  }));
 
   return (
-    <div className="staff-layout">
-      <aside className="staff-sidebar">
-        <h2 className="sidebar-title">BẢNG ĐIỀU KHIỂN NHÂN VIÊN</h2>
-        <nav className="sidebar-nav">
-          <button
-            onClick={() => handleNavigate("/staff/requests")}
-            className={active === "requests" ? "nav-btn active" : "nav-btn"}
+    <ConfigProvider theme={{ token: { colorPrimary: '#1890ff' } }}>
+      <Layout style={{ minHeight: '100vh' }}>
+        <Sider
+          collapsible
+          collapsed={collapsed}
+          onCollapse={setCollapsed}
+          width={280}
+          trigger={(
+            <MenuOutlined
+              onClick={() => setCollapsed(!collapsed)}
+              aria-label={collapsed ? 'Mở sidebar' : 'Đóng sidebar'}
+              style={{ color: 'white', fontSize: 18, padding: '0 24px', cursor: 'pointer' }}
+            />
+          )}
+          style={{
+            background: '#b91c1c',
+            position: 'sticky',
+            height: '100vh',
+            left: 0,
+            top: 0,
+            zIndex: 100,
+          }}
+        >
+          <div
+            style={{
+              padding: '20px 16px',
+              textAlign: 'center',
+              borderBottom: '1px solid rgba(255,255,255,0.1)',
+            }}
           >
-            Yêu cầu truyền máu
-          </button>
-          <button
-            onClick={() => handleNavigate("/staff/donation")}
-            className={active === "donation" ? "nav-btn active" : "nav-btn"}
-          >
-            Xác nhận hiến máu
-          </button>
-          <button
-            onClick={() => handleNavigate("/staff/inventory")}
-            className={active === "inventory" ? "nav-btn active" : "nav-btn"}
-          >
-            Quản lý kho máu
-          </button>
-          <button
-            onClick={() => handleNavigate("/staff/statistics")}
-            className={active === "statistics" ? "nav-btn active" : "nav-btn"}
-          >
-            Thống kê
-          </button>
-          <button
-            onClick={() => handleNavigate("/staff/urgent-requests")}
-            className={active === "urgent" ? "nav-btn active" : "nav-btn"}
-          >
-          </button>
-        </nav>
-      </aside>
+            <Title
+              level={4}
+              style={{ color: 'white', margin: 0, fontSize: collapsed ? 14 : 16 }}
+            >
+              {collapsed ? 'STAFF' : 'BẢNG NHÂN VIÊN'}
+            </Title>
+          </div>
 
-      <main className="staff-main">
-        <Outlet />
-      </main>
-    </div>
+          <Menu
+            theme="dark"
+            mode="inline"
+            selectedKeys={[selectedKey]}
+            items={menuItems}
+            style={{ background: 'transparent', border: 'none' }}
+          />
+        </Sider>
+
+        <Layout
+          style={{
+            transition: 'margin-left 0.2s',
+          }}
+        >
+          <Content style={{ padding: 24, background: '#f5f5f5', minHeight: '100vh' }}>
+            <Outlet />
+          </Content>
+        </Layout>
+      </Layout>
+    </ConfigProvider>
   );
 };
 

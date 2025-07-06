@@ -23,6 +23,7 @@ import Forgot from "./components/Forgot";
 import ChangePassword from "./components/ChangePassword";
 import OtpVerify from "./components/OtpVerify";
 
+
 // 👤 Người dùng
 import BoardUser from "./components/BoardUser";
 import UserLayout from "./layouts/UserLayout";
@@ -49,6 +50,7 @@ import BoardAdmin from "./components/BoardAdmin";
 import AdminLayout from "./layouts/AdminLayout";
 import AdminDashboard from "./components/AdminDashboard";
 import TransfusionHistory from "./components/TransfusionHistory";
+import AdminBloodRequests from "./components/AdminBloodRequests";
 
 // 📢 Khác
 import BlogList from "./components/BlogList";
@@ -143,7 +145,7 @@ const App = () => {
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<BoardAdmin />} />
             <Route path="dashboard" element={<AdminDashboard />} />
-            <Route path="urgent-requests" element={<UrgentRequests />} />
+            <Route path="adblood-requests" element={<AdminBloodRequests />} />
             <Route path="donation-history" element={<DonationHistory />} />
             <Route path="transfusion-history" element={<TransfusionHistory />} />
 

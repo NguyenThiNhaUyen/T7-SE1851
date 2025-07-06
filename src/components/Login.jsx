@@ -72,7 +72,7 @@ export default function Login() {
         {/* Form bên phải */}
         <Col xs={24} md={12} lg={10} xl={12} className="form-col">
           <div className="form-wrapper">
-            <Card className="login-card" bodyStyle={{ padding: 40 }}>
+            <Card className="login-card" styles={{ body: { padding: 16 } }}>
               <Space direction="vertical" size="large" style={{ width: "100%" }}>
                 <div className="login-header">
                   <Avatar src="/donor.png" icon={<UserOutlined />} className="profile-img-card" />

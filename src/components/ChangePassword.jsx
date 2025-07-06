@@ -1,118 +1,121 @@
 import React, { useState } from "react";
-import Form from "react-validation/build/form";
-import Input from "react-validation/build/input";
+import {
+  Form,
+  Input,
+  Button,
+  Card,
+  Typography,
+  Space,
+  Avatar,
+  message
+} from "antd";
+import {
+  UserOutlined,
+  LockOutlined,
+  EyeInvisibleOutlined,
+  EyeTwoTone
+} from "@ant-design/icons";
+
+const { Title, Text } = Typography;
 
 const ChangePassword = () => {
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [message, setMessage] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
+  const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
-  e.preventDefault();
-
-  if (!newPassword || !confirmPassword) {
-    setMessage("Điền hết đi!!!");
-    return;
-  }
-
-  if (newPassword.length < 6) {
-    setMessage("Mật khẩu phải từ 6 ký tự trở lên");
-    return;
-  }
-
-  if (newPassword !== confirmPassword) {
-    setMessage("Mật khẩu không khớp");
-    return;
-  }
-
-  setMessage("Mật khẩu thay đổi thành công!");
-};
-
+  const handleSubmit = async (values) => {
+    setLoading(true);
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      message.success("Mật khẩu thay đổi thành công!");
+      form.resetFields();
+    } catch (err) {
+      message.error("Có lỗi xảy ra khi đổi mật khẩu");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="change-fullpage">
-      <div className="change-box">
-        <img
-          src="/donor.png"
-          alt="profile-img"
-          className="profile-img-card"
-        />
+    <div className="regis-fullpage">
+      <div className="form-wrapper" style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        width: '100%',
+        padding: '30px'
+      }}>
+        <Card className="login-card" bodyStyle={{ padding: 40 }} style={{ maxWidth: 600, width: '100%' }}>
+          <Space direction="vertical" size="large" style={{ width: "100%" }}>
+            <div className="login-header">
+              <Avatar 
+                src="/donor.png" 
+                icon={<UserOutlined />} 
+                className="profile-img-card" 
+              />
+              <Title level={3} className="login-title">Đổi mật khẩu</Title>
+              <Text type="secondary">Cập nhật mật khẩu mới của bạn</Text>
+            </div>
 
-        <Form onSubmit={handleSubmit}>
-          <h4 className="text-center mb-3">Đổi mật khẩu</h4>
-
-          <div className="form-group">
-            <label>Mật khẩu mới<span style={{ color: "red" }}>*</span></label>
-            <div style={{ position: "relative" }}>
-              <Input
-                type={showPassword ? "text" : "password"}
-                className="form-control"
+            <Form 
+              form={form} 
+              onFinish={handleSubmit} 
+              layout="vertical" 
+              size="large"
+            >
+              <Form.Item
                 name="newPassword"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                style={{ paddingRight: "40px" }}
-              />
-              <span
-                onClick={() => setShowPassword(!showPassword)}
-                style={{
-                  position: "absolute",
-                  top: "50%",
-                  right: "10px",
-                  transform: "translateY(-50%)",
-                  cursor: "pointer"
-                }}
+                label={<span>Mật khẩu mới <span className="required">*</span></span>}
+                rules={[
+                  { required: true, message: "Vui lòng nhập mật khẩu mới!" },
+                  { min: 6, message: "Mật khẩu phải từ 6 ký tự trở lên!" }
+                ]}
               >
-                <img
-                  src={showPassword ? "/eye-open.png" : "/eye-close.png"}
-                  alt="toggle"
-                  width={20}
+                <Input.Password
+                  prefix={<LockOutlined />}
+                  placeholder="Nhập mật khẩu mới"
+                  iconRender={vis => vis ? <EyeTwoTone /> : <EyeInvisibleOutlined />}
                 />
-              </span>
-            </div>
-          </div>
+              </Form.Item>
 
-          <div className="form-group mt-2">
-            <label>Xác nhận mật khẩu<span style={{ color: "red" }}>*</span></label>
-            <div style={{ position: "relative" }}>
-              <Input
-                type={showConfirm ? "text" : "password"}
-                className="form-control"
+              <Form.Item
                 name="confirmPassword"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                style={{ paddingRight: "40px" }}
-              />
-              <span
-                onClick={() => setShowConfirm(!showConfirm)}
-                style={{
-                  position: "absolute",
-                  top: "50%",
-                  right: "10px",
-                  transform: "translateY(-50%)",
-                  cursor: "pointer"
-                }}
+                label={<span>Xác nhận mật khẩu <span className="required">*</span></span>}
+                dependencies={['newPassword']}
+                rules={[
+                  { required: true, message: "Vui lòng xác nhận mật khẩu!" },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      if (!value || getFieldValue('newPassword') === value) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(new Error('Mật khẩu không khớp!'));
+                    },
+                  }),
+                ]}
               >
-                <img
-                  src={showConfirm ? "/eye-open.png" : "/eye-close.png"}
-                  alt="toggle"
-                  width={20}
+                <Input.Password
+                  prefix={<LockOutlined />}
+                  placeholder="Xác nhận mật khẩu mới"
+                  iconRender={vis => vis ? <EyeTwoTone /> : <EyeInvisibleOutlined />}
                 />
-              </span>
-            </div>
-          </div>
+              </Form.Item>
 
-          <div className="form-group mt-3">
-            <button className="btn btn-block btn-gradient-red" type="submit">
-              Đổi mật khẩu
-            </button>
-          </div>
-
-          {message && (
-            <div className="alert alert-danger mt-3">{message}</div>
-          )}
-        </Form>
+              <Form.Item>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={loading}
+                  block
+                  className="btn-gradient"
+                >
+                  Đổi mật khẩu
+                </Button>
+              </Form.Item>
+            </Form>
+          </Space>
+        </Card>
       </div>
     </div>
   );
