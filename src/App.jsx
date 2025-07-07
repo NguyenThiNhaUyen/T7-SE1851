@@ -41,6 +41,7 @@ import BoardStaff from "./components/BoardStaff";
 import StaffLayout from "./layouts/StaffLayout";
 import BloodRequestForm from "./components/BloodRequestForm";
 import DonationConfirm from "./components/DonationConfirm";
+import StaffDonationHistory from "./components/StaffDonationHistory";
 import InventoryChart from "./components/InventoryChart";
 import StaffStatistics from "./components/StaffStatistics";
 import UrgentRequests from "./components/UrgentRequests"; // chỉ import 1 lần
@@ -49,8 +50,9 @@ import UrgentRequests from "./components/UrgentRequests"; // chỉ import 1 lầ
 import BoardAdmin from "./components/BoardAdmin";
 import AdminLayout from "./layouts/AdminLayout";
 import AdminDashboard from "./components/AdminDashboard";
-import TransfusionHistory from "./components/TransfusionHistory";
 import AdminBloodRequests from "./components/AdminBloodRequests";
+import TransfusionHistory from "./components/TransfusionHistory";
+import UrgentList from "./components/UrgentList";
 
 // 📢 Khác
 import BlogList from "./components/BlogList";
@@ -145,12 +147,12 @@ const App = () => {
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<BoardAdmin />} />
             <Route path="dashboard" element={<AdminDashboard />} />
-            <Route path="adblood-requests" element={<AdminBloodRequests />} />
-            <Route path="donation-history" element={<DonationHistory />} />
+            <Route path="blood-requests" element={<AdminBloodRequests />} />
+            {/* <Route path="donation-history" element={<AdminDonationHistory />} /> */}
             <Route path="transfusion-history" element={<TransfusionHistory />} />
+            <Route path="urgent-list" element={<UrgentList />} />
 
-            {/* <Route path="users" element={<UserManagement />} />
-            <Route path="blood" element={<BloodManagement />} />
+            {/*<Route path="blood" element={<BloodManagement />} />
             <Route path="compatibility" element={<CompatibilityRules />} />
             <Route path="report" element={<ReportPage />} /> */}
             {/* <Route path="/admin/blog" element={<BlogList />} /> */}
@@ -161,6 +163,7 @@ const App = () => {
             <Route index element={<BoardStaff />} />
             <Route path="requests" element={<BloodRequestForm />} />
             <Route path="donation" element={<DonationConfirm />} />
+            <Route path="donation-history" element={<StaffDonationHistory />} />
             <Route path="inventory" element={<InventoryChart />} />
             <Route path="statistics" element={<StaffStatistics />} />
             <Route path="urgent-requests" element={<UrgentRequests />} />

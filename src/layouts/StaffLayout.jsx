@@ -14,6 +14,7 @@ import {
   BarChartOutlined,
   AlertOutlined,
   MenuOutlined,
+  HistoryOutlined,
 } from "@ant-design/icons";
 
 const { Sider, Content } = Layout;
@@ -30,6 +31,7 @@ const StaffLayout = () => {
     { key: 'requests', icon: <ExclamationCircleOutlined />, label: 'Yêu cầu truyền máu', path: '/staff/requests' },
     { key: 'donation', icon: <HeartOutlined />, label: 'Xác nhận hiến máu', path: '/staff/donation' },
     { key: 'inventory', icon: <ExperimentOutlined />, label: 'Quản lý kho máu', path: '/staff/inventory' },
+    { key: 'donation-history', icon: <HistoryOutlined />, label: 'Lịch sử hiến máu', path: '/staff/donation-history' },
     { key: 'statistics', icon: <BarChartOutlined />, label: 'Thống kê', path: '/staff/statistics' },
     { key: 'urgent-requests', icon: <AlertOutlined />, label: 'Yêu cầu khẩn cấp', path: '/staff/urgent-requests' },
   ];

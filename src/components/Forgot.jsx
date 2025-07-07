@@ -11,7 +11,8 @@ import {
 } from "antd";
 import {
   UserOutlined,
-  MailOutlined,
+  IdcardOutlined,
+  PhoneOutlined,
   ArrowLeftOutlined
 } from "@ant-design/icons";
 
@@ -22,21 +23,37 @@ const Forgot = () => {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (values) => {
-    const { email } = values;
+    const { cccd, phone } = values;
     
     setLoading(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Simulate API call to verify CCCD and phone number
+      const response = await fetch('/api/verify-identity', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ cccd, phone }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Verification failed');
+      }
+
+      const data = await response.json();
       
-      localStorage.setItem("recoveryEmail", email);
-      message.success("Mã OTP đã được gửi đến email của bạn!");
+      // Store the verified email for OTP sending
+      localStorage.setItem("recoveryEmail", data.email);
+      localStorage.setItem("verifiedCCCD", cccd);
+      localStorage.setItem("verifiedPhone", phone);
+      
+      message.success("Thông tin xác thực thành công! Mã OTP đã được gửi đến email của bạn.");
       
       setTimeout(() => {
         window.location.href = "/verify-otp";
       }, 1500);
     } catch (error) {
-      message.error("Có lỗi xảy ra, vui lòng thử lại!");
+      message.error("Thông tin CCCD hoặc số điện thoại không chính xác!");
     } finally {
       setLoading(false);
     }
@@ -63,9 +80,11 @@ const Forgot = () => {
                 icon={<UserOutlined />} 
                 className="profile-img-card" 
               />
-              <Title level={3} className="login-title">Đặt lại mật khẩu</Title>
+              <Title level={3} style={{ color: '#771813', marginBottom: '8px' }}>
+                Đặt lại mật khẩu
+              </Title>
               <Text type="secondary">
-                Nhập địa chỉ email để nhận mã xác thực
+                Nhập thông tin tài khoản của bạn để xác minh danh tính
               </Text>
             </div>
 
@@ -76,16 +95,38 @@ const Forgot = () => {
               size="large"
             >
               <Form.Item
-                name="email"
-                label={<span>Email <span className="required">*</span></span>}
+                name="cccd"
+                label={<span>Số CMND/CCCD/Hộ Chiếu<span className="required">*</span></span>}
                 rules={[
-                  { required: true, message: "Vui lòng nhập email!" },
-                  { type: "email", message: "Email không hợp lệ!" }
+                  { required: true, message: "Vui lòng nhập số CCCD!" },
+                  { 
+                    pattern: /^[0-9]{9,12}$/, 
+                    message: "Số CCCD phải có từ 9-12 chữ số!" 
+                  }
                 ]}
               >
                 <Input
-                  prefix={<MailOutlined />}
-                  placeholder="Nhập địa chỉ email của bạn"
+                  prefix={<IdcardOutlined />}
+                  placeholder="Nhập số giấy tờ tùy thân"
+                  maxLength={12}
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="phone"
+                label={<span>Số điện thoại<span className="required">*</span></span>}
+                rules={[
+                  { required: true, message: "Vui lòng nhập số điện thoại!" },
+                  { 
+                    pattern: /^[0-9]{10,11}$/, 
+                    message: "Số điện thoại phải có 10-11 chữ số!" 
+                  }
+                ]}
+              >
+                <Input
+                  prefix={<PhoneOutlined />}
+                  placeholder="Nhập số điện thoại"
+                  maxLength={11}
                 />
               </Form.Item>
 
@@ -97,24 +138,27 @@ const Forgot = () => {
                   block
                   className="btn-gradient"
                 >
-                  Gửi mã xác thực
+                  Tiếp tục
                 </Button>
               </Form.Item>
             </Form>
 
             <div style={{ textAlign: 'center' }}>
-              <Button
-                type="link"
-                icon={<ArrowLeftOutlined />}
-                onClick={handleBackToLogin}
-                style={{ 
-                  color: '#771813',
-                  padding: 0,
-                  height: 'auto'
-                }}
-              >
-                Quay lại đăng nhập
-              </Button>
+              <Text type="secondary" style={{ fontSize: '12px', display: 'block', marginBottom: '8px' }}>
+                Bạn đã có tài khoản?{' '}
+                <Button
+                  type="link"
+                  onClick={handleBackToLogin}
+                  style={{ 
+                    color: '#771813',
+                    padding: 0,
+                    height: 'auto',
+                    fontSize: '12px'
+                  }}
+                >
+                  Đăng nhập
+                </Button>
+              </Text>
             </div>
           </Space>
         </Card>
