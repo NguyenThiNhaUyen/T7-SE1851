@@ -27,7 +27,6 @@ import {
   FilterOutlined,
   EyeOutlined,
   ReloadOutlined,
-  ExportOutlined,
   UserOutlined,
   CalendarOutlined,
   EnvironmentOutlined,
@@ -264,10 +263,6 @@ const StaffDonationHistory = () => {
     }
   };
 
-  const handleExport = () => {
-    message.info('Chức năng xuất dữ liệu đang được phát triển');
-  };
-
   const resetFilters = () => {
     setSearchText('');
     setDateRange([]);
@@ -490,12 +485,6 @@ const StaffDonationHistory = () => {
                 }}
               >
                 Reset
-              </Button>
-              <Button
-                icon={<ExportOutlined />}
-                onClick={handleExport}
-              >
-                Xuất
               </Button>
             </Space>
           </Col>
