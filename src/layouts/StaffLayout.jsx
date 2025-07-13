@@ -14,6 +14,7 @@ import {
   BarChartOutlined,
   AlertOutlined,
   MenuOutlined,
+  HistoryOutlined,
 } from "@ant-design/icons";
 import { DeploymentUnitOutlined } from '@ant-design/icons'; // icon gợi ý liên quan đến tách máu
 

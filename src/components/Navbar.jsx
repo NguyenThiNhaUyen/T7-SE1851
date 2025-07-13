@@ -336,14 +336,6 @@ const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, showUserBoard, lo
             label: <NavLink to="/profile">Hồ sơ cá nhân</NavLink>,
         }] : []),
         {
-            key: 'settings',
-            icon: <SettingOutlined />,
-            label: <NavLink to="/settings">Cài đặt</NavLink>,
-        },
-        {
-            type: 'divider',
-        },
-        {
             key: 'logout',
             icon: <LogoutOutlined />,
             label: 'Đăng xuất',
@@ -407,6 +399,7 @@ const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, showUserBoard, lo
 
             {/* User section */}
             <Space size="large">
+<<<<<<< HEAD
                 {/* Search button - GỢI Ý THÊM */}
                 {currentUser && (
                     <Tooltip title="Tìm kiếm">
@@ -424,6 +417,8 @@ const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, showUserBoard, lo
                     </Tooltip>
                 )}
 
+=======
+>>>>>>> e8658a39c8801b2222dd9e6c291b42efe96ddb41
                 {/* Notification bell */}
                 {currentUser && (
                     <Popover

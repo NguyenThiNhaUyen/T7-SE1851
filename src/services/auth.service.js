@@ -10,7 +10,7 @@ const login = async (username, password) => {
     headers: { 'Content-Type': 'application/json' }
   });
 
-  const userData = response?.data?.data; // 👈 CHỈ LẤY response.data
+  const userData = response?.data; // 👈 CHỈ LẤY response.data
   if (!userData || !userData.accessToken) {
     throw new Error("Dữ liệu đăng nhập không hợp lệ.");
   }
@@ -46,15 +46,14 @@ const logout = () => {
 
 // ✅ Lấy user hiện tại
 const getCurrentUser = () => {
-  const raw = localStorage.getItem('user');
-  // Nếu không có gì hoặc bằng chuỗi "undefined" thì trả về null
-  if (!raw || raw === 'undefined') {
-    return null;
-  }
   try {
-    return JSON.parse(raw);
+    const userStr = localStorage.getItem('user');
+    if (!userStr || userStr === "undefined") {
+      return null; // hoặc {} nếu bạn muốn tránh null
+    }
+    return JSON.parse(userStr);
   } catch (err) {
-    console.error('AuthService#getCurrentUser — Lỗi parse JSON:', err, raw);
+    console.error("Lỗi parse user từ localStorage:", err);
     return null;
   }
 };
