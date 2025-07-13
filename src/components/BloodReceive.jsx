@@ -53,7 +53,7 @@ const BloodReceive = () => {
 
   return (
     <div style={{ padding: 24 }}>
-      <Title level={2}>🩸 Cách nhận máu</Title>
+      <Title level={2}>🩸 Liên hệ với chúng tôi ngay:</Title>
 
       <Collapse accordion>
         {receiveMethods.map((method) => (

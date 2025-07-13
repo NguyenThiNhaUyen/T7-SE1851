@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import UserService from "../services/user.service";
 import BenefitCarousel from "./BenefitCarousel";
 import Footer from "./Footer";
 import DonationInfoSection from './DonationInfoSection';
+import { Button, Typography, Row, Col, Card, Divider } from 'antd';
+import { motion } from 'framer-motion';
 import "../styles/Home.css";
 
-const images = ["/banner1.jpg", "/banner2.jpg"];
+const { Title, Paragraph } = Typography;
 
 const infoSections = [
   {
@@ -28,8 +30,6 @@ const infoSections = [
 
 const Home = () => {
   const [content, setContent] = useState("");
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [benefitIndex, setBenefitIndex] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -50,61 +50,62 @@ const Home = () => {
     };
   }, []);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % images.length);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <div className="home-wrapper">
-      <div className="fade-slider">
-        {images.map((src, index) => (
-          <img
-            key={index}
-            src={src}
-            alt={`Banner ${index + 1}`}
-            className={`fade-img ${index === currentIndex ? "active" : ""}`}
-          />
-        ))}
+      {/* 🔥 Video Background Hero */}
+      <div className="video-hero-wrapper">
+        <video autoPlay muted loop playsInline className="background-video">
+          <source src="/blood3.mp4" type="video/mp4" />
+          Trình duyệt không hỗ trợ video.
+        </video>
+
+        <div className="video-overlay">
+          <h1>Hiến máu - Cứu người</h1>
+          <p>Mỗi giọt máu cho đi là một cuộc đời ở lại</p>
+          <Button
+            type="primary"
+            size="large"
+            className="cta-button"
+            onClick={() => {
+              const token = localStorage.getItem("token");
+              navigate(token ? "/donation-intent" : "/login");
+            }}>
+            Hiến máu ngay
+          </Button>
+        </div>
       </div>
 
-      <section className="hero">
-        <h1>Hiến máu - Cứu người</h1>
-        <p>Mỗi giọt máu cho đi là một cuộc đời ở lại</p>
-        <div className="cta-buttons-vertical">
-          <button
-            className="cta-button donate"
-            onClick={() => navigate("/donation-intent")}
-          >
-            Hiến máu ngay
-          </button>
-        </div>
-      </section>
+      {/* <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+      >
+        <Title level={2} className="section-intro-heading">
+          Khám phá hành trình hiến máu đầy ý nghĩa
+        </Title>
+      </motion.div> */}
 
       <BenefitCarousel />
-
       <DonationInfoSection />
 
-      <div className="section-divider" />
+      <Divider />
 
       <section className="info-section">
-        {infoSections.map((item, index) => (
-          <div
-            key={index}
-            className="info-card"
-            onClick={() => navigate(`/blog/${item.blogId}`)}
-            role="button"
-          >
-            <h3>{item.title}</h3>
-            <p>{item.summary}</p>
-          </div>
-        ))}
+        <Row gutter={[32, 32]} justify="center">
+          {infoSections.map((item, index) => (
+            <Col xs={22} sm={10} md={6} key={index}>
+              <Card hoverable className="info-card" onClick={() => navigate(`/blog/${item.blogId}`)}>
+                <Title level={4}>{item.title}</Title>
+                <Paragraph>{item.summary}</Paragraph>
+              </Card>
+            </Col>
+          ))}
+        </Row>
       </section>
 
       <section className="blog-preview-section">
-        <h2 className="section-title">Từ Blog của chúng tôi</h2>
+        <Title className="section-title">Từ Blog của chúng tôi</Title>
         <div className="grid-cards">
           <div className="blog-card no-left-border" onClick={() => navigate("/blog/1")}>
             <img src="/banner1.jpg" alt="Blog 1" />
@@ -118,9 +119,7 @@ const Home = () => {
           </div>
         </div>
         <div style={{ textAlign: "center", marginTop: "1rem" }}>
-          <button className="cta-button" onClick={() => navigate("/blog")}>
-            Xem tất cả bài viết
-          </button>
+          <Button type="primary" size="large" onClick={() => navigate("/blog")}>Xem tất cả bài viết</Button>
         </div>
       </section>
 

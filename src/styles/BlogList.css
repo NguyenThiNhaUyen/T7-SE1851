@@ -7,7 +7,6 @@
   margin: 0 auto;
 }
 
-/* Tiêu đề */
 .blog-list-wrapper h2 {
   font-size: 2rem;
   font-weight: 700;
@@ -20,7 +19,6 @@
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
 }
 
-/* Container grid để hiển thị dạng cột linh hoạt */
 .blog-list-grid {
   display: flex;
   flex-wrap: wrap;
@@ -28,20 +26,19 @@
   justify-content: space-between;
 }
 
-/* Mỗi thẻ blog */
 .blog-list-card {
   background-color: #fff9f9;
   border-radius: 16px;
   padding: 16px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: all 0.3s ease;
   width: calc(50% - 12px);
   display: flex;
   flex-direction: column;
 }
 
 .blog-list-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-4px) scale(1.01);
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
 }
 
@@ -58,15 +55,14 @@
   margin-bottom: 16px;
 }
 
-/* Tiêu đề bài viết */
 .blog-list-card h4 {
   margin-bottom: 12px;
   color: #771813;
   font-size: 1.3rem;
   font-weight: 600;
+  line-height: 1.4;
 }
 
-/* Tóm tắt */
 .blog-list-card p {
   margin-bottom: 10px;
   font-size: 1rem;
@@ -74,13 +70,25 @@
   color: #444;
 }
 
-/* Ngày đăng */
 .blog-list-card small {
   font-size: 0.9rem;
   color: #888;
 }
+.title-link {
+  text-decoration: none;
+  color: inherit;
+}
+.title-link h4:hover {
+  color: #d61b1b;
+  text-decoration: underline;
+  cursor: pointer;
+}
 
-/* Responsive cho mobile */
+.clickable-area {
+  cursor: pointer;
+}
+
+/* Mobile responsive */
 @media screen and (max-width: 768px) {
   .blog-list-card {
     width: 100%;

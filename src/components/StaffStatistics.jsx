@@ -1,205 +1,245 @@
-// 📊 Enhanced Staff Statistics Page
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Pie, Bar } from "react-chartjs-2";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement } from "chart.js";
+import {
+  App as AntdApp,
+  Button,
+  Card,
+  Col,
+  DatePicker,
+  Divider,
+  Row,
+  Select,
+  Space,
+  Typography,
+  Table,
+  Tooltip,
+  ConfigProvider,
+  theme,
+  message,
+} from "antd";
+import { Bar, Pie } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip as ChartTooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+} from "chart.js";
+import { DownloadOutlined, ReloadOutlined, SearchOutlined, InfoCircleOutlined } from "@ant-design/icons";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import "../styles/staff.css";
 
-ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
+ChartJS.register(ArcElement, ChartTooltip, Legend, CategoryScale, LinearScale, BarElement);
+
+const { Title, Text } = Typography;
+const { Option } = Select;
+
+const mockStatisticsData = [
+  {
+    blood_type: "A+",
+    component_name: "Hồng cầu",
+    total_transfusions: 45,
+    total_patients: 30,
+    last_date: "2025-07-10",
+  },
+  {
+    blood_type: "O-",
+    component_name: "Tiểu cầu",
+    total_transfusions: 25,
+    total_patients: 20,
+    last_date: "2025-07-09",
+  },
+  {
+    blood_type: "B+",
+    component_name: "Huyết tương",
+    total_transfusions: 35,
+    total_patients: 28,
+    last_date: "2025-07-08",
+  },
+  {
+    blood_type: "AB-",
+    component_name: "Hồng cầu",
+    total_transfusions: 15,
+    total_patients: 12,
+    last_date: "2025-07-07",
+  },
+];
 
 const StaffStatistics = () => {
-  const [stats, setStats] = useState([]);
-  const [bloodType, setBloodType] = useState("");
-  const [component, setComponent] = useState("");
-  const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate] = useState("");
-  const [dateRange, setDateRange] = useState("");
-  const [chartType, setChartType] = useState("bar");
+  const [statistics, setStatistics] = useState([]);
+  const [selectedBloodType, setSelectedBloodType] = useState("");
+  const [selectedComponent, setSelectedComponent] = useState("");
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [selectedChartType, setSelectedChartType] = useState("bar");
+  const [isDarkTheme, setIsDarkTheme] = useState(false);
 
-  const today = new Date().toISOString().split("T")[0];
-
-  const handlePresetChange = (value) => {
-    setDateRange(value);
-    const now = new Date();
-    let from = "", to = today;
-
-    switch (value) {
-      case "today":
-        from = to;
-        break;
-      case "yesterday":
-        now.setDate(now.getDate() - 1);
-        from = to = now.toISOString().split("T")[0];
-        break;
-      case "last7":
-        now.setDate(now.getDate() - 6);
-        from = now.toISOString().split("T")[0];
-        break;
-      case "last30":
-        now.setDate(now.getDate() - 29);
-        from = now.toISOString().split("T")[0];
-        break;
-      default:
-        from = ""; to = "";
-    }
-
-    setFromDate(from);
-    setToDate(to);
-  };
-
-  const fetchStatistics = () => {
-    axios
-      .get("http://localhost:3000/api/statistics", {
-        params: { bloodType, component, fromDate, toDate },
-      })
-      .then((res) => setStats(res.data))
-      .catch((err) => console.error("❌ Lỗi lấy dữ liệu thống kê:", err));
+  const fetchStatisticsData = () => {
+    const filteredData = mockStatisticsData.filter((item) => {
+      const matchesBloodType = !selectedBloodType || item.blood_type === selectedBloodType;
+      const matchesComponent = !selectedComponent || item.component_name === selectedComponent;
+      const matchesDateRange = (!startDate || new Date(item.last_date) >= new Date(startDate)) &&
+        (!endDate || new Date(item.last_date) <= new Date(endDate));
+      return matchesBloodType && matchesComponent && matchesDateRange;
+    });
+    setStatistics(filteredData);
   };
 
   useEffect(() => {
-    fetchStatistics();
+    fetchStatisticsData();
   }, []);
 
-  const exportToExcel = () => {
-    const ws = XLSX.utils.json_to_sheet(stats);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "ThongKeTruyenMau");
-    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-    const data = new Blob([excelBuffer], { type: "application/octet-stream" });
-    saveAs(data, "bao_cao_truyen_mau.xlsx");
+  const exportStatisticsToExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(statistics);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "ThongKeTruyenMau");
+    const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+    const fileData = new Blob([excelBuffer], { type: "application/octet-stream" });
+    saveAs(fileData, "bao_cao_truyen_mau.xlsx");
   };
 
-  const getTopComponent = () => {
-    return stats.reduce((prev, curr) => prev.total_transfusions > curr.total_transfusions ? prev : curr, stats[0])?.component_name || "N/A";
-  };
+  const totalTransfusions = statistics.reduce((sum, record) => sum + record.total_transfusions, 0);
+  const totalPatients = statistics.reduce((sum, record) => sum + record.total_patients, 0);
+  const mostCommonComponent = statistics.reduce((prev, curr) => prev.total_transfusions > curr.total_transfusions ? prev : curr, statistics[0])?.component_name || "N/A";
+  const mostCommonBloodType = statistics.reduce((prev, curr) => prev.total_transfusions > curr.total_transfusions ? prev : curr, statistics[0])?.blood_type || "N/A";
+  const latestTransfusionDate = statistics.map(item => new Date(item.last_date)).sort((a, b) => b - a)[0];
 
-  const getTopBloodType = () => {
-    return stats.reduce((prev, curr) => prev.total_transfusions > curr.total_transfusions ? prev : curr, stats[0])?.blood_type || "N/A";
-  };
+  const uniqueComponentList = [...new Set(statistics.map(item => item.component_name))];
 
-  const getLastTransfusionDate = () => {
-    const latest = stats.reduce((latest, s) => new Date(s.last_date) > new Date(latest) ? s.last_date : latest, stats[0]?.last_date || "");
-    return latest ? new Date(latest).toLocaleDateString() : "N/A";
-  };
+  const statisticsColumns = [
+    { title: "Nhóm máu", dataIndex: "blood_type", key: "blood_type" },
+    { title: "Thành phần", dataIndex: "component_name", key: "component_name" },
+    { title: "Số lượt truyền", dataIndex: "total_transfusions", key: "total_transfusions" },
+    { title: "Số bệnh nhân", dataIndex: "total_patients", key: "total_patients" },
+    { title: "Ngày gần nhất", dataIndex: "last_date", key: "last_date" },
+  ];
 
   return (
-    <div className="inventory-container">
-      <h2>📊 Thống kê truyền máu</h2>
+    <ConfigProvider theme={{ algorithm: isDarkTheme ? theme.darkAlgorithm : theme.defaultAlgorithm }}>
+      <div style={{ padding: 24 }}>
+        <Title level={3}>📊 Thống kê truyền máu</Title>
 
-      <div className="stats-wrapper">
-        <h4>🎛️ Bộ lọc thống kê truyền máu</h4>
-        <div className="filter-panel">
-          <div className="filter-group">
-            <label>Nhóm máu:</label>
-            <select value={bloodType} onChange={(e) => setBloodType(e.target.value)}>
-              <option value="">-- Chọn nhóm máu --</option>
-              {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map(bt => (
-                <option key={bt} value={bt}>{bt}</option>
-              ))}
-            </select>
-          </div>
+        <Card style={{ marginBottom: 24 }}>
+          <Row gutter={[16, 16]}>
+            <Col xs={24} md={6}>
+              <Select
+                style={{ width: "100%" }}
+                placeholder="Chọn nhóm máu"
+                value={selectedBloodType}
+                onChange={setSelectedBloodType}
+                allowClear
+              >
+                {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map((blood) => (
+                  <Option key={blood} value={blood}>{blood}</Option>
+                ))}
+              </Select>
+            </Col>
 
-          <div className="filter-group">
-            <label>Thành phần:</label>
-            <select value={component} onChange={(e) => setComponent(e.target.value)}>
-              <option value="">-- Chọn thành phần --</option>
-              {["Hồng cầu", "Tiểu cầu", "Huyết tương"].map(c => (
-                <option key={c} value={c}>{c}</option>
-              ))}
-            </select>
-          </div>
+            <Col xs={24} md={6}>
+              <Select
+                style={{ width: "100%" }}
+                placeholder="Chọn thành phần"
+                value={selectedComponent}
+                onChange={setSelectedComponent}
+                allowClear
+              >
+                {["Hồng cầu", "Tiểu cầu", "Huyết tương"].map((component) => (
+                  <Option key={component} value={component}>{component}</Option>
+                ))}
+              </Select>
+            </Col>
 
-          <div className="filter-group">
-            <label>Thời gian nhanh:</label>
-            <select value={dateRange} onChange={(e) => handlePresetChange(e.target.value)}>
-              <option value="">-- Tuỳ chọn --</option>
-              <option value="today">Hôm nay</option>
-              <option value="yesterday">Hôm qua</option>
-              <option value="last7">7 ngày qua</option>
-              <option value="last30">30 ngày qua</option>
-            </select>
-          </div>
+            <Col xs={12} md={6}>
+              <DatePicker
+                style={{ width: "100%" }}
+                placeholder="Từ ngày"
+                value={startDate}
+                onChange={setStartDate}
+                format="YYYY-MM-DD"
+              />
+            </Col>
 
-          <div className="filter-group">
-            <label>Từ ngày:</label>
-            <input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
-          </div>
+            <Col xs={12} md={6}>
+              <DatePicker
+                style={{ width: "100%" }}
+                placeholder="Đến ngày"
+                value={endDate}
+                onChange={setEndDate}
+                format="YYYY-MM-DD"
+              />
+            </Col>
 
-          <div className="filter-group">
-            <label>Đến ngày:</label>
-            <input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} />
-          </div>
+            <Col xs={24} style={{ textAlign: "right" }}>
+              <Space>
+                <Select value={selectedChartType} onChange={setSelectedChartType}>
+                  <Option value="bar">📊 Biểu đồ cột</Option>
+                  <Option value="pie">🧬 Biểu đồ tròn</Option>
+                </Select>
+                <Button icon={<SearchOutlined />} onClick={fetchStatisticsData}>Lọc</Button>
+                <Button icon={<DownloadOutlined />} onClick={exportStatisticsToExcel}>Xuất Excel</Button>
+                <Button icon={<ReloadOutlined />} onClick={() => {
+                  setSelectedBloodType("");
+                  setSelectedComponent("");
+                  setStartDate(null);
+                  setEndDate(null);
+                  fetchStatisticsData();
+                }}>Xoá lọc</Button>
+                <Button onClick={() => setIsDarkTheme(!isDarkTheme)}>{isDarkTheme ? "🌞 Giao diện sáng" : "🌙 Giao diện tối"}</Button>
+              </Space>
+            </Col>
+          </Row>
+        </Card>
 
-          <div className="filter-group">
-            <label>Biểu đồ:</label>
-            <select value={chartType} onChange={(e) => setChartType(e.target.value)}>
-              <option value="bar">📊 Biểu đồ cột</option>
-              <option value="pie">🧬 Biểu đồ tròn</option>
-            </select>
-          </div>
-
-          <div className="filter-group">
-            <button onClick={fetchStatistics}>🔍 Lọc</button>
-            <button className="export-btn" onClick={exportToExcel}>📥 Xuất Excel</button>
-            <button onClick={() => {
-              setBloodType(""); setComponent(""); setFromDate(""); setToDate(""); setDateRange("");
-              fetchStatistics();
-            }}>♻️ Xoá bộ lọc</button>
-          </div>
-        </div>
-
-        {stats.length === 0 ? (
-          <p style={{ color: "#dc2626", marginTop: "1rem" }}>⚠️ Không tìm thấy dữ liệu phù hợp với bộ lọc hiện tại.</p>
+        {statistics.length === 0 ? (
+          <Text type="danger">⚠️ Không tìm thấy dữ liệu phù hợp với bộ lọc hiện tại.</Text>
         ) : (
           <>
-            <div className="summary-section">
-              <div className="card">🔢 <strong>Tổng lượt truyền:</strong> {stats.reduce((sum, s) => sum + s.total_transfusions, 0)}</div>
-              <div className="card">👥 <strong>Tổng bệnh nhân:</strong> {stats.reduce((sum, s) => sum + s.total_patients, 0)}</div>
-              <div className="card">🧬 <strong>Thành phần phổ biến:</strong> {getTopComponent()}</div>
-              <div className="card">🩸 <strong>Nhóm máu phổ biến:</strong> {getTopBloodType()}</div>
-              <div className="card">📅 <strong>Ngày gần nhất:</strong> {getLastTransfusionDate()}</div>
-            </div>
+            <Row gutter={[16, 16]}>
+              <Col span={6}><Card><Text strong>Tổng lượt truyền:</Text><br />{totalTransfusions}</Card></Col>
+              <Col span={6}><Card><Text strong>Tổng bệnh nhân:</Text><br />{totalPatients}</Card></Col>
+              <Col span={6}><Card><Text strong>Thành phần phổ biến:</Text><br />{mostCommonComponent}</Card></Col>
+              <Col span={6}><Card><Text strong>Nhóm máu phổ biến:</Text><br />{mostCommonBloodType}</Card></Col>
+            </Row>
 
-            <div className="chart-wrapper">
-              {chartType === "bar" ? (
-                <Bar
-                  data={{
-                    labels: stats.map(s => `${s.blood_type} - ${s.component_name}`),
-                    datasets: [{
-                      label: "Số lượt truyền",
-                      data: stats.map(s => s.total_transfusions),
-                      backgroundColor: "#3b82f6"
-                    }]
-                  }}
-                  options={{
-                    responsive: true,
-                    scales: {
-                      y: { beginAtZero: true }
-                    }
-                  }}
-                />
-              ) : (
-                <Pie
-                  data={{
-                    labels: [...new Set(stats.map(s => s.component_name))],
-                    datasets: [{
-                      label: "Tỷ lệ",
-                      data: [...new Set(stats.map(s => s.component_name))].map(
-                        name => stats.filter(s => s.component_name === name)
-                          .reduce((acc, s) => acc + s.total_transfusions, 0)
-                      ),
-                      backgroundColor: ["#f87171", "#60a5fa", "#34d399"]
-                    }]
-                  }}
-                />
-              )}
-            </div>
+            <Divider orientation="left" style={{ marginTop: 40 }}>📈 Biểu đồ thống kê</Divider>
+
+            {selectedChartType === "bar" ? (
+              <Bar
+                data={{
+                  labels: statistics.map(record => `${record.blood_type} - ${record.component_name}`),
+                  datasets: [{
+                    label: "Số lượt truyền",
+                    data: statistics.map(record => record.total_transfusions),
+                    backgroundColor: "#1677ff"
+                  }]
+                }}
+                options={{ responsive: true, scales: { y: { beginAtZero: true } } }}
+              />
+            ) : (
+              <Pie
+                data={{
+                  labels: uniqueComponentList,
+                  datasets: [{
+                    label: "Tỷ lệ",
+                    data: uniqueComponentList.map(component =>
+                      statistics.filter(record => record.component_name === component)
+                        .reduce((total, record) => total + record.total_transfusions, 0)
+                    ),
+                    backgroundColor: ["#f87171", "#60a5fa", "#34d399"]
+                  }]
+                }}
+              />
+            )}
+
+            <Divider orientation="left" style={{ marginTop: 40 }}>📋 Chi tiết thống kê</Divider>
+
+            <Table columns={statisticsColumns} dataSource={statistics} rowKey={(record, index) => index} pagination={{ pageSize: 5 }} />
           </>
         )}
       </div>
-    </div>
+    </ConfigProvider>
   );
 };
 

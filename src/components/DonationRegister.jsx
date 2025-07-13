@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Typography,
   DatePicker,
@@ -61,83 +61,88 @@ const DonationRegister = () => {
   };
 
   return (
-  <div style={{ background: "#f5f5f5", padding: "24px 0", minHeight: "calc(100vh - 64px)" }}>
-    <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 16px" }}>
-      <Card bordered={false} className="shadow-md rounded-xl">
-        <Title level={3}>
-          <ScheduleOutlined /> Đăng ký hiến máu
-        </Title>
-        <Text type="secondary">
-          Vui lòng chọn ngày và giờ phù hợp để tham gia hiến máu
-        </Text>
-        <Divider />
+    <div
+      style={{
+        background: "#f5f5f5",
+        padding: "24px 0",
+        minHeight: "calc(100vh - 64px)",
+        overflowX: "hidden", // ✅ CHẶN DƯ SCROLL NGANG
+      }}
+    >
+      <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 16px" }}>
+        <Card bordered={false} className="shadow-md rounded-xl">
+          <Title level={3}>
+            <ScheduleOutlined /> Đăng ký hiến máu
+          </Title>
+          <Text type="secondary">
+            Vui lòng chọn ngày và giờ phù hợp để tham gia hiến máu
+          </Text>
+          <Divider />
 
-        <Space direction="vertical" style={{ width: "100%" }} size="large">
-          <div>
-            <Text strong>📍 Chọn địa điểm hiến máu</Text>
-            <Select
-              style={{ width: "100%", marginTop: 8 }}
-              placeholder="VD: BV Chợ Rẫy, TP.HCM"
-              value={selectedLocation}
-              onChange={(value) => setSelectedLocation(value)}
-            >
-              <Option value="BV Chợ Rẫy">BV Chợ Rẫy</Option>
-              <Option value="BV Huyết học TP.HCM">BV Huyết học TP.HCM</Option>
-              <Option value="FPTU Campus">FPTU Campus</Option>
-            </Select>
-          </div>
-
-          <div>
-            <Text strong>📅 Chọn ngày</Text>
-            <DatePicker
-              style={{ width: "100%", marginTop: 8 }}
-              value={selectedDate}
-              onChange={setSelectedDate}
-            />
-          </div>
-
-          <div>
-            <Text strong>🕒 Chọn khung giờ</Text>
-            <div
-              className="overflow-x-auto"
-              style={{
-                maxHeight: 220,
-                padding: 4,
-                border: "1px solid #eee",
-                borderRadius: 8,
-              }}
-            >
-              <Row gutter={[8, 8]} wrap>
-                {slots.map((slot) => (
-                  <Col key={slot} span={6} sm={4}>
-                    <Button
-                      block
-                      size="middle"
-                      type={selectedSlot === slot ? "primary" : "default"}
-                      onClick={() => setSelectedSlot(slot)}
-                    >
-                      {slot}
-                    </Button>
-                  </Col>
-                ))}
-              </Row>
+          <Space direction="vertical" style={{ width: "100%" }} size="large">
+            <div>
+              <Text strong>📍 Chọn địa điểm hiến máu</Text>
+              <Select
+                style={{ width: "100%", marginTop: 8 }}
+                placeholder="VD: FPTU"
+                value={selectedLocation}
+                onChange={(value) => setSelectedLocation(value)}
+              >
+                <Option value="FPTU Campus">FPTU Campus</Option>
+              </Select>
             </div>
-          </div>
 
-          <Button
-            type="primary"
-            size="large"
-            onClick={handleSubmit}
-            loading={loading}
-            disabled={!selectedDate || !selectedSlot || !selectedLocation}
-          >
-            Gửi đăng ký
-          </Button>
-        </Space>
-      </Card>
+            <div>
+              <Text strong>📅 Chọn ngày</Text>
+              <DatePicker
+                style={{ width: "100%", marginTop: 8 }}
+                value={selectedDate}
+                onChange={setSelectedDate}
+              />
+            </div>
+
+            <div>
+              <Text strong>🕒 Chọn khung giờ</Text>
+              <div
+                style={{
+                  maxHeight: 220,
+                  padding: 4,
+                  border: "1px solid #eee",
+                  borderRadius: 8,
+                  overflowX: "hidden", // 👈 nếu dài thì cuộn theo chiều dọc
+                }}
+              >
+                <Row gutter={[8, 8]} wrap justify="start">
+                  {slots.map((slot) => (
+                    <Col key={slot} span={6} sm={4} xs={6}>
+                      <Button
+                        block
+                        size="middle"
+                        type={selectedSlot === slot ? "primary" : "default"}
+                        onClick={() => setSelectedSlot(slot)}
+                      >
+                        {slot}
+                      </Button>
+                    </Col>
+                  ))}
+                </Row>
+              </div>
+            </div>
+
+            <Button
+              type="primary"
+              size="large"
+              onClick={handleSubmit}
+              loading={loading}
+              disabled={!selectedDate || !selectedSlot || !selectedLocation}
+            >
+              Gửi đăng ký
+            </Button>
+          </Space>
+        </Card>
+      </div>
     </div>
-  </div>
-);
+  );
 };
 
 export default DonationRegister;
