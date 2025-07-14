@@ -16,6 +16,7 @@ import {
   MenuOutlined,
   HistoryOutlined,
 } from "@ant-design/icons";
+import { DeploymentUnitOutlined } from '@ant-design/icons'; // icon gợi ý liên quan đến tách máu
 
 const { Sider, Content } = Layout;
 const { Title } = Typography;
@@ -27,14 +28,14 @@ const StaffLayout = () => {
   const [selectedKey, setSelectedKey] = useState("");
   const [collapsed, setCollapsed] = useState(false);
 
-  const staffMenuItems = [
-    { key: 'requests', icon: <ExclamationCircleOutlined />, label: 'Yêu cầu truyền máu', path: '/staff/requests' },
-    { key: 'donation-confirm', icon: <HeartOutlined />, label: 'Xác nhận hiến máu', path: '/staff/donation-confirm' },
-    { key: 'inventory', icon: <ExperimentOutlined />, label: 'Quản lý kho máu', path: '/staff/inventory' },
-    { key: 'donation-history', icon: <HistoryOutlined />, label: 'Lịch sử hiến máu', path: '/staff/donation-history' },
-    { key: 'statistics', icon: <BarChartOutlined />, label: 'Thống kê', path: '/staff/statistics' },
-    { key: 'urgent-requests', icon: <AlertOutlined />, label: 'Yêu cầu khẩn cấp', path: '/staff/urgent-requests' },
-  ];
+const staffMenuItems = [
+  { key: 'requests', icon: <ExclamationCircleOutlined />, label: 'Yêu cầu truyền máu', path: '/staff/requests' },
+  { key: 'donation', icon: <HeartOutlined />, label: 'Xác nhận hiến máu', path: '/staff/donation' },
+  { key: 'inventory', icon: <ExperimentOutlined />, label: 'Quản lý kho máu', path: '/staff/inventory' },
+  { key: 'separation-dashboard', icon: <DeploymentUnitOutlined />, label: 'Dashboard tách máu', path: '/staff/separation-dashboard' }, // ✅ Mục mới
+  { key: 'statistics', icon: <BarChartOutlined />, label: 'Thống kê', path: '/staff/statistics' },
+  { key: 'urgent-requests', icon: <AlertOutlined />, label: 'Yêu cầu khẩn cấp', path: '/staff/urgent-requests' },
+];
 
   // keep selectedKey in sync with current URL
   useEffect(() => {

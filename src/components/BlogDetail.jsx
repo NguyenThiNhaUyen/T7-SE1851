@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { Tag, Typography, Breadcrumb } from "antd";
+import { HomeOutlined, FileTextOutlined, CalendarOutlined } from "@ant-design/icons";
 import "../styles/BlogDetail.css";
+
+const { Title, Paragraph } = Typography;
 
 const blogs = [
   {
@@ -75,6 +79,13 @@ Một quy trình chuyên nghiệp để bạn yên tâm đóng góp cho cộng �
   }
 ];
 
+const categoryColorMap = {
+  "Truyền cảm hứng": "magenta",
+  "Hướng dẫn": "green",
+  "Thông tin": "blue",
+  "Quy trình": "volcano",
+};
+
 const formatDate = (dateStr) => {
   const options = { day: "2-digit", month: "2-digit", year: "numeric" };
   return new Date(dateStr).toLocaleDateString("vi-VN", options);
@@ -82,6 +93,7 @@ const formatDate = (dateStr) => {
 
 const BlogDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [blog, setBlog] = useState(null);
 
   useEffect(() => {
@@ -90,22 +102,61 @@ const BlogDetail = () => {
   }, [id]);
 
   useEffect(() => {
-    if (blog) {
-      document.title = `${blog.title}`;
-    }
+    if (blog) document.title = blog.title;
   }, [blog]);
 
-  if (!blog) return <p className="loading-text">Đang tải nội dung bài viết...</p>;
+  if (!blog) return <p className="loading-text">Đang tải bài viết...</p>;
 
   return (
-    <div className="blog-detail-wrapper">
-      <Link to="/blog" className="back-link">← Quay lại danh sách</Link>
-      <h2 className="blog-title">{blog.title}</h2>
-      <p className="published-date">🗓️ {formatDate(blog.published_at)}</p>
-      <div className="blog-content">
-        {blog.content.split("\n").map((line, i) => (
-          <p key={i}>{line}</p>
-        ))}
+    <div className="blog-modern-wrapper">
+      <div className="blog-banner">
+        <img src={blog.image} alt={blog.title} className="blog-banner-img" />
+      </div>
+
+      <div className="blog-modern-content">
+        <Breadcrumb className="blog-breadcrumb">
+          <Breadcrumb.Item href="/">
+            <HomeOutlined />
+          </Breadcrumb.Item>
+          <Breadcrumb.Item href="/blog">
+            <FileTextOutlined />
+            <span>Blog</span>
+          </Breadcrumb.Item>
+          <Breadcrumb.Item>{blog.title}</Breadcrumb.Item>
+        </Breadcrumb>
+
+        <Title level={2} className="blog-modern-title">{blog.title}</Title>
+
+        <div className="blog-meta">
+          <Tag color={categoryColorMap[blog.category] || "default"}>
+            {blog.category}
+          </Tag>
+          <span>
+            <CalendarOutlined /> {formatDate(blog.published_at)}
+          </span>
+        </div>
+
+        <div className="blog-body">
+          {blog.content.split("\n").map((p, idx) => (
+            <Paragraph key={idx}>{p.trim()}</Paragraph>
+          ))}
+        </div>
+
+        {/* Related posts */}
+        <div className="related-posts">
+          <Title level={4} style={{ marginTop: 48 }}>📰 Bài viết liên quan</Title>
+          <div className="related-posts-grid">
+            {blogs
+              .filter((b) => b.id !== blog.id && b.category === blog.category)
+              .slice(0, 3)
+              .map((rel) => (
+                <Link to={`/blog/${rel.id}`} key={rel.id} className="related-post-card">
+                  <img src={rel.image} alt={rel.title} />
+                  <p>{rel.title}</p>
+                </Link>
+              ))}
+          </div>
+        </div>
       </div>
     </div>
   );

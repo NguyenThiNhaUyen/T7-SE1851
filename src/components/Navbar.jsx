@@ -1,36 +1,36 @@
 import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
-  Layout,
-  Menu,
-  Avatar,
-  Dropdown,
-  Badge,
-  Button,
-  Space,
-  Popover,
-  List,
-  Typography,
-  Divider,
-  Empty,
-  Tooltip
+    Layout,
+    Menu,
+    Avatar,
+    Dropdown,
+    Badge,
+    Button,
+    Space,
+    Popover,
+    List,
+    Typography,
+    Divider,
+    Empty,
+    Tooltip
 } from "antd";
 import {
-  BellOutlined,
-  UserOutlined,
-  LogoutOutlined,
-  LoginOutlined,
-  UserAddOutlined,
-  HomeOutlined,
-  ReadOutlined,
-  QuestionCircleOutlined,
-  CalendarOutlined,
-  HeartOutlined,
-  CheckCircleOutlined,
-  ClockCircleOutlined,
-  ExclamationCircleOutlined,
-  SettingOutlined,
-  SearchOutlined
+    BellOutlined,
+    UserOutlined,
+    LogoutOutlined,
+    LoginOutlined,
+    UserAddOutlined,
+    HomeOutlined,
+    ReadOutlined,
+    QuestionCircleOutlined,
+    CalendarOutlined,
+    HeartOutlined,
+    CheckCircleOutlined,
+    ClockCircleOutlined,
+    ExclamationCircleOutlined,
+    SettingOutlined,
+    SearchOutlined
 } from "@ant-design/icons";
 import "../styles/Navbar.css";
 
@@ -39,7 +39,8 @@ const { Text, Title } = Typography;
 
 const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, showUserBoard, logOut }) => {
     const navigate = useNavigate();
-    
+    // const currentUser = AuthService.getCurrentUser();
+
     // Mock notification data - XÓA SAU KHI TÍCH HỢP API THẬT
     const [notifications, setNotifications] = useState([
         // {
@@ -95,12 +96,12 @@ const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, showUserBoard, lo
     // Xử lý click thông báo
     const handleNotificationClick = (notification) => {
         // Đánh dấu đã đọc
-        setNotifications(prev => 
-            prev.map(n => 
+        setNotifications(prev =>
+            prev.map(n =>
                 n.id === notification.id ? { ...n, isRead: true } : n
             )
         );
-        
+
         // Chuyển hướng nếu có link
         if (notification.link) {
             navigate(notification.link);
@@ -109,7 +110,7 @@ const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, showUserBoard, lo
 
     // Đánh dấu tất cả đã đọc
     const markAllAsRead = () => {
-        setNotifications(prev => 
+        setNotifications(prev =>
             prev.map(n => ({ ...n, isRead: true }))
         );
     };
@@ -151,15 +152,25 @@ const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, showUserBoard, lo
             key: 'activities',
             icon: <CalendarOutlined />,
             label: <NavLink to="/activities">Hoạt động</NavLink>,
+        },
+        {
+            key: 'donate',
+            icon: <HeartOutlined />,
+            label: (
+                <NavLink to={`/user/${currentUser?.id}/register`}>
+                    Đăng ký hiến máu
+                </NavLink>
+            ),
         }
+
     ];
 
     // Notification content - Giống Facebook
     const notificationContent = (
         <div style={{ width: 360, maxHeight: 480, overflowY: 'auto' }}>
             {/* Header thông báo */}
-            <div style={{ 
-                padding: '16px 20px 12px', 
+            <div style={{
+                padding: '16px 20px 12px',
                 borderBottom: '1px solid #f0f0f0',
                 display: 'flex',
                 justifyContent: 'space-between',
@@ -168,8 +179,8 @@ const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, showUserBoard, lo
                 <Title level={4} style={{ margin: 0, fontWeight: 600 }}>
                     Thông báo
                 </Title>
-                <Button 
-                    type="link" 
+                <Button
+                    type="link"
                     size="small"
                     onClick={markAllAsRead}
                     disabled={unreadCount === 0}
@@ -200,23 +211,23 @@ const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, showUserBoard, lo
                                 e.currentTarget.style.backgroundColor = '#fafafa';
                             }}
                             onMouseLeave={(e) => {
-                                e.currentTarget.style.backgroundColor = 
+                                e.currentTarget.style.backgroundColor =
                                     notification.isRead ? 'transparent' : '#f6ffed';
                             }}
                         >
                             <List.Item.Meta
                                 avatar={
                                     <div style={{ position: 'relative' }}>
-                                        <Avatar 
+                                        <Avatar
                                             src={notification.avatar}
                                             icon={!notification.avatar && <UserOutlined />}
                                             size={40}
-                                            style={{ 
+                                            style={{
                                                 backgroundColor: notification.avatar ? undefined : '#f56a00'
                                             }}
                                         />
                                         {/* Icon loại thông báo */}
-                                        <div 
+                                        <div
                                             style={{
                                                 position: 'absolute',
                                                 bottom: -2,
@@ -237,9 +248,9 @@ const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, showUserBoard, lo
                                 }
                                 title={
                                     <div>
-                                        <Text 
+                                        <Text
                                             strong={!notification.isRead}
-                                            style={{ 
+                                            style={{
                                                 fontSize: '14px',
                                                 fontWeight: notification.isRead ? 400 : 600,
                                                 lineHeight: '1.4'
@@ -248,7 +259,7 @@ const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, showUserBoard, lo
                                             {notification.title}
                                         </Text>
                                         {!notification.isRead && (
-                                            <div 
+                                            <div
                                                 style={{
                                                     width: 8,
                                                     height: 8,
@@ -263,9 +274,9 @@ const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, showUserBoard, lo
                                 }
                                 description={
                                     <div>
-                                        <Text 
-                                            style={{ 
-                                                fontSize: '13px', 
+                                        <Text
+                                            style={{
+                                                fontSize: '13px',
                                                 color: '#666',
                                                 lineHeight: '1.4',
                                                 display: 'block',
@@ -274,9 +285,9 @@ const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, showUserBoard, lo
                                         >
                                             {notification.message}
                                         </Text>
-                                        <Text 
-                                            style={{ 
-                                                fontSize: '12px', 
+                                        <Text
+                                            style={{
+                                                fontSize: '12px',
                                                 color: '#1890ff',
                                                 fontWeight: 500
                                             }}
@@ -291,7 +302,7 @@ const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, showUserBoard, lo
                 />
             ) : (
                 <div style={{ padding: '40px 20px', textAlign: 'center' }}>
-                    <Empty 
+                    <Empty
                         description="Không có thông báo nào"
                         image={Empty.PRESENTED_IMAGE_SIMPLE}
                     />
@@ -300,13 +311,13 @@ const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, showUserBoard, lo
 
             {/* Footer */}
             {notifications.length > 0 && (
-                <div style={{ 
-                    padding: '12px 20px', 
+                <div style={{
+                    padding: '12px 20px',
                     borderTop: '1px solid #f0f0f0',
                     textAlign: 'center'
                 }}>
-                    <Button 
-                        type="link" 
+                    <Button
+                        type="link"
                         onClick={() => navigate('/notifications')}
                         style={{ padding: 0, fontSize: '14px', fontWeight: 500 }}
                     >
@@ -333,26 +344,29 @@ const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, showUserBoard, lo
     ];
 
     return (
-        <Header 
-            style={{ 
-                background: '#d32f2f', // Blood red theme
+        <Header
+            style={{
+                background: '#d32f2f',
                 padding: '0 24px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                position: 'sticky',
+                borderBottom: "none",
+                position: 'fixed',         // ✅ cố định tuyệt đối
                 top: 0,
-                zIndex: 1000
+                width: '100%',             // ✅ full chiều ngang
+                zIndex: 10
             }}
         >
+
             {/* Logo section */}
             <div style={{ display: 'flex', alignItems: 'center' }}>
-                <img 
-                    src="/Logo-Blood-Donation.jpg" 
-                    alt="Logo" 
-                    style={{ 
-                        height: '40px', 
+                <img
+                    src="/Logo-Blood-Donation.jpg"
+                    alt="Logo"
+                    style={{
+                        height: '40px',
                         marginRight: '24px',
                         borderRadius: '4px',
                         cursor: 'pointer'
@@ -361,21 +375,47 @@ const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, showUserBoard, lo
                 />
             </div>
 
-            {/* Navigation menu */}
-            <Menu
-                mode="horizontal"
-                items={navigationItems}
-                style={{
-                    background: 'transparent',
-                    border: 'none',
-                    flex: 1,
-                    justifyContent: 'center'
-                }}
-                theme="dark"
-            />
+            {/* Navigation menu giống 30Shine */}
+            <div className="navbar-center-wrapper">
+                <div className="navbar-center">
+                    {navigationItems.map((item) => {
+                        return (
+                            <div className="nav-pill-wrapper" key={item.key}>
+                                {React.cloneElement(item.label, {
+                                    className: ({ isActive }) =>
+                                        `nav-pill-custom ${isActive ? 'active' : ''}`,
+                                    children: (
+                                        <>
+                                            {item.icon}
+                                            <span>{item.label.props.children}</span>
+                                        </>
+                                    )
+                                })}
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
 
             {/* User section */}
             <Space size="large">
+                {/* Search button - GỢI Ý THÊM */}
+                {currentUser && (
+                    <Tooltip title="Tìm kiếm">
+                        <Button
+                            type="text"
+                            icon={<SearchOutlined />}
+                            onClick={() => navigate('/search')}
+                            style={{
+                                color: 'white',
+                                fontSize: '18px',
+                                display: 'flex',
+                                alignItems: 'center'
+                            }}
+                        />
+                    </Tooltip>
+                )}
+
                 {/* Notification bell */}
                 {currentUser && (
                     <Popover
@@ -385,15 +425,15 @@ const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, showUserBoard, lo
                         placement="bottomRight"
                         overlayClassName="notification-popover"
                     >
-                        <Badge 
-                            count={unreadCount} 
+                        <Badge
+                            count={unreadCount}
                             size="small"
                             offset={[-2, 2]}
                         >
                             <Button
                                 type="text"
                                 icon={<BellOutlined />}
-                                style={{ 
+                                style={{
                                     color: 'white',
                                     fontSize: '18px',
                                     display: 'flex',
@@ -411,8 +451,8 @@ const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, showUserBoard, lo
                         trigger={['click']}
                     >
                         <Space style={{ cursor: 'pointer', color: 'white' }}>
-                            <Avatar 
-                                icon={<UserOutlined />} 
+                            <Avatar
+                                icon={<UserOutlined />}
                                 size="small"
                                 style={{ backgroundColor: '#fff', color: '#d32f2f' }}
                             />
@@ -427,7 +467,7 @@ const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, showUserBoard, lo
                             type="ghost"
                             icon={<LoginOutlined />}
                             onClick={() => navigate('/login')}
-                            style={{ 
+                            style={{
                                 borderColor: 'white',
                                 color: 'white'
                             }}
@@ -438,7 +478,7 @@ const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, showUserBoard, lo
                             type="primary"
                             icon={<UserAddOutlined />}
                             onClick={() => navigate('/register/information')}
-                            style={{ 
+                            style={{
                                 backgroundColor: 'white',
                                 borderColor: 'white',
                                 color: '#d32f2f'

@@ -75,16 +75,11 @@ const UserLayout = () => {
       icon: <InfoCircleOutlined />,
       label: collapsed ? <Tooltip title="Các loại máu">Máu</Tooltip> : "Các loại máu"
     },
-    {
-      key: "receive",
-      icon: <PhoneOutlined />,
-      label: collapsed ? <Tooltip title="Liên hệ & hỗ trợ hiến máu">Nhận</Tooltip> : "Liên hệ & hỗ trợ hiến máu"
-    },
-    {
-      key: "roles",
-      icon: <ProfileOutlined />,
-      label: collapsed ? <Tooltip title="Vai trò truyền máu">Vai</Tooltip> : "Vai trò truyền máu"
-    }
+    // {
+    //   key: "receive",
+    //   icon: <PhoneOutlined />,
+    //   label: collapsed ? <Tooltip title="Liên hệ & hỗ trợ hiến máu">Nhận</Tooltip> : "Liên hệ & hỗ trợ hiến máu"
+    // },
   ];
 
   const handleMenuClick = ({ key }) => {
@@ -241,15 +236,21 @@ const UserLayout = () => {
         </div>
       </Sider>
 
-      <Layout style={{ marginLeft: collapsed ? 80 : 280, marginTop: 64 }}>
+      <Layout style={{ marginLeft: collapsed ? 80 : 280 }}>
+      {/* <Layout style={{ marginLeft: collapsed ? 80 : 280, marginTop: 64 }}></Layout> */}
         <Content style={{
-          padding: 24,
+          margin: 0, 
+          padding: 0,
           background: "#f9f9f9",
+          marginTop: 10,
           minHeight: "calc(100vh - 64px)",
+          overflowX: 'hidden',       // ✅ CHẶN NGANG
+          overflowY: 'auto',
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between"
         }}>
+
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}

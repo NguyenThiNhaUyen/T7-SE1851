@@ -32,7 +32,6 @@ import DonationHistory from "./components/DonationHistory";
 import RequestHistory from "./components/RequestHistory";
 import BloodTypes from "./components/BloodTypes";
 import BloodReceive from "./components/BloodReceive";
-import BloodRoles from "./components/BloodRoles";
 import UrgentDonationRegister from "./components/UrgentDonationRegister";
 import UrgentDonationWrapper from "./components/UrgentDonationWrapper";
 
@@ -45,6 +44,7 @@ import StaffDonationHistory from "./components/StaffDonationHistory";
 import InventoryChart from "./components/InventoryChart";
 import StaffStatistics from "./components/StaffStatistics";
 import UrgentRequests from "./components/UrgentRequests"; // chỉ import 1 lần
+import SeparationDashboard from "./components/SeparationDashboard"; 
 
 // 👑 Quản trị viên
 import BoardAdmin from "./components/BoardAdmin";
@@ -88,15 +88,14 @@ const App = () => {
       setShowAdminBoard(user.role === "ADMIN");
       setShowStaffBoard(user.role === "STAFF");
 
-      if (user.role === "STAFF" && ["/", "/home", "/login"].includes(location.pathname)) {
+      // Nếu đang ở login hoặc home thì mới redirect
+      const currentPath = location.pathname;
+
+      if (user.role === "STAFF" && ["/", "/home", "/login"].includes(currentPath)) {
         navigate("/staff");
-      }
-
-      if (user.role === "ADMIN" && ["/", "/home", "/login"].includes(location.pathname)) {
+      } else if (user.role === "ADMIN" && ["/", "/home", "/login"].includes(currentPath)) {
         navigate("/admin");
-      }
-
-      if (user.role === "USER" && ["/", "/home", "/login"].includes(location.pathname)) {
+      } else if (user.role === "USER" && ["/", "/home", "/login"].includes(currentPath)) {
         navigate(`/user/${user.id}`);
       }
     }
@@ -128,7 +127,7 @@ const App = () => {
         logOut={logOut}
       />
 
-      <div className="page-content width-full">
+      <div className="page-content width-full" style={{ paddingTop: 64 }}>
         <Routes>
           {/* Chung */}
           <Route path="/" element={<Home />} />
@@ -170,6 +169,7 @@ const App = () => {
             <Route path="inventory" element={<InventoryChart />} />
             <Route path="statistics" element={<StaffStatistics />} />
             <Route path="urgent-requests" element={<UrgentRequests />} />
+            <Route path="separation-dashboard" element={<SeparationDashboard />} />
           </Route>
 
           {/* User */}
@@ -180,7 +180,6 @@ const App = () => {
             <Route path="request-history" element={<RequestHistory />} />
             <Route path="types" element={<BloodTypes />} />
             <Route path="receive" element={<BloodReceive />} />
-            <Route path="roles" element={<BloodRoles />} />
             <Route path="urgent" element={<UrgentDonationWrapper />} />
             <Route path="urgent-register" element={<UrgentDonationRegister />} />
           </Route>
