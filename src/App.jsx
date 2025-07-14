@@ -54,6 +54,9 @@ import AdminBloodRequests from "./components/AdminBloodRequests";
 import TransfusionHistory from "./components/TransfusionHistory";
 import UrgentList from "./components/UrgentList";
 import StaffManagement from "./components/StaffManagement";
+import ReportPage from "./components/ReportPage";
+import BloodCompatibility from "./components/BloodCompatibility";
+import BloodManagement from "./components/BloodManagement";
 
 // 📢 Khác
 import BlogList from "./components/BlogList";
@@ -149,14 +152,13 @@ const App = () => {
             <Route index element={<BoardAdmin />} />
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="blood-requests" element={<AdminBloodRequests />} />
-            {/* <Route path="donation-history" element={<AdminDonationHistory />} /> */}
+            <Route path="donation-history" element={<StaffDonationHistory />} />
             <Route path="transfusion-history" element={<TransfusionHistory />} />
             <Route path="urgent-list" element={<UrgentList />} />
             <Route path="staff&doctor" element={<StaffManagement />} />
-            
-            {/*<Route path="compatibility" element={<CompatibilityRules />} />
-            <Route path="report" element={<ReportPage />} /> */}
-            {/* <Route path="/admin/blog" element={<BlogList />} /> */}
+            <Route path="blood" element={<BloodManagement />} />
+            <Route path="compatibility" element={<BloodCompatibility />} />
+            <Route path="report" element={<ReportPage />} />
           </Route>
 
           {/* Staff */}

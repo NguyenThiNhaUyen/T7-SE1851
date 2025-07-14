@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { 
+  Layout,
   Form, 
   Input, 
   Button, 
@@ -46,6 +47,7 @@ import {
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 
+const { Header, Content } = Layout;
 const { Title, Text } = Typography;
 const { Option } = Select;
 const { TextArea } = Input;
@@ -346,91 +348,111 @@ const StaffManagement = () => {
   ];
 
   return (
-    <div style={{ padding: '24px' }}>
-      <Card>
-        <div style={{ marginBottom: '24px' }}>
-          <Title level={2} style={{ color: '#1890ff', marginBottom: '8px' }}>
-            <UsergroupAddOutlined style={{ marginRight: '12px' }} />
-            Quản Lý Nhân Viên Y Tế
-          </Title>
-          
-          {/* Thống kê */}
-          <Row gutter={16} style={{ marginBottom: '24px' }}>
-            {statsData.map((stat, index) => (
-              <Col span={6} key={index}>
-                <Card size="small" style={{ textAlign: 'center' }}>
-                  <Text style={{ color: stat.color, fontSize: '24px', fontWeight: 'bold' }}>
-                    {stat.value}
-                  </Text>
-                  <br />
-                  <Text type="secondary">{stat.title}</Text>
-                </Card>
+    <Layout style={{ minHeight: '100vh' }}>
+      <Header style={{ background: '#fff', padding: '0 24px', borderBottom: '1px solid #f0f0f0' }}>
+        <Row justify="space-between" align="middle">
+          <Col>
+            <Title level={2} style={{ margin: 0, color: '#1890ff' }}>
+              <UsergroupAddOutlined style={{ marginRight: 8 }} />
+              Quản lý Nhân viên Y tế
+            </Title>
+          </Col>
+          <Col>
+            <Space>
+              <Text type="secondary">
+                <CalendarOutlined style={{ marginRight: 4 }} />
+                {new Date().toLocaleDateString('vi-VN')}
+              </Text>
+              <Text type="secondary">
+                <UserOutlined style={{ marginRight: 4 }} />
+                Quản trị viên
+              </Text>
+            </Space>
+          </Col>
+        </Row>
+      </Header>
+
+      <Content style={{ padding: '24px' }}>
+        <Card>
+          <div style={{ marginBottom: '24px' }}>
+            {/* Thống kê */}
+            <Row gutter={16} style={{ marginBottom: '24px' }}>
+              {statsData.map((stat, index) => (
+                <Col span={6} key={index}>
+                  <Card size="small" style={{ textAlign: 'center' }}>
+                    <Text style={{ color: stat.color, fontSize: '24px', fontWeight: 'bold' }}>
+                      {stat.value}
+                    </Text>
+                    <br />
+                    <Text type="secondary">{stat.title}</Text>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+
+            {/* Thanh tìm kiếm và bộ lọc */}
+            <Row gutter={16} style={{ marginBottom: '16px' }}>
+              <Col span={8}>
+                <Input.Search
+                  placeholder="Tìm kiếm nhân viên..."
+                  allowClear
+                  value={searchText}
+                  onChange={(e) => setSearchText(e.target.value)}
+                  style={{ width: '100%' }}
+                />
               </Col>
-            ))}
-          </Row>
+              <Col span={4}>
+                <Select
+                  value={filterRole}
+                  onChange={setFilterRole}
+                  style={{ width: '100%' }}
+                  placeholder="Lọc theo vai trò"
+                >
+                  <Option value="all">Tất cả vai trò</Option>
+                  <Option value="DOCTOR">Bác sĩ</Option>
+                  <Option value="STAFF">Nhân viên</Option>
+                </Select>
+              </Col>
+              <Col span={4}>
+                <Select
+                  value={filterStatus}
+                  onChange={setFilterStatus}
+                  style={{ width: '100%' }}
+                  placeholder="Lọc theo trạng thái"
+                >
+                  <Option value="all">Tất cả trạng thái</Option>
+                  <Option value="ACTIVE">Đang làm việc</Option>
+                  <Option value="INACTIVE">Nghỉ việc</Option>
+                </Select>
+              </Col>
+              <Col span={8} style={{ textAlign: 'right' }}>
+                <Button 
+                  type="primary" 
+                  icon={<PlusOutlined />}
+                  onClick={() => setShowCreateForm(true)}
+                  size="large"
+                >
+                  Thêm nhân viên mới
+                </Button>
+              </Col>
+            </Row>
 
-          {/* Thanh tìm kiếm và bộ lọc */}
-          <Row gutter={16} style={{ marginBottom: '16px' }}>
-            <Col span={8}>
-              <Input.Search
-                placeholder="Tìm kiếm nhân viên..."
-                allowClear
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-                style={{ width: '100%' }}
-              />
-            </Col>
-            <Col span={4}>
-              <Select
-                value={filterRole}
-                onChange={setFilterRole}
-                style={{ width: '100%' }}
-                placeholder="Lọc theo vai trò"
-              >
-                <Option value="all">Tất cả vai trò</Option>
-                <Option value="DOCTOR">Bác sĩ</Option>
-                <Option value="STAFF">Nhân viên</Option>
-              </Select>
-            </Col>
-            <Col span={4}>
-              <Select
-                value={filterStatus}
-                onChange={setFilterStatus}
-                style={{ width: '100%' }}
-                placeholder="Lọc theo trạng thái"
-              >
-                <Option value="all">Tất cả trạng thái</Option>
-                <Option value="ACTIVE">Đang làm việc</Option>
-                <Option value="INACTIVE">Nghỉ việc</Option>
-              </Select>
-            </Col>
-            <Col span={8} style={{ textAlign: 'right' }}>
-              <Button 
-                type="primary" 
-                icon={<PlusOutlined />}
-                onClick={() => setShowCreateForm(true)}
-                size="large"
-              >
-                Thêm nhân viên mới
-              </Button>
-            </Col>
-          </Row>
-
-          {/* Bảng danh sách nhân viên */}
-          <Table
-            columns={columns}
-            dataSource={filteredStaff}
-            rowKey="id"
-            pagination={{
-              pageSize: 10,
-              showSizeChanger: true,
-              showQuickJumper: true,
-              showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} nhân viên`
-            }}
-            scroll={{ x: 1200 }}
-          />
-        </div>
-      </Card>
+            {/* Bảng danh sách nhân viên */}
+            <Table
+              columns={columns}
+              dataSource={filteredStaff}
+              rowKey="id"
+              pagination={{
+                pageSize: 10,
+                showSizeChanger: true,
+                showQuickJumper: true,
+                showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} nhân viên`
+              }}
+              scroll={{ x: 1200 }}
+            />
+          </div>
+        </Card>
+      </Content>
 
       {/* Drawer tạo/sửa nhân viên */}
       <Drawer
@@ -818,7 +840,7 @@ const StaffManagement = () => {
           </div>
         )}
       </Modal>
-    </div>
+    </Layout>
   );
 };
 
