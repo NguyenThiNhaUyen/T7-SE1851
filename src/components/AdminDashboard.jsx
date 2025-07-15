@@ -104,7 +104,6 @@ const AdminDashboard = () => {
     totalDonors: 1205,
     successfulTransfusions: 342,
     pendingRequests: 15,
-    avgResponseTime: 35,
     bloodBankCapacity: 85.5,
   };
 
@@ -596,16 +595,6 @@ const AdminDashboard = () => {
             value={dashboardStats.successfulTransfusions}
             prefix={<CheckCircleOutlined style={{ color: '#52c41a' }} />}
             suffix="ca"
-          />
-        </Card>
-      </Col>
-      <Col xs={24} sm={12} md={8}>
-        <Card>
-          <Statistic
-            title="Thời gian phản hồi trung bình"
-            value={dashboardStats.avgResponseTime}
-            prefix={<ClockCircleOutlined style={{ color: '#faad14' }} />}
-            suffix="phút"
           />
         </Card>
       </Col>

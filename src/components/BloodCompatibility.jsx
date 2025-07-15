@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Layout, 
-  Card, 
-  Select, 
-  Button, 
-  Table, 
-  Tag, 
-  Space, 
-  Alert, 
-  Typography, 
-  Row, 
-  Col, 
-  Divider, 
+import {
+  Layout,
+  Card,
+  Select,
+  Button,
+  Table,
+  Tag,
+  Space,
+  Alert,
+  Typography,
+  Row,
+  Col,
+  Divider,
   Badge,
   Tooltip,
   Modal,
@@ -31,11 +31,11 @@ import {
   Avatar,
   Checkbox
 } from 'antd';
-import { 
-  HeartOutlined, 
-  ExperimentOutlined, 
-  CheckCircleOutlined, 
-  CloseCircleOutlined, 
+import {
+  HeartOutlined,
+  ExperimentOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
   ExclamationCircleOutlined,
   SearchOutlined,
   UserOutlined,
@@ -145,9 +145,9 @@ const BloodCompatibility = () => {
 
     const donorType = donorBlood + donorRh;
     const recipientType = recipientBlood + recipientRh;
-    
+
     const isCompatible = compatibilityMatrix[donorComponent][recipientType]?.includes(donorType);
-    
+
     const result = {
       donor: donorType,
       recipient: recipientType,
@@ -160,7 +160,7 @@ const BloodCompatibility = () => {
     };
 
     setCompatibilityResult(result);
-    
+
     // Thêm vào lịch sử
     const newHistory = {
       id: historyData.length + 1,
@@ -172,7 +172,7 @@ const BloodCompatibility = () => {
       technician: 'Người dùng hệ thống',
       notes: result.notes
     };
-    
+
     setHistoryData(prev => [newHistory, ...prev]);
     message.success('Kiểm tra tương thích thành công!');
   };
@@ -220,7 +220,7 @@ const BloodCompatibility = () => {
       dataIndex: 'result',
       key: 'result',
       render: (result) => (
-        <Tag 
+        <Tag
           color={result === 'compatible' ? 'green' : 'red'}
           icon={result === 'compatible' ? <CheckCircleOutlined /> : <CloseCircleOutlined />}
         >
@@ -276,7 +276,7 @@ const BloodCompatibility = () => {
     const { compatible, donor, recipient, component, recommendation, notes, riskLevel } = compatibilityResult;
 
     return (
-      <Card 
+      <Card
         title={
           <Space>
             <MedicineBoxOutlined />
@@ -310,7 +310,7 @@ const BloodCompatibility = () => {
                   {notes}
                 </Descriptions.Item>
               </Descriptions>
-              
+
               <Space>
                 <Button type="primary" icon={<PrinterOutlined />}>
                   In báo cáo
@@ -370,7 +370,7 @@ const BloodCompatibility = () => {
     ];
 
     return (
-      <Table 
+      <Table
         columns={tableColumns}
         dataSource={tableData}
         pagination={{ pageSize: 8 }}
@@ -435,9 +435,9 @@ const BloodCompatibility = () => {
         <Row gutter={16}>
           <Col span={12}>
             <Card title="Xu hướng kiểm tra">
-              <Progress 
-                type="circle" 
-                percent={successRate} 
+              <Progress
+                type="circle"
+                percent={successRate}
                 format={(percent) => `${percent}%`}
                 strokeColor={{
                   '0%': '#108ee9',
@@ -507,7 +507,7 @@ const BloodCompatibility = () => {
             }
             key="1"
           >
-            <Card 
+            <Card
               title={
                 <Space>
                   <MedicineBoxOutlined />
@@ -516,11 +516,21 @@ const BloodCompatibility = () => {
               }
               style={{ marginBottom: 16 }}
             >
-              <Steps current={currentStep} style={{ marginBottom: 24 }}>
-                <Step title="Chọn thông tin" description="Nhóm máu và thành phần" />
-                <Step title="Kiểm tra" description="Xác minh tương thích" />
-                <Step title="Kết quả" description="Báo cáo chi tiết" />
-              </Steps>
+              <Card
+                title={
+                  <Space>
+                    <SafetyOutlined />
+                    <Text strong>Bảng quy tắc tương thích</Text>
+                  </Space>
+                }
+                extra={
+                  <Button type="primary" icon={<PlusOutlined />}>
+                    Thêm quy tắc
+                  </Button>
+                }
+              >
+                {renderCompatibilityTable()}
+              </Card>
 
               <Alert
                 message="Thông tin quan trọng"
@@ -619,17 +629,17 @@ const BloodCompatibility = () => {
 
               <div style={{ textAlign: 'center', marginTop: 24 }}>
                 <Space size="large">
-                  <Button 
-                    type="primary" 
-                    size="large" 
+                  <Button
+                    type="primary"
+                    size="large"
                     icon={<SearchOutlined />}
                     onClick={checkCompatibility}
                     disabled={!donorBlood || !donorRh || !recipientBlood || !recipientRh || !donorComponent}
                   >
                     Kiểm tra tương thích
                   </Button>
-                  <Button 
-                    size="large" 
+                  <Button
+                    size="large"
                     icon={<ReloadOutlined />}
                     onClick={resetForm}
                   >
@@ -651,7 +661,7 @@ const BloodCompatibility = () => {
             }
             key="2"
           >
-            <Card 
+            <Card
               title={
                 <Space>
                   <ClockCircleOutlined />
@@ -690,32 +700,6 @@ const BloodCompatibility = () => {
           >
             <Card title="Thống kê tổng quan">
               {renderStatistics()}
-            </Card>
-          </TabPane>
-
-          <TabPane
-            tab={
-              <Space>
-                <TableOutlined />
-                Bảng tương thích
-              </Space>
-            }
-            key="4"
-          >
-            <Card 
-              title={
-                <Space>
-                  <SafetyOutlined />
-                  <Text strong>Bảng quy tắc tương thích</Text>
-                </Space>
-              }
-              extra={
-                <Button type="primary" icon={<PlusOutlined />}>
-                  Thêm quy tắc
-                </Button>
-              }
-            >
-              {renderCompatibilityTable()}
             </Card>
           </TabPane>
         </Tabs>

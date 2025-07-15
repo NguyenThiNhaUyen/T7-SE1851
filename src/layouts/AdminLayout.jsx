@@ -17,6 +17,7 @@ import {
   BarChartOutlined,
   MedicineBoxOutlined,
   MenuOutlined,
+  SearchOutlined,
   UnorderedListOutlined,
 } from "@ant-design/icons";
 
@@ -36,6 +37,7 @@ const AdminLayout = () => {
     { key: 'donation-history', icon: <HistoryOutlined />, label: 'Lịch sử hiến máu', path: '/admin/donation-history' },
     { key: 'transfusion-history', icon: <MedicineBoxOutlined />, label: 'Lịch sử truyền máu', path: '/admin/transfusion-history' },
     { key: 'urgent-list', icon: <UnorderedListOutlined />, label: 'DS người hiến máu khẩn cấp', path: '/admin/urgent-list' },
+    { key: 'urgent-search', icon: <SearchOutlined />, label: 'Tìm người hiến máu khẩn cấp', path: '/admin/urgent-search' },
     { key: 'staff&doctor', icon: <TeamOutlined />, label: 'Nhân viên y tế', path: '/admin/staff&doctor' },
     { key: 'blood', icon: <ExperimentOutlined />, label: 'Nhóm máu & Thành phần', path: '/admin/blood' },
     { key: 'compatibility', icon: <ShareAltOutlined />, label: 'Quy tắc tương thích', path: '/admin/compatibility' },

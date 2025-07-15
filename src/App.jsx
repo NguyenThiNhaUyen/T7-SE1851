@@ -43,8 +43,9 @@ import DonationConfirm from "./components/DonationConfirm";
 import StaffDonationHistory from "./components/StaffDonationHistory";
 import InventoryChart from "./components/InventoryChart";
 import StaffStatistics from "./components/StaffStatistics";
-import UrgentRequests from "./components/UrgentRequests"; // chỉ import 1 lần
-import SeparationDashboard from "./components/SeparationDashboard"; 
+import UrgentRequests from "./components/UrgentRequests";
+import UrgentSearch from "./components/UrgentSearch";
+import SeparationDashboard from "./components/SeparationDashboard";
 
 // 👑 Quản trị viên
 import BoardAdmin from "./components/BoardAdmin";
@@ -154,6 +155,7 @@ const App = () => {
             <Route path="donation-history" element={<StaffDonationHistory />} />
             <Route path="transfusion-history" element={<TransfusionHistory />} />
             <Route path="urgent-list" element={<UrgentList />} />
+            <Route path="urgent-search" element={<UrgentSearch />} />
             <Route path="staff&doctor" element={<StaffManagement />} />
             <Route path="blood" element={<BloodManagement />} />
             <Route path="compatibility" element={<BloodCompatibility />} />

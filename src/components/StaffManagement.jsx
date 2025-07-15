@@ -131,12 +131,6 @@ const StaffManagement = () => {
     "Gây mê hồi sức", "Chuẩn đoán hình ảnh", "Xét nghiệm", "Dược"
   ];
 
-  const departments = [
-    "Khoa Nội", "Khoa Ngoại", "Khoa Sản", "Khoa Nhi", "Khoa Cấp cứu",
-    "Phòng Xét nghiệm", "Phòng Chẩn đoán hình ảnh", "Phòng Dược", 
-    "Phòng Hành chính", "Phòng Kế toán", "Phòng Nhân sự", "Phòng Kỹ thuật"
-  ];
-
   const handleSubmit = async (values) => {
     setLoading(true);
     try {
@@ -264,11 +258,6 @@ const StaffManagement = () => {
           {role === 'DOCTOR' ? 'Bác sĩ' : 'Nhân viên'}
         </Tag>
       )
-    },
-    {
-      title: 'Phòng ban',
-      dataIndex: 'department',
-      width: 150
     },
     {
       title: 'Liên hệ',
@@ -448,7 +437,7 @@ const StaffManagement = () => {
                 showQuickJumper: true,
                 showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} nhân viên`
               }}
-              scroll={{ x: 1200 }}
+              scroll={{ x: 1000 }}
             />
           </div>
         </Card>
@@ -576,45 +565,6 @@ const StaffManagement = () => {
             </Col>
           </Row>
 
-          <Divider orientation="left">Phân công công việc</Divider>
-          
-          {selectedRole === 'DOCTOR' && (
-            <Row gutter={16}>
-              <Col span={12}>
-                <Form.Item 
-                  label="Chuyên khoa" 
-                  name="specialty"
-                  rules={[{ required: true, message: 'Vui lòng chọn chuyên khoa!' }]}
-                >
-                  <Select 
-                    placeholder="Chọn chuyên khoa"
-                    showSearch
-                    filterOption={(input, option) =>
-                      option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                    }
-                  >
-                    {specialties.map(specialty => (
-                      <Option key={specialty} value={specialty}>{specialty}</Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item 
-                  label="Phòng ban" 
-                  name="department"
-                  rules={[{ required: true, message: 'Vui lòng chọn phòng ban!' }]}
-                >
-                  <Select placeholder="Chọn phòng ban">
-                    {departments.map(dept => (
-                      <Option key={dept} value={dept}>{dept}</Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-              </Col>
-            </Row>
-          )}
-
           {selectedRole === 'STAFF' && (
             <Row gutter={16}>
               <Col span={12}>
@@ -632,19 +582,6 @@ const StaffManagement = () => {
                     <Option value="Bảo vệ">Bảo vệ</Option>
                     <Option value="Lao công">Lao công</Option>
                     <Option value="Lái xe">Lái xe</Option>
-                  </Select>
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item 
-                  label="Phòng ban" 
-                  name="department"
-                  rules={[{ required: true, message: 'Vui lòng chọn phòng ban!' }]}
-                >
-                  <Select placeholder="Chọn phòng ban">
-                    {departments.map(dept => (
-                      <Option key={dept} value={dept}>{dept}</Option>
-                    ))}
                   </Select>
                 </Form.Item>
               </Col>
@@ -808,17 +745,6 @@ const StaffManagement = () => {
               </Col>
               <Col span={12}>
                 <Text strong>Số điện thoại:</Text> {viewingStaff.phone}
-              </Col>
-            </Row>
-            
-            <Row gutter={16} style={{ marginTop: '16px' }}>
-              <Col span={12}>
-                <Text strong>Phòng ban:</Text> {viewingStaff.department}
-              </Col>
-              <Col span={12}>
-                <Text strong>
-                  {viewingStaff.role === 'DOCTOR' ? 'Chuyên khoa:' : 'Chức danh:'}
-                </Text> {viewingStaff.specialty || viewingStaff.position}
               </Col>
             </Row>
             

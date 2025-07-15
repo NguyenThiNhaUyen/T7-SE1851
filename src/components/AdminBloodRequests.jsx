@@ -350,65 +350,65 @@ const AdminBloodRequests = () => {
       filteredValue: statusFilter === 'all' ? null : [statusFilter],
       onFilter: (value, record) => record.status === value,
       render: (status, record) => {
-        const { color, text, icon } = statusConfig[status] || statusConfig.PENDING;
+        const { color, text, icon } = statusConfig.PENDING;
 
-        // Nếu trạng thái là PENDING, hiển thị dropdown để admin chọn
-        if (status === 'PENDING') {
-          return (
-            <Select
-              size="middle"
-              value={statusConfig[status].text}
-              onChange={(newStatus) => handleStatusChange(record.id, newStatus)}
-              className="w-full"
-              placeholder="Chọn trạng thái"
-            >
-              <Option value="PENDING" disabled>
-                <Tag color="warning" icon={<ClockCircleOutlined />} className="font-semibold m-0">
-                  CHỜ DUYỆT
-                </Tag>
-              </Option>
-              <Option value="APPROVED">
-                <Tag color="success" icon={<CheckCircleOutlined />} className="font-semibold m-0">
-                  ĐÃ DUYỆT
-                </Tag>
-              </Option>
-              <Option value="REJECTED">
-                <Tag color="error" icon={<ExclamationCircleOutlined />} className="font-semibold m-0">
-                  TỪ CHỐI
-                </Tag>
-              </Option>
-              <Option value="WAITING">
-                <Tag color="processing" icon={<ClockCircleOutlined />} className="font-semibold m-0">
-                  CHỜ MÁU
-                </Tag>
-              </Option>
-            </Select>
-          );
-        }
+        // // Nếu trạng thái là PENDING, hiển thị dropdown để admin chọn
+        // if (status === 'PENDING') {
+        //   return (
+        //     <Select
+        //       size="middle"
+        //       value={statusConfig[status].text}
+        //       onChange={(newStatus) => handleStatusChange(record.id, newStatus)}
+        //       className="w-full"
+        //       placeholder="Chọn trạng thái"
+        //     >
+        //       <Option value="PENDING" disabled>
+        //         <Tag color="warning" icon={<ClockCircleOutlined />} className="font-semibold m-0">
+        //           CHỜ DUYỆT
+        //         </Tag>
+        //       </Option>
+        //       <Option value="APPROVED">
+        //         <Tag color="success" icon={<CheckCircleOutlined />} className="font-semibold m-0">
+        //           ĐÃ DUYỆT
+        //         </Tag>
+        //       </Option>
+        //       <Option value="REJECTED">
+        //         <Tag color="error" icon={<ExclamationCircleOutlined />} className="font-semibold m-0">
+        //           TỪ CHỐI
+        //         </Tag>
+        //       </Option>
+        //       <Option value="WAITING">
+        //         <Tag color="processing" icon={<ClockCircleOutlined />} className="font-semibold m-0">
+        //           CHỜ MÁU
+        //         </Tag>
+        //       </Option>
+        //     </Select>
+        //   );
+        // }
 
-        // Nếu trạng thái là WAITING, chỉ cho chọn APPROVED hoặc REJECTED
-        if (status === 'WAITING') {
-          return (
-            <Select
-              size="middle"
-              value={statusConfig[status].text}
-              onChange={newStatus => handleStatusChange(record.id, newStatus)}
-              className="w-full"
-              placeholder="Chọn hành động"
-            >
-              <Option value="APPROVED">
-                <Tag color="success" icon={<CheckCircleOutlined />} className="font-semibold m-0">
-                  ĐÃ DUYỆT
-                </Tag>
-              </Option>
-              <Option value="REJECTED">
-                <Tag color="error" icon={<ExclamationCircleOutlined />} className="font-semibold m-0">
-                  TỪ CHỐI
-                </Tag>
-              </Option>
-            </Select>
-          );
-        }
+        // // Nếu trạng thái là WAITING, chỉ cho chọn APPROVED hoặc REJECTED
+        // if (status === 'WAITING') {
+        //   return (
+        //     <Select
+        //       size="middle"
+        //       value={statusConfig[status].text}
+        //       onChange={newStatus => handleStatusChange(record.id, newStatus)}
+        //       className="w-full"
+        //       placeholder="Chọn hành động"
+        //     >
+        //       <Option value="APPROVED">
+        //         <Tag color="success" icon={<CheckCircleOutlined />} className="font-semibold m-0">
+        //           ĐÃ DUYỆT
+        //         </Tag>
+        //       </Option>
+        //       <Option value="REJECTED">
+        //         <Tag color="error" icon={<ExclamationCircleOutlined />} className="font-semibold m-0">
+        //           TỪ CHỐI
+        //         </Tag>
+        //       </Option>
+        //     </Select>
+        //   );
+        // }
 
         // Nếu đã có trạng thái khác PENDING, chỉ hiển thị tag
         return (
@@ -460,72 +460,99 @@ const AdminBloodRequests = () => {
   };
 
   // Hàm render footer của modal
-  const renderModalFooter = () => {
-    if (!selectedRecord) return null;
+const renderModalFooter = () => {
+  if (!selectedRecord) return null;
 
-    const footerButtons = [
-      <Button key="close" onClick={handleCloseModal} className="ml-2">
-        Đóng
+  const footerButtons = [
+    <Button key="close" onClick={handleCloseModal} className="ml-2">
+      Đóng
+    </Button>
+  ];
+
+  if (selectedRecord.status === 'PENDING') {
+    // Hiển thị 3 nút cho trạng thái PENDING với style có background màu
+    footerButtons.unshift(
+      <Button
+        key="approve"
+        type="default"
+        icon={<CheckCircleOutlined />}
+        onClick={() => handleStatusChange(selectedRecord.id, 'APPROVED')}
+        className="bg-green-50 hover:bg-green-100 border-green-300 text-green-700 font-semibold"
+        style={{ 
+          backgroundColor: '#f0f9ff', 
+          borderColor: '#52c41a',
+          color: '#52c41a'
+        }}
+      >
+        ĐÃ DUYỆT
+      </Button>,
+      <Button
+        key="waiting"
+        type="default"
+        icon={<ClockCircleOutlined />}
+        onClick={() => handleStatusChange(selectedRecord.id, 'WAITING')}
+        className="bg-blue-50 hover:bg-blue-100 border-blue-300 text-blue-700 font-semibold"
+        style={{ 
+          backgroundColor: '#e6f7ff', 
+          borderColor: '#1890ff',
+          color: '#1890ff'
+        }}
+      >
+        CHỜ MÁU
+      </Button>,
+      <Button
+        key="reject"
+        type="default"
+        icon={<ExclamationCircleOutlined />}
+        onClick={() => handleStatusChange(selectedRecord.id, 'REJECTED')}
+        className="bg-red-50 hover:bg-red-100 border-red-300 text-red-700 font-semibold"
+        style={{ 
+          backgroundColor: '#fff1f0', 
+          borderColor: '#ff4d4f',
+          color: '#ff4d4f'
+        }}
+      >
+        TỪ CHỐI
       </Button>
-    ];
+    );
+  } else if (selectedRecord.status === 'WAITING') {
+    // Hiển thị 2 nút cho trạng thái WAITING với style có background màu
+    footerButtons.unshift(
+      <Button
+        key="approve"
+        type="default"
+        icon={<CheckCircleOutlined />}
+        onClick={() => handleStatusChange(selectedRecord.id, 'APPROVED')}
+        className="bg-green-50 hover:bg-green-100 border-green-300 text-green-700 font-semibold"
+        style={{ 
+          backgroundColor: '#f0f9ff', 
+          borderColor: '#52c41a',
+          color: '#52c41a'
+        }}
+      >
+        <CheckCircleOutlined className="mr-1" />
+        ĐÃ DUYỆT
+      </Button>,
+      <Button
+        key="reject"
+        type="default"
+        icon={<ExclamationCircleOutlined />}
+        onClick={() => handleStatusChange(selectedRecord.id, 'REJECTED')}
+        className="bg-red-50 hover:bg-red-100 border-red-300 text-red-700 font-semibold"
+        style={{ 
+          backgroundColor: '#fff1f0', 
+          borderColor: '#ff4d4f',
+          color: '#ff4d4f'
+        }}
+      >
+        <ExclamationCircleOutlined className="mr-1" />
+        TỪ CHỐI
+      </Button>
+    );
+  }
 
-    if (selectedRecord.status === 'PENDING') {
-      // Hiển thị 3 nút cho trạng thái PENDING
-      footerButtons.unshift(
-        <Button
-          key="approve"
-          type="primary"
-          icon={<CheckCircleOutlined />}
-          onClick={() => handleStatusChange(selectedRecord.id, 'APPROVED')}
-          className="bg-green-500 hover:bg-green-600 border-green-500"
-        >
-          Duyệt
-        </Button>,
-        <Button
-          key="waiting"
-          type="primary"
-          icon={<ClockCircleOutlined />}
-          onClick={() => handleStatusChange(selectedRecord.id, 'WAITING')}
-          className="bg-blue-500 hover:bg-blue-600 border-blue-500"
-        >
-          Chờ máu
-        </Button>,
-        <Button
-          key="reject"
-          type="primary"
-          danger
-          icon={<ExclamationCircleOutlined />}
-          onClick={() => handleStatusChange(selectedRecord.id, 'REJECTED')}
-        >
-          Từ chối
-        </Button>
-      );
-    } else if (selectedRecord.status === 'WAITING') {
-      // Hiển thị 2 nút cho trạng thái WAITING
-      footerButtons.unshift(
-        <Button
-          key="approve"
-          type="primary"
-          icon={<CheckCircleOutlined />}
-          onClick={() => handleStatusChange(selectedRecord.id, 'APPROVED')}
-          className="bg-green-500 hover:bg-green-600 border-green-500"
-        >
-          Duyệt
-        </Button>,
-        <Button
-          key="reject"
-          type="primary"
-          danger
-          icon={<ExclamationCircleOutlined />}
-          onClick={() => handleStatusChange(selectedRecord.id, 'REJECTED')}
-        >
-          Từ chối
-        </Button>
-      );
-    }
-
-    return footerButtons;
-  };
+  return footerButtons;
+};
 
   return (
     <Layout style={{ minHeight: '100vh' }}>

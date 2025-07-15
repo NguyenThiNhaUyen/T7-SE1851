@@ -420,7 +420,7 @@ const UrgentList = () => {
               pageSizeOptions: ['5', '10', '20', '50'],
               defaultPageSize: 10,
             }}
-            scroll={{ x: 1200 }}
+            scroll={{ x: 1000 }}
             size="middle"
           />
 

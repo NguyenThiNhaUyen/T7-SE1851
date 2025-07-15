@@ -399,23 +399,6 @@ const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, showUserBoard, lo
 
             {/* User section */}
             <Space size="large">
-                {/* Search button - GỢI Ý THÊM */}
-                {currentUser && (
-                    <Tooltip title="Tìm kiếm">
-                        <Button
-                            type="text"
-                            icon={<SearchOutlined />}
-                            onClick={() => navigate('/search')}
-                            style={{
-                                color: 'white',
-                                fontSize: '18px',
-                                display: 'flex',
-                                alignItems: 'center'
-                            }}
-                        />
-                    </Tooltip>
-                )}
-
                 {/* Notification bell */}
                 {currentUser && (
                     <Popover
