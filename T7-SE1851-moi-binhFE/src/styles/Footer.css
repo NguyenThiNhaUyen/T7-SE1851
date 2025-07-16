@@ -1,18 +1,20 @@
-/* Footer.css */
-
 .blood-footer {
   background: linear-gradient(to right, #7a0000, #a30000);
   color: #ffffff;
-  padding: 50px 25px 30px;
+  padding: 50px 0 30px;
   font-family: 'Segoe UI', sans-serif;
+}
+
+.blood-footer-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
 }
 
 .blood-footer-top {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 40px;
-  max-width: 1200px;
-  margin: 0 auto;
   align-items: flex-start;
 }
 
@@ -85,4 +87,20 @@
   .cta-button {
     width: 100%;
   }
+
+  .blood-footer-wrapper {
+    padding: 0 16px;
+  }
+}
+.blood-footer-top {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 40px;
+}
+
+.footer-box {
+  flex: 1;
+  min-width: 280px;
+  max-width: 350px;
 }

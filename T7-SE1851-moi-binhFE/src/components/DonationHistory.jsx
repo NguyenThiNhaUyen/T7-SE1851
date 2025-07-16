@@ -14,28 +14,33 @@ import { DownloadOutlined } from "@ant-design/icons";
 import axios from "axios";
 import dayjs from "dayjs";
 import * as XLSX from "xlsx";
-import { useCurrentUser } from "../hooks/useCurrentUser";
 
 const { Title } = Typography;
 
 const DonationHistory = () => {
-  const { user, isLoggedIn } = useCurrentUser();
   const [history, setHistory] = useState([]);
   const [selected, setSelected] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
-    if (!isLoggedIn) return;
+  const token = localStorage.getItem("token"); // hoặc nơi bạn lưu token
+  axios
+    .get(`http://localhost:8080/api/donation`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((res) => {
+      console.log("✅ Data từ API:", res.data);
+      setHistory(Array.isArray(res.data) ? res.data : []);
+    })
+    .catch((err) => {
+      console.error("❌ Lỗi API:", err);
+      message.error("Không thể tải danh sách hiến máu.");
+    });
+}, []);
 
-    axios
-      .get(`/users/donations/history/${user.id}`)
-      .then((res) => {
-        setHistory(Array.isArray(res.data) ? res.data : []);
-      })
-      .catch(() => {
-        message.error("Không thể tải lịch sử hiến máu.");
-      });
-  }, [user, isLoggedIn]);
+
 
   const handleExportExcel = () => {
     const exportData = history.map((h) => ({
@@ -76,7 +81,7 @@ const DonationHistory = () => {
       title: "📦 Trạng thái",
       dataIndex: "status",
       render: (status) => (
-        <Tag color={status === "Đã tách" || status === "DONATED" ? "green" : "orange"}>
+        <Tag color={status === "DONATED" || status === "CONFIRMED" ? "green" : "orange"}>
           {status === "DONATED" ? "Đã hiến" : status}
         </Tag>
       ),
@@ -88,7 +93,9 @@ const DonationHistory = () => {
       <Row justify="space-between" align="middle">
         <Col>
           <Title level={3}>📊 Lịch sử hiến máu</Title>
-          <p>Tổng số lượt hiến máu: <strong>{history.length}</strong></p>
+          <p>
+            Tổng số lượt hiến máu: <strong>{history.length}</strong>
+          </p>
         </Col>
         <Col>
           <Button
@@ -124,7 +131,7 @@ const DonationHistory = () => {
         {selected && (
           <Descriptions column={1} bordered size="small">
             <Descriptions.Item label="👤 Người hiến">
-              {selected.donor_name || `${user.first_name} ${user.last_name}`}
+              {selected.donor_name || "—"}
             </Descriptions.Item>
             <Descriptions.Item label="🗓 Ngày hiến">
               {dayjs(selected.donation_date).format("DD/MM/YYYY")}

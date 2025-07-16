@@ -216,38 +216,6 @@ const RegisterAccount = () => {
               />
             </Form.Item>
 
-            <Form.Item
-              label="Mã OTP xác thực"
-              name="otp"
-              rules={[
-                { required: true },
-                {
-                  pattern: /^\d{6}$/,
-                  message: 'Mã OTP phải gồm đúng 6 chữ số'
-                }
-              ]}
-              extra={
-                <Space>
-                  <Text type="secondary">Mã OTP đã được gửi đến số điện thoại của bạn</Text>
-                  <Button type="link" size="small" style={{ padding: 0 }}>
-                    Gửi lại mã
-                  </Button>
-                </Space>
-              }
-              hasFeedback
-            >
-              <Input
-                size="large"
-                placeholder="Nhập mã OTP gồm 6 chữ số"
-                prefix={<SafetyOutlined />}
-                maxLength={6}
-                onChange={(e) => {
-                  const value = e.target.value.replace(/\D/g, '');
-                  form.setFieldsValue({ otp: value });
-                }}
-              />
-            </Form.Item>
-
             <Alert
               message="Bảo mật tài khoản"
               description="Vui lòng tạo mật khẩu mạnh và bảo mật thông tin đăng nhập của bạn. Không chia sẻ thông tin tài khoản với người khác."

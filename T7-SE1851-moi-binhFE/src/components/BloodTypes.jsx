@@ -1,54 +1,103 @@
 import React, { useEffect, useState } from "react";
-import { Card, Row, Col, Typography, Tag, Spin, Alert } from "antd";
+import { Row, Col, Tag, Typography, Spin, Tooltip } from "antd";
+import { FireTwoTone, HeartTwoTone, ShareAltOutlined } from "@ant-design/icons";
+import { motion } from "framer-motion";
+import "../styles/BloodTypes.css";
+
+import BloodTypeStatsChart from "./BloodTypeStatsChart";
+import BloodTypeQuiz from "./BloodTypeQuiz";
 
 const { Title, Text, Paragraph } = Typography;
 
-const BloodTypes = () => {
-  const [bloodTypes, setBloodTypes] = useState([]);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(true);
+const bloodData = [
+  { id: 1, name: "A+", rh: "+", receives: ["A+", "A-", "O+", "O-"], gives: ["A+", "AB+"], stars: 3, funfact: `A+ là nhóm máu phổ biến (~30%). Có thể nhận từ A+, A-, O+, O-.` },
+  { id: 2, name: "A-", rh: "-", receives: ["A-", "O-"], gives: ["A+", "A-", "AB+", "AB-"], stars: 4, funfact: `A- là nhóm máu hiếm (~6%). Có thể hiến cho cả Rh- và Rh+.` },
+  { id: 3, name: "B+", rh: "+", receives: ["B+", "B-", "O+", "O-"], gives: ["B+", "AB+"], stars: 3, funfact: `B+ chiếm khoảng 9% dân số toàn cầu. Là nhóm phổ biến ở châu Á.` },
+  { id: 4, name: "B-", rh: "-", receives: ["B-", "O-"], gives: ["B+", "B-", "AB+", "AB-"], stars: 5, funfact: `B- là nhóm máu cực hiếm (~2%). Người B- nên hiến máu định kỳ.` },
+  { id: 5, name: "AB+", rh: "+", receives: ["Tất cả"], gives: ["AB+"], stars: 4, funfact: `AB+ là người nhận phổ thông. Dùng nhiều trong các ca phức tạp.` },
+  { id: 6, name: "AB-", rh: "-", receives: ["AB-", "A-", "B-", "O-"], gives: ["AB+", "AB-"], stars: 5, funfact: `AB- là nhóm máu hiếm nhất (~0.5%). Rất cần thiết trong cấp cứu.` },
+  { id: 7, name: "O+", rh: "+", receives: ["O+", "O-"], gives: ["O+", "A+", "B+", "AB+"], stars: 3, funfact: `O+ là nhóm phổ biến nhất (~37%). Hiến được cho mọi nhóm Rh+.` },
+  { id: 8, name: "O-", rh: "-", receives: ["O-"], gives: ["Tất cả"], stars: 5, funfact: `O- là nhóm hiến "phổ thông", có thể dùng trong cấp cứu khẩn cấp.` }
+];
 
+const BloodTypes = () => {
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
-    const sampleData = [
-      { id: 1, name: "A+", rh_factor: "+", compatible_donors: ["A+", "A-", "O+", "O-"], compatible_recipients: ["A+", "AB+"], description: "Nhóm máu phổ biến, có thể nhận từ A+, A-, O+, O-." },
-      { id: 2, name: "A-", rh_factor: "-", compatible_donors: ["A-", "O-"], compatible_recipients: ["A+", "A-", "AB+", "AB-"], description: "Nhóm máu hiếm, an toàn cho phụ nữ mang thai Rh-." },
-      { id: 3, name: "B+", rh_factor: "+", compatible_donors: ["B+", "B-", "O+", "O-"], compatible_recipients: ["B+", "AB+"], description: "Phổ biến ở một số khu vực châu Á." },
-      { id: 4, name: "B-", rh_factor: "-", compatible_donors: ["B-", "O-"], compatible_recipients: ["B+", "B-", "AB+", "AB-"], description: "Ít gặp, cần bảo quản cẩn thận." },
-      { id: 5, name: "AB+", rh_factor: "+", compatible_donors: ["Tất cả"], compatible_recipients: ["AB+"], description: "Nhóm nhận phổ thông, hiếm khi hiến cho người khác." },
-      { id: 6, name: "AB-", rh_factor: "-", compatible_donors: ["AB-", "A-", "B-", "O-"], compatible_recipients: ["AB+", "AB-"], description: "Rất hiếm, cần ưu tiên bảo quản." },
-      { id: 7, name: "O+", rh_factor: "+", compatible_donors: ["O+", "O-"], compatible_recipients: ["O+", "A+", "B+", "AB+"], description: "Nhóm hiến rộng rãi, phổ biến toàn cầu." },
-      { id: 8, name: "O-", rh_factor: "-", compatible_donors: ["O-"], compatible_recipients: ["Tất cả"], description: "Nhóm hiến phổ thông, cứu sống trong khẩn cấp." },
-    ];
-    setTimeout(() => {
-      setBloodTypes(sampleData);
-      setLoading(false);
-    }, 500);
+    setTimeout(() => setLoading(false), 300);
   }, []);
 
-  if (loading) return <Spin tip="Đang tải dữ liệu..." size="large" style={{ display: "block", marginTop: 80 }} />;
+  if (loading) return <Spin tip="Đang tải..." size="large" style={{ display: "block", marginTop: 80 }} />;
 
   return (
-    <div style={{ padding: "24px" }}>
-      <Title level={2}>🩸 Các loại nhóm máu</Title>
-      {error && <Alert message={error} type="error" showIcon style={{ marginBottom: 16 }} />}
-      <Row gutter={[16, 16]}>
-        {bloodTypes.map((type) => (
-          <Col xs={24} sm={12} md={8} lg={6} key={type.id}>
-            <Card
-              title={<span>{type.name} <Tag color={type.rh_factor === "+" ? "volcano" : "blue"}>{type.rh_factor}</Tag></span>}
-              bordered
-              hoverable
+    <div style={{ padding: 24 }}>
+      <Title level={2} style={{ color: "#cf1322", marginBottom: 12 }}>🩸 Các loại nhóm máu</Title>
+
+      {/* 🧠 Quiz kiến thức */}
+      <BloodTypeQuiz />
+
+      {/* 🔄 Danh sách các nhóm máu */}
+      <Row gutter={[16, 24]} style={{ marginTop: 24 }}>
+        {bloodData.map((blood) => (
+          <Col xs={24} sm={12} md={8} lg={6} key={blood.id}>
+            <motion.div
+              className="flip-card"
+              whileHover={{ scale: 1.03 }}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4 }}
             >
-              <Text strong>Tính tương thích:</Text>
-              <ul style={{ paddingLeft: 16, marginBottom: 12 }}>
-                <li><Text type="secondary">Nhận từ:</Text> {type.compatible_donors.map(d => <Tag key={d}>{d}</Tag>)}</li>
-                <li><Text type="secondary">Hiến cho:</Text> {type.compatible_recipients.map(r => <Tag key={r} color="green">{r}</Tag>)}</li>
-              </ul>
-              <Paragraph>{type.description}</Paragraph>
-            </Card>
+              <div className="flip-card-inner">
+                {/* FRONT */}
+                <div className="flip-card-front">
+                  <div className="blood-card">
+                    <div className="blood-header">
+                      <Tooltip title={`Nhóm máu ${blood.name} (${blood.rh})`}>
+                        <Title level={3} className="blood-title">
+                          <FireTwoTone /> {blood.name}
+                          <Tag color={blood.rh === "+" ? "volcano" : "blue"}>Rh {blood.rh}</Tag>
+                        </Title>
+                      </Tooltip>
+                      <Tag color={blood.stars >= 4 ? "magenta" : "green"}>
+                        {blood.stars >= 4 ? "Hiếm" : "Phổ thông"}
+                      </Tag>
+                    </div>
+
+                    <div className="rating-stars">
+                      {"⭐".repeat(blood.stars)}{"☆".repeat(5 - blood.stars)}
+                    </div>
+
+                    <Text><ShareAltOutlined /> <b>Nhận từ:</b> {" "}
+                      {blood.receives.map(g => (
+                        <Tag key={g} className="tag-receive">{g}</Tag>
+                      ))}
+                    </Text>
+                    <br />
+                    <Text><HeartTwoTone twoToneColor="#eb2f96" /> <b>Hiến cho:</b> {" "}
+                      {blood.gives.map(g => (
+                        <Tag key={g} className="tag-give">{g}</Tag>
+                      ))}
+                    </Text>
+                  </div>
+                </div>
+
+                {/* BACK */}
+                <div className="flip-card-back">
+                  <div className="blood-card back">
+                    <Title level={5}>📚 Thông tin thú vị</Title>
+                    <Paragraph style={{ fontSize: 13 }}>{blood.funfact}</Paragraph>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
           </Col>
         ))}
       </Row>
+
+      {/* 📊 Biểu đồ tỷ lệ nhóm máu */}
+      <div style={{ marginTop: 48 }}>
+        <BloodTypeStatsChart />
+      </div>
     </div>
   );
 };

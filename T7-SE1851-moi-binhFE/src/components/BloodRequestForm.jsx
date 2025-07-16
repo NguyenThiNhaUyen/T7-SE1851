@@ -23,6 +23,8 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import axios from 'axios';
 import AuthService from '../services/auth.service';
+import dayjs from "dayjs";
+
 const currentUser = AuthService.getCurrentUser();
 const { Option } = Select;
 const { TextArea } = Input;
@@ -35,7 +37,7 @@ const BloodRequestForm = () => {
   const [form] = Form.useForm();
   const [formData, setFormData] = useState({
     // requesterId: currentUser.userId, // giả lập user đang đăng nhập, bạn có thể cập nhật động sau
-    doctorId: 11, // ✅ Gán mặc định bác sĩ ID 11
+    doctorId: 2, // ✅ Gán mặc định bác sĩ ID 11
     patientName: "",
     patientPhone: "",
     patientAge: "",
@@ -70,23 +72,23 @@ const BloodRequestForm = () => {
   });
 
 
-useEffect(() => {
-  const currentUser = AuthService.getCurrentUser();
+  useEffect(() => {
+    const currentUser = AuthService.getCurrentUser();
 
-  if (currentUser) {
-    const generatedCode = `BA${new Date().getFullYear()}${currentUser.userId.toString().padStart(4, '0')}`;
-    
-    setFormData(prev => ({
-      ...prev,
-      requesterId: currentUser.userId,
-      medical_record_id: generatedCode
-    }));
+    if (currentUser) {
+      const generatedCode = `BA${new Date().getFullYear()}${currentUser.userId.toString().padStart(4, '0')}`;
 
-    form.setFieldsValue({
-      medical_record_id: generatedCode
-    });
-  }
-}, [form]);
+      setFormData(prev => ({
+        ...prev,
+        requesterId: currentUser.userId,
+        medical_record_id: generatedCode
+      }));
+
+      form.setFieldsValue({
+        medical_record_id: generatedCode
+      });
+    }
+  }, [form]);
 
 
   const handleFormChange = (changedValues, allValues) => {
@@ -107,62 +109,63 @@ useEffect(() => {
     return null;
   };
 
-const handleSubmit = async (values) => {
-  const error = validateForm(values);
-  if (error) {
-    message.error(error);
-    return;
-  }
+  const handleSubmit = async (values) => {
+    const error = validateForm(values);
+    if (error) {
+      message.error(error);
+      return;
+    }
 
-  try {
-    const payload = {
-      requesterId: formData.requesterId,
-      doctorId: formData.doctorId,
-      patientName: values.patient_name,
-      patientPhone: values.contact,
-      patientAge: Number(values.age),
-      patientGender: values.gender,
-      patientWeight: Number(values.weight),
-      patientBloodGroup: values.blood_type || "", // nếu có tên nhóm máu
-      bloodTypeId: values.bloodTypeId,
-      componentId: values.bloodComponentId,
-      quantityBag: Number(values.unit_count),
-      quantityMl: Number(values.quantity_ml),
-      urgencyLevel: values.urgency_level?.toUpperCase(),
-      triageLevel: formData.triageLevel || "RED",
-      reason: values.clinical_indication,
-      neededAt: values.required_time?.toISOString?.() || values.required_time,
-      crossmatchRequired: values.crossmatch_required || false,
-      hasTransfusionHistory: values.previous_transfusion || false,
-      hasReactionHistory: values.previous_reaction || false,
-      isPregnant: values.is_pregnant || false,
-      hasAntibodyIssue: values.abnormal_antibody || false,
-      warningNote: values.warning_factor,
-      specialNote: values.special_notes,
-      isUnmatched: false,
-      codeRedId: null
-    };
+    try {
+      const payload = {
+        requesterId: formData.requesterId,
+        doctorId: formData.doctorId,
+        patientName: values.patient_name,
+        patientPhone: values.contact,
+        patientAge: Number(values.age),
+        patientGender: values.gender,
+        patientWeight: Number(values.weight),
+        patientBloodGroup: values.blood_type || "", // nếu có tên nhóm máu
+        bloodTypeId: values.bloodTypeId,
+        componentId: values.bloodComponentId,
+        quantityBag: Number(values.unit_count),
+        quantityMl: Number(values.quantity_ml),
+        urgencyLevel: values.urgency_level?.toUpperCase(),
+        triageLevel: formData.triageLevel || "RED",
+        reason: values.clinical_indication,
+        neededAt: dayjs(values.required_time).format("YYYY-MM-DDTHH:mm:ss"),
+        crossmatchRequired: values.crossmatch_required || false,
+        hasTransfusionHistory: values.previous_transfusion || false,
+        hasReactionHistory: values.previous_reaction || false,
+        isPregnant: values.is_pregnant || false,
+        hasAntibodyIssue: values.abnormal_antibody || false,
+        warningNote: values.warning_factor,
+        specialNote: values.special_notes,
+        isUnmatched: false,
+        codeRedId: null,
+        status: "PENDING"
+      };
 
-    const token = localStorage.getItem("token");
+      const token = localStorage.getItem("token");
 
-    const response = await axios.post(
-      "http://localhost:8080/api/blood-requests",
-      payload,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
+      const response = await axios.post(
+        "http://localhost:8080/api/blood-requests",
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+          }
         }
-      }
-    );
+      );
 
-    message.success("✅ Gửi yêu cầu máu thành công!");
-    setFormData(prev => ({ ...prev, ...values, submitted_at: new Date() }));
-  } catch (err) {
-    console.error(err);
-    message.error("❌ Lỗi khi gửi yêu cầu máu.");
-  }
-};
+      message.success("✅ Gửi yêu cầu máu thành công!");
+      setFormData(prev => ({ ...prev, ...values, submitted_at: new Date() }));
+    } catch (err) {
+      console.error(err);
+      message.error("❌ Lỗi khi gửi yêu cầu máu.");
+    }
+  };
 
 
   const requiredMessage = (label) => [{ required: true, message: `Vui lòng nhập ${label}` }];
@@ -331,9 +334,9 @@ const handleSubmit = async (values) => {
             <Col span={4}>
               <Form.Item label="Mức độ" name="urgency_level" rules={requiredMessage('mức độ')}>
                 <Select>
-                  <Option value="Bình thường">Bình thường</Option>
-                  <Option value="Khẩn cấp">Khẩn cấp</Option>
-                  <Option value="Cấp cứu">Cấp cứu</Option>
+                  <Option value="BINH_THUONG">Bình thường</Option>
+                  <Option value="KHAN_CAP">Khẩn cấp</Option>
+                  <Option value="CAP_CUU">Cấp cứu</Option>
                 </Select>
               </Form.Item>
             </Col>

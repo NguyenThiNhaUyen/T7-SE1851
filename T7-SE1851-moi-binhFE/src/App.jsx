@@ -23,15 +23,17 @@ import Forgot from "./components/Forgot";
 import ChangePassword from "./components/ChangePassword";
 import OtpVerify from "./components/OtpVerify";
 
+
 // 👤 Người dùng
 import BoardUser from "./components/BoardUser";
 import UserLayout from "./layouts/UserLayout";
 import DonationRegister from "./components/DonationRegister";
 import DonationHistory from "./components/DonationHistory";
+import MemberDonationHistory from "./components/MemberDonationHistory";
 import RequestHistory from "./components/RequestHistory";
 import BloodTypes from "./components/BloodTypes";
 import BloodReceive from "./components/BloodReceive";
-import BloodRoles from "./components/BloodRoles";
+// import BloodRoles from "./components/BloodRoles";
 import UrgentDonationRegister from "./components/UrgentDonationRegister";
 import UrgentDonationWrapper from "./components/UrgentDonationWrapper";
 
@@ -40,6 +42,7 @@ import BoardStaff from "./components/BoardStaff";
 import StaffLayout from "./layouts/StaffLayout";
 import BloodRequestForm from "./components/BloodRequestForm";
 import DonationConfirm from "./components/DonationConfirm";
+import StaffDonationHistory from "./components/StaffDonationHistory";
 import InventoryChart from "./components/InventoryChart";
 import StaffStatistics from "./components/StaffStatistics";
 import UrgentRequests from "./components/UrgentRequests"; // chỉ import 1 lần
@@ -48,13 +51,20 @@ import UrgentRequests from "./components/UrgentRequests"; // chỉ import 1 lầ
 import BoardAdmin from "./components/BoardAdmin";
 import AdminLayout from "./layouts/AdminLayout";
 import AdminDashboard from "./components/AdminDashboard";
+import AdminBloodRequests from "./components/AdminBloodRequests";
 import TransfusionHistory from "./components/TransfusionHistory";
+import UrgentList from "./components/UrgentList";
+import StaffManagement from "./components/StaffManagement";
+import SeparationDashboard from "./components/SeparationDashboard"; 
+import ReportPage from "./components/ReportPage";
+import BloodCompatibility from "./components/BloodCompatibility";
+import BloodManagement from "./components/BloodManagement";
 
 // 📢 Khác
 import BlogList from "./components/BlogList";
 import BlogDetail from "./components/BlogDetail";
 import BlogAccordion from './components/BlogAccordion';
-import VnPayForm from "./components/VnPayForm";
+import VnPayPaymentForm from "./components/VnPayPaymentForm";
 import Activities from "./components/Activities";
 import DonationIntentSelection from "./components/DonationIntentSelection";
 import DonationTermsPage from "./components/DonationTermsPage";
@@ -74,27 +84,40 @@ const App = () => {
 
   useEffect(() => {
     const user = AuthService.getCurrentUser();
-if (user) {
-  console.log("🧠 Đăng nhập với vai trò:", user.role); // đảm bảo là ADMIN, STAFF, USER
-}
+
+    // if (user) {
+    //   setCurrentUser(user);
+    //   setShowAdminBoard(user.role === "ADMIN");
+    //   setShowStaffBoard(user.role === "STAFF");
+
+    //   if (user.role === "STAFF" && ["/", "/home", "/login"].includes(location.pathname)) {
+    //     navigate("/staff");
+    //   }
+
+    //   if (user.role === "ADMIN" && ["/", "/home", "/login"].includes(location.pathname)) {
+    //     navigate("/admin");
+    //   }
+
+    //   if (user.role === "USER" && ["/", "/home", "/login"].includes(location.pathname)) {
+    //     navigate(`/user/${user.id}`);
+    //   }
+    // }
     if (user) {
       setCurrentUser(user);
       setShowAdminBoard(user.role === "ADMIN");
       setShowStaffBoard(user.role === "STAFF");
 
-      if (user?.role === "STAFF" && ["/", "/home", "/login"].includes(location.pathname)) {
+      // Nếu đang ở login hoặc home thì mới redirect
+      const currentPath = location.pathname;
+
+      if (user.role === "STAFF" && ["/", "/home", "/login"].includes(currentPath)) {
         navigate("/staff");
-      }
-
-      if (user?.role === "ADMIN" && ["/", "/home", "/login"].includes(location.pathname)) {
+      } else if (user.role === "ADMIN" && ["/", "/home", "/login"].includes(currentPath)) {
         navigate("/admin");
-      }
-
-      if (user?.role === "USER" && ["/", "/home", "/login"].includes(location.pathname)) {
+      } else if (user.role === "USER" && ["/", "/home", "/login"].includes(currentPath)) {
         navigate(`/user/${user.id}`);
       }
     }
-
     eventBus.on("logout", logOut);
     return () => eventBus.remove("logout", logOut);
   }, [location]);
@@ -122,7 +145,7 @@ if (user) {
         logOut={logOut}
       />
 
-      <div className="page-content width-full">
+       <div className="page-content width-full" style={{ paddingTop: 64 }}>
         <Routes>
           {/* Chung */}
           <Route path="/" element={<Home />} />
@@ -145,38 +168,44 @@ if (user) {
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<BoardAdmin />} />
             <Route path="dashboard" element={<AdminDashboard />} />
-            <Route path="urgent-requests" element={<UrgentRequests />} />
+            <Route path="blood-requests" element={<AdminBloodRequests />} />
             <Route path="donation-history" element={<DonationHistory />} />
             <Route path="transfusion-history" element={<TransfusionHistory />} />
-
-            {/* <Route path="users" element={<UserManagement />} />
-            <Route path="blood" element={<BloodManagement />} />
-            <Route path="compatibility" element={<CompatibilityRules />} />
+            <Route path="urgent-list" element={<UrgentList />} />
+            <Route path="staff&doctor" element={<StaffManagement />} />
+            
+            {/*<Route path="compatibility" element={<CompatibilityRules />} />
             <Route path="report" element={<ReportPage />} /> */}
             {/* <Route path="/admin/blog" element={<BlogList />} /> */}
+            <Route path="blood" element={<BloodManagement />} />
+            <Route path="compatibility" element={<BloodCompatibility />} />
+            <Route path="report" element={<ReportPage />} />
           </Route>
 
           {/* Staff */}
           <Route path="/staff" element={<StaffLayout />}>
             <Route index element={<BoardStaff />} />
             <Route path="requests" element={<BloodRequestForm />} />
-            <Route path="donation" element={<DonationConfirm />} />
+            <Route path="donation-confirm" element={<DonationConfirm />} />
+            <Route path="donation-history" element={<StaffDonationHistory />} />
             <Route path="inventory" element={<InventoryChart />} />
             <Route path="statistics" element={<StaffStatistics />} />
             <Route path="urgent-requests" element={<UrgentRequests />} />
+            <Route path="vnpay" element={<VnPayPaymentForm/>} />
+             <Route path="separation-dashboard" element={<SeparationDashboard />} />
           </Route>
 
           {/* User */}
           <Route path="/user/:id" element={<UserLayout />}>
             <Route index element={<BoardUser />} />
             <Route path="register" element={<DonationRegister />} />
-            <Route path="donation-history" element={<DonationHistory />} />
+            <Route path="donation-history" element={<MemberDonationHistory/>} />
             <Route path="request-history" element={<RequestHistory />} />
             <Route path="types" element={<BloodTypes />} />
             <Route path="receive" element={<BloodReceive />} />
-            <Route path="roles" element={<BloodRoles />} />
+            {/* <Route path="roles" element={<BloodRoles />} /> */}
+            <Route path="urgent" element={<UrgentDonationWrapper />} />
             <Route path="urgent-register" element={<UrgentDonationRegister />} />
-          
           </Route>
 
           {/* Blog - Notification - Thanh toán */}
@@ -184,8 +213,7 @@ if (user) {
           <Route path="/blog/:id" element={<BlogDetail />} />
           <Route path="/faq" element={<BlogAccordion />} />
           <Route path="/activities" element={<Activities />} />
-          <Route path="/vnpay" element={<VnPayForm />} />
-         <Route path="/donate/urgent" element={<UrgentDonationWrapper />} />
+          <Route path="/vnpay" element={<VnPayPaymentForm/>} />
 
           {/* Nếu không khớp */}
           <Route path="*" element={<Navigate to="/" />} />
