@@ -6,7 +6,7 @@ import {
   Button,
   Modal,
   Form,
-  Input,
+  Layout,
   Select,
   InputNumber,
   Space,
@@ -20,8 +20,7 @@ import {
   notification,
   Badge,
   Tooltip,
-  Steps,
-  Alert
+  Alert,
 } from 'antd';
 import {
   CheckCircleOutlined,
@@ -38,6 +37,7 @@ import {
 } from '@ant-design/icons';
 import "../styles/staff.css";
 
+const { Header, Content } = Layout;
 const { Title, Text } = Typography;
 const { Option } = Select;
 
@@ -548,294 +548,312 @@ const DonationConfirm = () => {
   ];
 
   return (
-    <div style={{ backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
-      <Card>
-        <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
+    <Layout style={{ minHeight: '100vh' }}>
+      <Header style={{ background: '#fff', padding: '0 24px', borderBottom: '1px solid #f0f0f0' }}>
+        <Row justify="space-between" align="middle">
           <Col>
             <Title level={2} style={{ margin: 0, color: '#ff4d4f' }}>
-              <HeartOutlined style={{ marginRight: 12 }} />
-              Quản lý Hiến máu
+              <HeartOutlined style={{ marginRight: 8 }} />
+              Quản lý hiến máu
             </Title>
-            <Text type="secondary">Bảng điều khiển xác nhận và quản lý các đăng ký hiến máu</Text>
           </Col>
           <Col>
             <Space>
-              <Tooltip title="Làm mới dữ liệu">
-                <Button
-                  icon={<ReloadOutlined />}
-                  onClick={loadDonations}
-                  loading={loading}
-                >
-                  Làm mới
-                </Button>
-              </Tooltip>
-              <Button
-                danger
-                icon={<DeleteOutlined />}
-                onClick={handleResetAll}
-              >
-                Reset thao tác
-              </Button>
+              <Text type="secondary">
+                <CalendarOutlined style={{ marginRight: 4 }} />
+                {new Date().toLocaleDateString('vi-VN')}
+              </Text>
+              <Text type="secondary">
+                <UserOutlined style={{ marginRight: 4 }} />
+                Quản trị viên
+              </Text>
             </Space>
           </Col>
         </Row>
+      </Header>
 
-        {/* Thống kê nhanh */}
-        <Row gutter={16} style={{ marginBottom: 24 }}>
-          <Col span={6}>
-            <Card size="small" style={{ textAlign: 'center', backgroundColor: '#fff2e8' }}>
-              <Text strong style={{ color: '#fa8c16' }}>Đang chờ</Text>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#fa8c16' }}>
-                {donations.filter(d => getStatusInfo(d.status, d.registrationId).text === 'Đang chờ').length}
-              </div>
-            </Card>
-          </Col>
-          <Col span={6}>
-            <Card size="small" style={{ textAlign: 'center', backgroundColor: '#e6f7ff' }}>
-              <Text strong style={{ color: '#1890ff' }}>Đang xử lý</Text>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#1890ff' }}>
-                {donations.filter(d => getStatusInfo(d.status, d.registrationId).text === 'Đang xử lý').length}
-              </div>
-            </Card>
-          </Col>
-          <Col span={6}>
-            <Card size="small" style={{ textAlign: 'center', backgroundColor: '#f6ffed' }}>
-              <Text strong style={{ color: '#52c41a' }}>Hoàn thành</Text>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#52c41a' }}>
-                {donations.filter(d => getStatusInfo(d.status, d.registrationId).text === 'Đã nhập dữ liệu').length}
-              </div>
-            </Card>
-          </Col>
-          <Col span={6}>
-            <Card size="small" style={{ textAlign: 'center', backgroundColor: '#fff1f0' }}>
-              <Text strong style={{ color: '#ff4d4f' }}>Đã hủy</Text>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#ff4d4f' }}>
-                {donations.filter(d => getStatusInfo(d.status, d.registrationId).text === 'Đã hủy').length}
-              </div>
-            </Card>
-          </Col>
-        </Row>
-
-        <Table
-          columns={columns}
-          dataSource={donations}
-          rowKey="registrationId"
-          loading={loading}
-          pagination={{
-            pageSize: 10,
-            showSizeChanger: true,
-            showQuickJumper: true,
-            showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} mục`
-          }}
-          scroll={{ x: 1200 }}
-          rowClassName={(record) => {
-            const statusInfo = getStatusInfo(record.status, record.registrationId);
-            return statusInfo.text === 'Đã hủy' ? 'cancelled-row' : '';
-          }}
-        />
-      </Card>
-
-      {/* Modal nhập/xem lượng máu */}
-      <Modal
-        title={
-          <div style={{ textAlign: 'center' }}>
-            <MedicineBoxOutlined style={{ marginRight: 8, color: '#ff4d4f' }} />
-            {modalMode === "view" ? "Xem thông tin lượng máu" : "Nhập thông tin lượng máu"}
-          </div>
-        }
-        open={modalVisible}
-        onCancel={() => setModalVisible(false)}
-        width={600}
-        footer={null}
-      >
-        {selectedDonation && (
-          <>
-            <Alert
-              message={`Người hiến: ${selectedDonation.donorName || `User ${selectedDonation.userId}`}`}
-              description={`Ngày hiến: ${new Date(selectedDonation.scheduledDate).toLocaleString('vi-VN')}`}
-              type="info"
-              showIcon
-              style={{ marginBottom: 24 }}
-            />
-
-            <Form
-              form={form}
-              layout="vertical"
-              onFinish={handleSaveVolume}
-            >
-              <Row gutter={16}>
-                <Col span={12}>
-                  <Form.Item
-                    label="Tổng lượng máu (ml)"
-                    name="total"
-                    rules={[{ required: true, message: 'Vui lòng nhập tổng lượng máu' }]}
+      <Content style={{ padding: '24px' }}>
+        <Card>
+          <Text type="secondary">Bảng điều khiển xác nhận và quản lý các đăng ký hiến máu</Text>
+          <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
+            <Col>
+              <Space>
+                <Tooltip title="Làm mới dữ liệu">
+                  <Button
+                    icon={<ReloadOutlined />}
+                    onClick={loadDonations}
+                    loading={loading}
                   >
-                    <InputNumber
-                      min={0}
-                      max={650}
-                      style={{ width: '100%' }}
-                      placeholder="Nhập tổng lượng"
-                      disabled={modalMode === "view"}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item
-                    label="Nhóm máu"
-                    name="bloodType"
-                    rules={[{ required: true, message: 'Vui lòng chọn nhóm máu' }]}
-                  >
-                    <Select placeholder="Chọn nhóm máu" disabled={modalMode === "view"}>
-                      {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map(type => (
-                        <Option key={type} value={type}>{type}</Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                </Col>
-              </Row>
-
-              <Divider orientation="left">Chi tiết thành phần</Divider>
-
-              <Row gutter={16}>
-                <Col span={8}>
-                  <Form.Item label="Hồng cầu (ml)" name="redCells">
-                    <InputNumber
-                      min={0}
-                      max={650}
-                      style={{ width: '100%' }}
-                      disabled={modalMode === "view"}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col span={8}>
-                  <Form.Item label="Tiểu cầu (ml)" name="platelets">
-                    <InputNumber
-                      min={0}
-                      max={650}
-                      style={{ width: '100%' }}
-                      disabled={modalMode === "view"}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col span={8}>
-                  <Form.Item label="Huyết tương (ml)" name="plasma">
-                    <InputNumber
-                      min={0}
-                      max={650}
-                      style={{ width: '100%' }}
-                      disabled={modalMode === "view"}
-                    />
-                  </Form.Item>
-                </Col>
-              </Row>
-
-              <Divider />
-
-              <Row justify="end" gutter={8}>
-                {modalMode === "edit" && (
-                  <>
-                    <Col>
-                      <Button
-                        icon={<BulbOutlined />}
-                        onClick={() => setSuggestModalVisible(true)}
-                      >
-                        Gợi ý
-                      </Button>
-                    </Col>
-                    <Col>
-                      <Button type="primary" htmlType="submit">
-                        Lưu thông tin
-                      </Button>
-                    </Col>
-                  </>
-                )}
-                <Col>
-                  <Button onClick={() => setModalVisible(false)}>
-                    Đóng
+                    Làm mới
                   </Button>
-                </Col>
-              </Row>
-            </Form>
-          </>
-        )}
-      </Modal>
-
-      {/* Modal gợi ý */}
-      <Modal
-        title={
-          <div style={{ textAlign: 'center' }}>
-            <BulbOutlined style={{ marginRight: 8, color: '#faad14' }} />
-            Gợi ý lượng máu
-          </div>
-        }
-        open={suggestModalVisible}
-        onCancel={() => setSuggestModalVisible(false)}
-        footer={null}
-        width={400}
-      >
-        <Alert
-          message="Thông tin gợi ý"
-          description="Nhập thông tin cơ bản để hệ thống tính toán lượng máu phù hợp"
-          type="info"
-          showIcon
-          style={{ marginBottom: 24 }}
-        />
-
-        <Form
-          form={suggestForm}
-          layout="vertical"
-          onFinish={handleApplySuggestion}
-        >
-          <Form.Item
-            label="Cân nặng (kg)"
-            name="weight"
-            rules={[{ required: true, message: 'Vui lòng nhập cân nặng' }]}
-          >
-            <InputNumber
-              min={0}
-              max={200}
-              style={{ width: '100%' }}
-              placeholder="Nhập cân nặng"
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Giới tính"
-            name="gender"
-            rules={[{ required: true, message: 'Vui lòng chọn giới tính' }]}
-          >
-            <Select placeholder="Chọn giới tính">
-              <Option value="Nam">Nam</Option>
-              <Option value="Nữ">Nữ</Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item label="Phương pháp tách" name="method">
-            <Select placeholder="Chọn phương pháp tách">
-              <Option value="gạn tách">Gạn tách</Option>
-              <Option value="li tâm">Li tâm</Option>
-            </Select>
-          </Form.Item>
-
-          <Divider />
-
-          <Row justify="end" gutter={8}>
-            <Col>
-              <Button onClick={() => setSuggestModalVisible(false)}>
-                Hủy
-              </Button>
-            </Col>
-            <Col>
-              <Button type="primary" htmlType="submit">
-                Áp dụng gợi ý
-              </Button>
+                </Tooltip>
+                <Button
+                  danger
+                  icon={<DeleteOutlined />}
+                  onClick={handleResetAll}
+                >
+                  Reset thao tác
+                </Button>
+              </Space>
             </Col>
           </Row>
-        </Form>
-      </Modal>
 
-      {/* CSS tùy chỉnh */}
-      <style jsx>{`
+          {/* Thống kê nhanh */}
+          <Row gutter={16} style={{ marginBottom: 24 }}>
+            <Col span={6}>
+              <Card size="small" style={{ textAlign: 'center', backgroundColor: '#fff2e8' }}>
+                <Text strong style={{ color: '#fa8c16' }}>Đang chờ</Text>
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#fa8c16' }}>
+                  {donations.filter(d => getStatusInfo(d.status, d.registrationId).text === 'Đang chờ').length}
+                </div>
+              </Card>
+            </Col>
+            <Col span={6}>
+              <Card size="small" style={{ textAlign: 'center', backgroundColor: '#e6f7ff' }}>
+                <Text strong style={{ color: '#1890ff' }}>Đang xử lý</Text>
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#1890ff' }}>
+                  {donations.filter(d => getStatusInfo(d.status, d.registrationId).text === 'Đang xử lý').length}
+                </div>
+              </Card>
+            </Col>
+            <Col span={6}>
+              <Card size="small" style={{ textAlign: 'center', backgroundColor: '#f6ffed' }}>
+                <Text strong style={{ color: '#52c41a' }}>Hoàn thành</Text>
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#52c41a' }}>
+                  {donations.filter(d => getStatusInfo(d.status, d.registrationId).text === 'Đã nhập dữ liệu').length}
+                </div>
+              </Card>
+            </Col>
+            <Col span={6}>
+              <Card size="small" style={{ textAlign: 'center', backgroundColor: '#fff1f0' }}>
+                <Text strong style={{ color: '#ff4d4f' }}>Đã hủy</Text>
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#ff4d4f' }}>
+                  {donations.filter(d => getStatusInfo(d.status, d.registrationId).text === 'Đã hủy').length}
+                </div>
+              </Card>
+            </Col>
+          </Row>
+
+          <Table
+            columns={columns}
+            dataSource={donations}
+            rowKey="registrationId"
+            loading={loading}
+            pagination={{
+              pageSize: 10,
+              showSizeChanger: true,
+              showQuickJumper: true,
+              showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} mục`
+            }}
+            scroll={{ x: 1200 }}
+            rowClassName={(record) => {
+              const statusInfo = getStatusInfo(record.status, record.registrationId);
+              return statusInfo.text === 'Đã hủy' ? 'cancelled-row' : '';
+            }}
+          />
+        </Card>
+
+        {/* Modal nhập/xem lượng máu */}
+        <Modal
+          title={
+            <div style={{ textAlign: 'center' }}>
+              <MedicineBoxOutlined style={{ marginRight: 8, color: '#ff4d4f' }} />
+              {modalMode === "view" ? "Xem thông tin lượng máu" : "Nhập thông tin lượng máu"}
+            </div>
+          }
+          open={modalVisible}
+          onCancel={() => setModalVisible(false)}
+          width={600}
+          footer={null}
+        >
+          {selectedDonation && (
+            <>
+              <Alert
+                message={`Người hiến: ${selectedDonation.donorName || `User ${selectedDonation.userId}`}`}
+                description={`Ngày hiến: ${new Date(selectedDonation.scheduledDate).toLocaleString('vi-VN')}`}
+                type="info"
+                showIcon
+                style={{ marginBottom: 24 }}
+              />
+
+              <Form
+                form={form}
+                layout="vertical"
+                onFinish={handleSaveVolume}
+              >
+                <Row gutter={16}>
+                  <Col span={12}>
+                    <Form.Item
+                      label="Tổng lượng máu (ml)"
+                      name="total"
+                      rules={[{ required: true, message: 'Vui lòng nhập tổng lượng máu' }]}
+                    >
+                      <InputNumber
+                        min={0}
+                        max={650}
+                        style={{ width: '100%' }}
+                        placeholder="Nhập tổng lượng"
+                        disabled={modalMode === "view"}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item
+                      label="Nhóm máu"
+                      name="bloodType"
+                      rules={[{ required: true, message: 'Vui lòng chọn nhóm máu' }]}
+                    >
+                      <Select placeholder="Chọn nhóm máu" disabled={modalMode === "view"}>
+                        {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map(type => (
+                          <Option key={type} value={type}>{type}</Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </Col>
+                </Row>
+
+                <Divider orientation="left">Chi tiết thành phần</Divider>
+
+                <Row gutter={16}>
+                  <Col span={8}>
+                    <Form.Item label="Hồng cầu (ml)" name="redCells">
+                      <InputNumber
+                        min={0}
+                        max={650}
+                        style={{ width: '100%' }}
+                        disabled={modalMode === "view"}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col span={8}>
+                    <Form.Item label="Tiểu cầu (ml)" name="platelets">
+                      <InputNumber
+                        min={0}
+                        max={650}
+                        style={{ width: '100%' }}
+                        disabled={modalMode === "view"}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col span={8}>
+                    <Form.Item label="Huyết tương (ml)" name="plasma">
+                      <InputNumber
+                        min={0}
+                        max={650}
+                        style={{ width: '100%' }}
+                        disabled={modalMode === "view"}
+                      />
+                    </Form.Item>
+                  </Col>
+                </Row>
+
+                <Divider />
+
+                <Row justify="end" gutter={8}>
+                  {modalMode === "edit" && (
+                    <>
+                      <Col>
+                        <Button
+                          icon={<BulbOutlined />}
+                          onClick={() => setSuggestModalVisible(true)}
+                        >
+                          Gợi ý
+                        </Button>
+                      </Col>
+                      <Col>
+                        <Button type="primary" htmlType="submit">
+                          Lưu thông tin
+                        </Button>
+                      </Col>
+                    </>
+                  )}
+                  <Col>
+                    <Button onClick={() => setModalVisible(false)}>
+                      Đóng
+                    </Button>
+                  </Col>
+                </Row>
+              </Form>
+            </>
+          )}
+        </Modal>
+
+        {/* Modal gợi ý */}
+        <Modal
+          title={
+            <div style={{ textAlign: 'center' }}>
+              <BulbOutlined style={{ marginRight: 8, color: '#faad14' }} />
+              Gợi ý lượng máu
+            </div>
+          }
+          open={suggestModalVisible}
+          onCancel={() => setSuggestModalVisible(false)}
+          footer={null}
+          width={400}
+        >
+          <Alert
+            message="Thông tin gợi ý"
+            description="Nhập thông tin cơ bản để hệ thống tính toán lượng máu phù hợp"
+            type="info"
+            showIcon
+            style={{ marginBottom: 24 }}
+          />
+
+          <Form
+            form={suggestForm}
+            layout="vertical"
+            onFinish={handleApplySuggestion}
+          >
+            <Form.Item
+              label="Cân nặng (kg)"
+              name="weight"
+              rules={[{ required: true, message: 'Vui lòng nhập cân nặng' }]}
+            >
+              <InputNumber
+                min={0}
+                max={200}
+                style={{ width: '100%' }}
+                placeholder="Nhập cân nặng"
+              />
+            </Form.Item>
+
+            <Form.Item
+              label="Giới tính"
+              name="gender"
+              rules={[{ required: true, message: 'Vui lòng chọn giới tính' }]}
+            >
+              <Select placeholder="Chọn giới tính">
+                <Option value="Nam">Nam</Option>
+                <Option value="Nữ">Nữ</Option>
+              </Select>
+            </Form.Item>
+
+            <Form.Item label="Phương pháp tách" name="method">
+              <Select placeholder="Chọn phương pháp tách">
+                <Option value="gạn tách">Gạn tách</Option>
+                <Option value="li tâm">Li tâm</Option>
+              </Select>
+            </Form.Item>
+
+            <Divider />
+
+            <Row justify="end" gutter={8}>
+              <Col>
+                <Button onClick={() => setSuggestModalVisible(false)}>
+                  Hủy
+                </Button>
+              </Col>
+              <Col>
+                <Button type="primary" htmlType="submit">
+                  Áp dụng gợi ý
+                </Button>
+              </Col>
+            </Row>
+          </Form>
+        </Modal>
+
+        {/* CSS tùy chỉnh */}
+        <style jsx>{`
         .cancelled-row {
           background-color: #f5f5f5 !important;
           opacity: 0.7;
@@ -887,8 +905,9 @@ const DonationConfirm = () => {
           border-color: #ff4d4f;
         }
       `}</style>
-    </div>
-  );
+      </Content>
+    </Layout>
+    );
 };
 
 export default DonationConfirm;

@@ -46,6 +46,7 @@ import StaffStatistics from "./components/StaffStatistics";
 import UrgentRequests from "./components/UrgentRequests";
 import UrgentSearch from "./components/UrgentSearch";
 import SeparationDashboard from "./components/SeparationDashboard";
+import StaffBloodCompatibility from "./components/StaffBloodCompatibility";
 
 // 👑 Quản trị viên
 import BoardAdmin from "./components/BoardAdmin";
@@ -172,6 +173,7 @@ const App = () => {
             <Route path="statistics" element={<StaffStatistics />} />
             <Route path="urgent-requests" element={<UrgentRequests />} />
             <Route path="separation-dashboard" element={<SeparationDashboard />} />
+            <Route path="compatibility" element={<StaffBloodCompatibility />} />
           </Route>
 
           {/* User */}

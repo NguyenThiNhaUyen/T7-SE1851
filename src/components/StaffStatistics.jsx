@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import {
   App as AntdApp,
   Button,
@@ -16,6 +15,7 @@ import {
   ConfigProvider,
   theme,
   message,
+  Layout,
 } from "antd";
 import { Bar, Pie } from "react-chartjs-2";
 import {
@@ -27,12 +27,21 @@ import {
   LinearScale,
   BarElement,
 } from "chart.js";
-import { DownloadOutlined, ReloadOutlined, SearchOutlined, InfoCircleOutlined } from "@ant-design/icons";
+import { 
+  DownloadOutlined, 
+  ReloadOutlined, 
+  SearchOutlined, 
+  InfoCircleOutlined,
+  BarChartOutlined,
+  CalendarOutlined,
+  UserOutlined
+} from "@ant-design/icons";
 import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
+// import { saveAs } from "file-saver";
 
 ChartJS.register(ArcElement, ChartTooltip, Legend, CategoryScale, LinearScale, BarElement);
 
+const { Header, Content } = Layout;
 const { Title, Text } = Typography;
 const { Option } = Select;
 
@@ -97,7 +106,16 @@ const StaffStatistics = () => {
     XLSX.utils.book_append_sheet(workbook, worksheet, "ThongKeTruyenMau");
     const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
     const fileData = new Blob([excelBuffer], { type: "application/octet-stream" });
-    saveAs(fileData, "bao_cao_truyen_mau.xlsx");
+    
+    // Tạo link download
+    const url = URL.createObjectURL(fileData);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'bao_cao_truyen_mau.xlsx';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   const totalTransfusions = statistics.reduce((sum, record) => sum + record.total_transfusions, 0);
@@ -118,127 +136,194 @@ const StaffStatistics = () => {
 
   return (
     <ConfigProvider theme={{ algorithm: isDarkTheme ? theme.darkAlgorithm : theme.defaultAlgorithm }}>
-      <div style={{ padding: 24 }}>
-        <Title level={3}>📊 Thống kê truyền máu</Title>
-
-        <Card style={{ marginBottom: 24 }}>
-          <Row gutter={[16, 16]}>
-            <Col xs={24} md={6}>
-              <Select
-                style={{ width: "100%" }}
-                placeholder="Chọn nhóm máu"
-                value={selectedBloodType}
-                onChange={setSelectedBloodType}
-                allowClear
-              >
-                {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map((blood) => (
-                  <Option key={blood} value={blood}>{blood}</Option>
-                ))}
-              </Select>
+      <Layout style={{ minHeight: '100vh' }}>
+        <Header style={{ background: '#fff', padding: '0 24px', borderBottom: '1px solid #f0f0f0' }}>
+          <Row justify="space-between" align="middle">
+            <Col>
+              <Title level={2} style={{ margin: 0, color: '#1890ff' }}>
+                <BarChartOutlined style={{ marginRight: 8 }} />
+                Thống kê truyền máu
+              </Title>
             </Col>
-
-            <Col xs={24} md={6}>
-              <Select
-                style={{ width: "100%" }}
-                placeholder="Chọn thành phần"
-                value={selectedComponent}
-                onChange={setSelectedComponent}
-                allowClear
-              >
-                {["Hồng cầu", "Tiểu cầu", "Huyết tương"].map((component) => (
-                  <Option key={component} value={component}>{component}</Option>
-                ))}
-              </Select>
-            </Col>
-
-            <Col xs={12} md={6}>
-              <DatePicker
-                style={{ width: "100%" }}
-                placeholder="Từ ngày"
-                value={startDate}
-                onChange={setStartDate}
-                format="YYYY-MM-DD"
-              />
-            </Col>
-
-            <Col xs={12} md={6}>
-              <DatePicker
-                style={{ width: "100%" }}
-                placeholder="Đến ngày"
-                value={endDate}
-                onChange={setEndDate}
-                format="YYYY-MM-DD"
-              />
-            </Col>
-
-            <Col xs={24} style={{ textAlign: "right" }}>
+            <Col>
               <Space>
-                <Select value={selectedChartType} onChange={setSelectedChartType}>
-                  <Option value="bar">📊 Biểu đồ cột</Option>
-                  <Option value="pie">🧬 Biểu đồ tròn</Option>
-                </Select>
-                <Button icon={<SearchOutlined />} onClick={fetchStatisticsData}>Lọc</Button>
-                <Button icon={<DownloadOutlined />} onClick={exportStatisticsToExcel}>Xuất Excel</Button>
-                <Button icon={<ReloadOutlined />} onClick={() => {
-                  setSelectedBloodType("");
-                  setSelectedComponent("");
-                  setStartDate(null);
-                  setEndDate(null);
-                  fetchStatisticsData();
-                }}>Xoá lọc</Button>
-                <Button onClick={() => setIsDarkTheme(!isDarkTheme)}>{isDarkTheme ? "🌞 Giao diện sáng" : "🌙 Giao diện tối"}</Button>
+                <Text type="secondary">
+                  <CalendarOutlined style={{ marginRight: 4 }} />
+                  {new Date().toLocaleDateString('vi-VN')}
+                </Text>
+                <Text type="secondary">
+                  <UserOutlined style={{ marginRight: 4 }} />
+                  Quản trị viên
+                </Text>
               </Space>
             </Col>
           </Row>
-        </Card>
+        </Header>
 
-        {statistics.length === 0 ? (
-          <Text type="danger">⚠️ Không tìm thấy dữ liệu phù hợp với bộ lọc hiện tại.</Text>
-        ) : (
-          <>
-            <Row gutter={[16, 16]}>
-              <Col span={6}><Card><Text strong>Tổng lượt truyền:</Text><br />{totalTransfusions}</Card></Col>
-              <Col span={6}><Card><Text strong>Tổng bệnh nhân:</Text><br />{totalPatients}</Card></Col>
-              <Col span={6}><Card><Text strong>Thành phần phổ biến:</Text><br />{mostCommonComponent}</Card></Col>
-              <Col span={6}><Card><Text strong>Nhóm máu phổ biến:</Text><br />{mostCommonBloodType}</Card></Col>
-            </Row>
+        <Content style={{ padding: '24px' }}>
+          <Card>
+            <Text type="secondary" style={{ display: 'block', marginBottom: '16px' }}>
+              Cập nhật lần cuối: {new Date().toLocaleString('vi-VN')}
+            </Text>
 
-            <Divider orientation="left" style={{ marginTop: 40 }}>📈 Biểu đồ thống kê</Divider>
+            <Card style={{ marginBottom: 24 }}>
+              <Row gutter={[16, 16]}>
+                <Col xs={24} md={6}>
+                  <Select
+                    style={{ width: "100%" }}
+                    placeholder="Chọn nhóm máu"
+                    value={selectedBloodType}
+                    onChange={setSelectedBloodType}
+                    allowClear
+                  >
+                    {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map((blood) => (
+                      <Option key={blood} value={blood}>{blood}</Option>
+                    ))}
+                  </Select>
+                </Col>
 
-            {selectedChartType === "bar" ? (
-              <Bar
-                data={{
-                  labels: statistics.map(record => `${record.blood_type} - ${record.component_name}`),
-                  datasets: [{
-                    label: "Số lượt truyền",
-                    data: statistics.map(record => record.total_transfusions),
-                    backgroundColor: "#1677ff"
-                  }]
-                }}
-                options={{ responsive: true, scales: { y: { beginAtZero: true } } }}
-              />
+                <Col xs={24} md={6}>
+                  <Select
+                    style={{ width: "100%" }}
+                    placeholder="Chọn thành phần"
+                    value={selectedComponent}
+                    onChange={setSelectedComponent}
+                    allowClear
+                  >
+                    {["Hồng cầu", "Tiểu cầu", "Huyết tương"].map((component) => (
+                      <Option key={component} value={component}>{component}</Option>
+                    ))}
+                  </Select>
+                </Col>
+
+                <Col xs={12} md={6}>
+                  <DatePicker
+                    style={{ width: "100%" }}
+                    placeholder="Từ ngày"
+                    value={startDate}
+                    onChange={setStartDate}
+                    format="YYYY-MM-DD"
+                  />
+                </Col>
+
+                <Col xs={12} md={6}>
+                  <DatePicker
+                    style={{ width: "100%" }}
+                    placeholder="Đến ngày"
+                    value={endDate}
+                    onChange={setEndDate}
+                    format="YYYY-MM-DD"
+                  />
+                </Col>
+
+                <Col xs={24} style={{ textAlign: "right" }}>
+                  <Space wrap>
+                    <Select value={selectedChartType} onChange={setSelectedChartType}>
+                      <Option value="bar">📊 Biểu đồ cột</Option>
+                      <Option value="pie">🧬 Biểu đồ tròn</Option>
+                    </Select>
+                    <Button icon={<SearchOutlined />} onClick={fetchStatisticsData}>Lọc</Button>
+                    <Button icon={<DownloadOutlined />} onClick={exportStatisticsToExcel}>Xuất Excel</Button>
+                    <Button icon={<ReloadOutlined />} onClick={() => {
+                      setSelectedBloodType("");
+                      setSelectedComponent("");
+                      setStartDate(null);
+                      setEndDate(null);
+                      fetchStatisticsData();
+                    }}>Xoá lọc</Button>
+                    <Button onClick={() => setIsDarkTheme(!isDarkTheme)}>{isDarkTheme ? "🌞 Giao diện sáng" : "🌙 Giao diện tối"}</Button>
+                  </Space>
+                </Col>
+              </Row>
+            </Card>
+
+            {statistics.length === 0 ? (
+              <Text type="danger">⚠️ Không tìm thấy dữ liệu phù hợp với bộ lọc hiện tại.</Text>
             ) : (
-              <Pie
-                data={{
-                  labels: uniqueComponentList,
-                  datasets: [{
-                    label: "Tỷ lệ",
-                    data: uniqueComponentList.map(component =>
-                      statistics.filter(record => record.component_name === component)
-                        .reduce((total, record) => total + record.total_transfusions, 0)
-                    ),
-                    backgroundColor: ["#f87171", "#60a5fa", "#34d399"]
-                  }]
-                }}
-              />
+              <>
+                <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+                  <Col xs={24} sm={12} md={6}>
+                    <Card>
+                      <Text strong>Tổng lượt truyền:</Text>
+                      <br />
+                      <Text style={{ fontSize: '20px', color: '#1890ff' }}>{totalTransfusions}</Text>
+                    </Card>
+                  </Col>
+                  <Col xs={24} sm={12} md={6}>
+                    <Card>
+                      <Text strong>Tổng bệnh nhân:</Text>
+                      <br />
+                      <Text style={{ fontSize: '20px', color: '#52c41a' }}>{totalPatients}</Text>
+                    </Card>
+                  </Col>
+                  <Col xs={24} sm={12} md={6}>
+                    <Card>
+                      <Text strong>Thành phần phổ biến:</Text>
+                      <br />
+                      <Text style={{ fontSize: '16px', color: '#fa8c16' }}>{mostCommonComponent}</Text>
+                    </Card>
+                  </Col>
+                  <Col xs={24} sm={12} md={6}>
+                    <Card>
+                      <Text strong>Nhóm máu phổ biến:</Text>
+                      <br />
+                      <Text style={{ fontSize: '16px', color: '#f5222d' }}>{mostCommonBloodType}</Text>
+                    </Card>
+                  </Col>
+                </Row>
+
+                <Divider orientation="left" style={{ marginTop: 40 }}>📈 Biểu đồ thống kê</Divider>
+
+                <Card style={{ marginBottom: 24 }}>
+                  {selectedChartType === "bar" ? (
+                    <Bar
+                      data={{
+                        labels: statistics.map(record => `${record.blood_type} - ${record.component_name}`),
+                        datasets: [{
+                          label: "Số lượt truyền",
+                          data: statistics.map(record => record.total_transfusions),
+                          backgroundColor: "#1677ff"
+                        }]
+                      }}
+                      options={{ responsive: true, scales: { y: { beginAtZero: true } } }}
+                    />
+                  ) : (
+                    <Pie
+                      data={{
+                        labels: uniqueComponentList,
+                        datasets: [{
+                          label: "Tỷ lệ",
+                          data: uniqueComponentList.map(component =>
+                            statistics.filter(record => record.component_name === component)
+                              .reduce((total, record) => total + record.total_transfusions, 0)
+                          ),
+                          backgroundColor: ["#f87171", "#60a5fa", "#34d399"]
+                        }]
+                      }}
+                    />
+                  )}
+                </Card>
+
+                <Divider orientation="left">📋 Chi tiết thống kê</Divider>
+
+                <Table 
+                  columns={statisticsColumns} 
+                  dataSource={statistics} 
+                  rowKey={(record, index) => index} 
+                  pagination={{ 
+                    pageSize: 10,
+                    showSizeChanger: true,
+                    showQuickJumper: true,
+                    showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} bản ghi`,
+                    pageSizeOptions: ['5', '10', '20', '50'],
+                  }}
+                  scroll={{ x: 800 }}
+                />
+              </>
             )}
-
-            <Divider orientation="left" style={{ marginTop: 40 }}>📋 Chi tiết thống kê</Divider>
-
-            <Table columns={statisticsColumns} dataSource={statistics} rowKey={(record, index) => index} pagination={{ pageSize: 5 }} />
-          </>
-        )}
-      </div>
+          </Card>
+        </Content>
+      </Layout>
     </ConfigProvider>
   );
 };
