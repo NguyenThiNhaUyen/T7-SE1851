@@ -47,19 +47,55 @@ const UrgentList = () => {
   const [levelFilter, setLevelFilter] = useState('all');
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(false);
+const GOOGLE_API_KEY = 'YOUR_GOOGLE_API_KEY';
+const FPT_ADDRESS = 'FPT University Ho Chi Minh City, Khu Công nghệ cao, TP Thủ Đức';
 
-  // Gọi API lấy danh sách người hiến máu khẩn cấp
-  const fetchUrgentDonors = async () => {
-    setLoading(true);
-    try {
-      const res = await axios.get('http://localhost:8080/api/admin/urgent-donors/list');
-      setData(res.data);
-    } catch (error) {
-      console.error('Lỗi khi tải dữ liệu:', error);
-    } finally {
-      setLoading(false);
+// Hàm chuẩn hóa địa chỉ từ các field detail
+const getFullAddress = (donor) => {
+  const detail = donor.detail || {};
+  const parts = [
+    detail.street || '',
+    detail.ward || '',
+    detail.district || '',
+    detail.city || '',
+  ];
+  return parts.filter(Boolean).join(', ');
+};
+
+// Hàm tính khoảng cách từ địa chỉ đến FPT
+const getDistanceToFPT = async (destinationAddress) => {
+  const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${encodeURIComponent(FPT_ADDRESS)}&destinations=${encodeURIComponent(destinationAddress)}&key=${GOOGLE_API_KEY}&language=vi`;
+
+  try {
+    const res = await axios.get(url);
+    const element = res.data.rows[0].elements[0];
+    if (element.status === 'OK') {
+      return element.distance.text; // ví dụ "14,2 km"
     }
-  };
+  } catch (err) {
+    console.error("❌ Lỗi khi tính khoảng cách:", err);
+  }
+  return "--";
+};
+
+// Hàm fetch danh sách người hiến máu khẩn cấp và tính khoảng cách
+const fetchUrgentDonors = async () => {
+  try {
+    const res = await axios.get("http://localhost:8080/api/admin/urgent-donors/list");
+    const enriched = await Promise.all(
+      res.data.map(async (donor) => {
+        const address = getFullAddress(donor) || donor.address || '';
+        const distance = await getDistanceToFPT(address);
+        return { ...donor, distanceToFpt: distance };
+      })
+    );
+    setData(enriched);
+  } catch (err) {
+    console.error("❌ Không thể tải danh sách người hiến:", err);
+    message.error("Lỗi khi tải dữ liệu người hiến.");
+  }
+};
+
 
   useEffect(() => {
     fetchUrgentDonors();
@@ -170,23 +206,25 @@ const UrgentList = () => {
     align: 'center',
     render: (date) => date === '--' ? '--' : date,
   },
-  {
-    title: 'Ghi chú',
-    dataIndex: 'note',
-    render: (note) => (
-      <Tooltip title={note}>
-        <div style={{ 
-          maxWidth: '150px', 
-          overflow: 'hidden', 
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap'
-        }}>
-          {note}
-        </div>
-      </Tooltip>
-    ),
-    width: 150,
-  },
+{
+  title: 'Khoảng cách đến FPT',
+  dataIndex: 'distanceToFpt',
+  render: (distance) => (
+    <Tooltip title={distance}>
+      <div style={{
+        maxWidth: '150px',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap'
+      }}>
+        {distance || '--'}
+      </div>
+    </Tooltip>
+  ),
+  width: 150,
+}
+
+,
   {
     title: 'Hành động',
     width: 100,

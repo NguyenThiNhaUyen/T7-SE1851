@@ -44,19 +44,49 @@ const { Option } = Select;
 const { RangePicker } = DatePicker;
 
 const VnPayPaymentForm = () => {
-  const [selectedRecord, setSelectedRecord] = useState(null);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [searchText, setSearchText] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [dateRange, setDateRange] = useState(null);
-  const [timePeriod, setTimePeriod] = useState('custom');
+const [selectedRecord, setSelectedRecord] = useState(null);
+const [modalVisible, setModalVisible] = useState(false);
+const [searchText, setSearchText] = useState('');
+const [statusFilter, setStatusFilter] = useState('all');
+const [dateRange, setDateRange] = useState(null);
+const [timePeriod, setTimePeriod] = useState('custom');
 const [showPaymentModal, setShowPaymentModal] = useState(false);
 const [selectedRequest, setSelectedRequest] = useState(null);
+const [selectedUnits, setSelectedUnits] = useState([]);
 const [isModalOpen, setIsModalOpen] = useState(false);
 const [currentRecord, setCurrentRecord] = useState(null);
 const [selectedBloodUnits, setSelectedBloodUnits] = useState([]);
 const [showSelector, setShowSelector] = useState(false);
+const handleConfirmUnits = () => {
+  const simplifiedUnits = selectedUnits.map(unit => ({
+    bloodUnitId: unit.bloodUnitId,
+    quantityMl: unit.quantityMl,
+    componentId: unit.componentId,
+  }));
 
+  setSelectedUnits(simplifiedUnits); // biến global state hoặc props callback
+  setShowPaymentModal(true); // mở modal thanh toán
+};
+
+const handleUnitSelected = (units) => {
+  console.log("Đơn vị máu được chọn:", units);
+
+  const simplified = units.map(unit => ({
+    bloodUnitId: unit.bloodUnitId || unit.id,  // cần `bloodUnitId` đúng tên
+    bloodTypeName: unit.bloodTypeName,
+    componentName: unit.componentName,
+    quantityMl: unit.quantityMl || unit.volume || unit.quantity, // tuỳ theo tên
+    unitCode: unit.unitCode,
+  }));
+
+  setSelectedUnits(simplified); // ✅ đây là state gửi sang VnPayPayment
+  setIsModalOpen(false);
+};
+
+const handleSelectUnits = (units) => {
+  console.log("🩸 Đơn vị máu đã chọn:", units);
+  setSelectedUnits(units);
+};
   // Cấu hình hiển thị trạng thái
   const statusConfig = {
     PENDING: { color: 'warning', text: 'CHỜ DUYỆT', icon: <ExclamationCircleOutlined /> },
@@ -96,6 +126,7 @@ const mapTriageToColor = {
   YELLOW: { color: 'orange', label: 'GẤP' },
   GREEN: { color: 'green', label: 'BÌNH THƯỜNG' },
 };
+
 const openUnitSelector = (record) => {
   setCurrentRecord(record);
   setIsModalOpen(true);
@@ -110,18 +141,41 @@ const mapStatusToTag = {
   REJECTED: { color: 'error', label: 'TỪ CHỐI' },
   COMPLETED: { color: 'cyan', label: 'ĐÃ HOÀN THÀNH' },
 };
+const bloodTypeReverseMap = {
+  'A+': 1,
+  'A-': 2,
+  'B+': 3,
+  'B-': 4,
+  'AB+': 5,
+  'AB-': 6,
+  'O+': 7,
+  'O-': 8,
+};
+
+const bloodComponentReverseMap = {
+  'Hồng cầu': 1,
+  'Huyết tương': 2,
+  'Tiểu cầu': 3,
+};
+
 const handleOpenModal = (record) => {
+  const bloodTypeId = record.bloodTypeId ?? bloodTypeReverseMap[record.bloodTypeName];
+  const componentId = record.componentId ?? bloodComponentReverseMap[record.componentName];
+
+  console.log("✅ Converted to ID:", { bloodTypeId, componentId });
+
   setCurrentRecord({
-    componentId: record.componentId,   // hoặc record.component.id nếu là object
-    bloodTypeId: record.bloodTypeId,   // hoặc record.bloodType.id nếu là object
+    requestId: record.requestId,
+    bloodTypeId,
+    componentId
   });
+
   setIsModalOpen(true);
 };
-const handleUnitSelected = (units) => {
-  setSelectedBloodUnits(units);
-  console.log("Đã chọn đơn vị máu:", units);
-  setIsModalOpen(false);
-};
+
+
+
+
 
 const bloodTypeMap = {
   1: 'A+',
@@ -139,12 +193,13 @@ const bloodComponentMap = {
   3: 'Tiểu cầu',
 };
 
+
     // Chuẩn hoá dữ liệu
 const mapped = res.data.map((item) => ({
   id: item.bloodRequestId,
   patientName: item.patientName || '—',
-  bloodType: bloodTypeMap[item.bloodTypeId] || `#${item.bloodTypeId}`,
-
+  bloodTypeName: item.bloodTypeName || 'Không rõ', // ✅ Thêm dòng này
+        componentName: item.componentName || 'Không rõ', // ✅ Thêm dòng này
   age: item.patientAge || '—',
   volume: `${item.quantityMl}ml`,
   priority: mapTriageToColor[item.triageLevel]?.label || 'Không rõ',
@@ -381,26 +436,24 @@ const handleStatusChange = async (recordId, newStatus) => {
       ),
     },
     {
-      title: 'Nhóm máu',
-      dataIndex: 'bloodType',
-      key: 'bloodType',
-      width: 100,
-      align: 'center',
-      render: (text) => (
-        <Tag color="red" className="font-semibold">
-          {text}
-        </Tag>
-      ),
-    },
+          title: 'Nhóm máu',
+          dataIndex: 'bloodTypeName',
+          key: 'bloodTypeName',
+          align: 'center',
+          render: (text) => (
+            <Tag color="red" className="font-semibold">
+              {text || 'Không rõ'}
+            </Tag>
+          ),
+        },
     {
       title: 'Thành phần máu',
-      dataIndex: 'bloodComponent',
-      key: 'bloodComponent',
-      width: 150,
+      dataIndex: 'componentName',
+      key: 'componentName',
       align: 'center',
       render: (text) => (
         <Tag color="blue" className="font-semibold">
-          {text}
+          {text || 'Không rõ'}
         </Tag>
       ),
     },
@@ -410,35 +463,64 @@ const handleStatusChange = async (recordId, newStatus) => {
   key: 'bloodUnitId',
   width: 250,
   render: (_, record) => (
-    <div>
-      {record.selectedUnits && record.selectedUnits.length > 0 ? (
-        <>
-          <strong>{record.selectedUnits.map(u => u.unitCode).join(', ')}</strong><br />
-          <small>{record.bloodTypeName} - {record.componentName}</small><br />
-          <span>
-            {record.selectedUnits.reduce((sum, u) => sum + (u.quantityMl || 0), 0)} ml
-          </span>
-        </>
-      ) : (
-        <span style={{ color: 'gray' }}>Chưa chọn</span>
-      )}
-      <br />
-      <button
-        style={{
-          marginTop: 6,
-          padding: '4px 8px',
-          backgroundColor: '#1677ff',
-          color: 'white',
-          border: 'none',
-          borderRadius: 4,
-          cursor: 'pointer'
-        }}
-        onClick={() => openUnitSelector && openUnitSelector(record)}
-      >
-        Chọn đơn vị máu
-      </button>
-    </div>
-  )
+  <div>
+    {record.selectedUnits && record.selectedUnits.length > 0 ? (
+      <>
+        <strong>{record.selectedUnits.map(u => u.unitCode).join(', ')}</strong><br />
+        <small>{record.bloodTypeName} - {record.componentName}</small><br />
+        <span>
+          {record.selectedUnits.reduce((sum, u) => sum + (u.quantityMl || 0), 0)} ml
+        </span>
+      </>
+    ) : (
+      <span style={{ color: 'gray' }}>Chưa chọn</span>
+    )}
+    <br />
+    <button
+      style={{
+        marginTop: 6,
+        padding: '4px 8px',
+        backgroundColor: '#1677ff',
+        color: 'white',
+        border: 'none',
+        borderRadius: 4,
+        cursor: 'pointer'
+      }}
+      onClick={() => {
+        // ✅ Gọi setCurrentRecord trước
+        const bloodTypeReverseMap = {
+  'A+': 1,
+  'A-': 2,
+  'B+': 3,
+  'B-': 4,
+  'AB+': 5,
+  'AB-': 6,
+  'O+': 7,
+  'O-': 8,
+};
+
+const bloodComponentReverseMap = {
+  'Hồng cầu': 1,
+  'Huyết tương': 2,
+  'Tiểu cầu': 3,
+};
+        const selected = {
+  componentId: record.componentId ?? bloodComponentReverseMap[record.componentName],
+  bloodTypeId: record.bloodTypeId ?? bloodTypeReverseMap[record.bloodTypeName],
+  bloodTypeName: record.bloodTypeName,
+  componentName: record.componentName,
+   requestId: record.id ?? record.requestId ?? record.request?.id,
+};
+        console.log("💡 Chọn đơn vị máu cho:", selected);
+        setCurrentRecord(selected);
+        setIsModalOpen(true); // ✅ Gọi sau
+      }}
+    >
+      Chọn đơn vị máu
+    </button>
+  </div>
+)
+
 }
 
 ,
@@ -987,23 +1069,30 @@ const handleStatusChange = async (recordId, newStatus) => {
   width={600}
   destroyOnClose
 >
-  <VnPayPaymentFormContent request={selectedRequest} />
+  <VnPayPaymentFormContent request={selectedRequest} selectedUnits={selectedUnits}/>
 </Modal>
 <Modal
   title="Chọn đơn vị máu"
   open={isModalOpen}
   onCancel={() => setIsModalOpen(false)}
   footer={null}
-  width={700}
+  width={1000}
 >
-  {currentRecord && (
-    <BloodUnitSelector
-      componentId={currentRecord.componentId}
-      bloodTypeId={currentRecord.bloodTypeId}
-      onSelect={handleUnitSelected}
-    />
-  )}
+{currentRecord && (
+  <BloodUnitSelector
+    id={{
+      componentId: currentRecord.componentId,
+      bloodTypeId: currentRecord.bloodTypeId,
+      requestId: currentRecord.requestId,
+    }}
+    onSelect={handleUnitSelected}
+  />
+)}
+
+
 </Modal>
+
+
 
       <style jsx global>{`
         .custom-table .ant-table-thead > tr > th {

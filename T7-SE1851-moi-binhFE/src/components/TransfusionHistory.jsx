@@ -157,7 +157,7 @@ const approveBloodRequest = async (data) => {
   try {
     const token = localStorage.getItem("token");
     const res = await axios.put(
-      "http://localhost:8080/api/blood-requests/approve",
+      "http://localhost:8080/api/blood-requests/admin/requests/completed",
       data,
       {
         headers: {
