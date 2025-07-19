@@ -58,26 +58,29 @@ const InventoryChart = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const inventoryRes = await fetch("/api/inventory");
-        const inventory = await inventoryRes.json();
-        setRawData(inventory);
-        setFilteredData(inventory);
-        updateSummary(inventory);
-      } catch (error) {
-        message.error("Không thể tải dữ liệu kho máu.");
-      }
+  try {
+  const bloodUnitsRes = await fetch("/api/blood-units");
+  const bloodUnits = await bloodUnitsRes.json();
+  // Gọi modal hiển thị ngay nếu muốn show lúc tải
+  setModalContent(bloodUnits);
+  setModalOpen(true);
+} catch (error) {
+  message.error("Không thể tải dữ liệu chi tiết tồn kho máu.");
+}
 
-      try {
-        const historyRes = await fetch("/api/inventory-history");
-        const history = await historyRes.json();
-        setHistoryData(history);
-      } catch (error) {
-        message.warning("Không thể tải dữ liệu lịch sử kho.");
-      }
     };
     fetchData();
   }, []);
+const openBloodUnitsDetails = async () => {
+  try {
+    const res = await fetch("/api/blood-units");
+    const data = await res.json();
+    setModalContent(data);
+    setModalOpen(true);
+  } catch (error) {
+    message.error("Không thể tải dữ liệu chi tiết tồn kho máu.");
+  }
+};
 
   useEffect(() => {
     const filtered = rawData.filter(
@@ -195,12 +198,13 @@ const InventoryChart = () => {
           <Card title="Tổng lượng máu trong kho" bordered>
             <Text strong>{summary.totalBlood} ml</Text>
             <Button
-              type="link"
-              icon={<InfoCircleOutlined />}
-              onClick={() => openDetails(rawData)}
-            >
-              Xem tất cả
-            </Button>
+  type="link"
+  icon={<InfoCircleOutlined />}
+  onClick={openBloodUnitsDetails}
+>
+  Nhập chi tiết tồn kho máu
+</Button>
+
           </Card>
         </Col>
         <Col span={12}>

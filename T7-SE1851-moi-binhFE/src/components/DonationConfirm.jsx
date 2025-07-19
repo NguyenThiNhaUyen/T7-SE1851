@@ -51,9 +51,11 @@ const DonationConfirm = () => {
   const [donations, setDonations] = useState([]);
   const [loading, setLoading] = useState(false);
   const [createModalVisible, setCreateModalVisible] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(dayjs());
+  const [healthForm] = Form.useForm();
   useEffect(() => {
     loadDonations();
-  }, []);
+  }, [selectedDate]); // load lại khi đổi ngày
 
   const loadDonations = () => {
     setLoading(true);
@@ -63,8 +65,23 @@ const DonationConfirm = () => {
       })
       .then((res) => {
         console.log("📦 Dữ liệu nhận được:", res.data);
-        setDonations(res.data);
+        const data = res.data || [];
+        setDonations(data);
+
+        // ✅ Lọc theo ngày nếu có selectedDate
+        const selectedStr = selectedDate.format("YYYY-MM-DD");
+        const filtered = data.filter(item => {
+          if (Array.isArray(item.scheduledDate) && item.scheduledDate.length >= 3) {
+            const [year, month, day] = item.scheduledDate;
+            const itemStr = dayjs(`${year}-${month}-${day}`).format("YYYY-MM-DD");
+            return itemStr === selectedStr;
+          }
+          return false;
+        });
+
+        setFilteredDonations(filtered);
         setLoading(false);
+
         notification.success({
           message: 'Thành công',
           description: 'Tải danh sách hiến máu thành công',
@@ -91,9 +108,10 @@ const DonationConfirm = () => {
             });
           }
         } else {
-          notification.error({
-            message: 'Lỗi kết nối',
-            description: 'Lỗi mạng hoặc không kết nối được đến server'
+          notification.success({
+            message: 'Thành công',
+            description: 'Tải danh sách hiến máu thành công',
+            icon: <HeartOutlined style={{ color: '#ff4d4f' }} />
           });
         }
       });
@@ -120,6 +138,13 @@ const DonationConfirm = () => {
     const saved = localStorage.getItem("statusMap");
     return saved ? JSON.parse(saved) : {};
   });
+  const updateStatusMap = (regId, value) => {
+    const updated = { ...statusMap, [regId]: value };
+    setStatusMap(updated);
+    localStorage.setItem("statusMap", JSON.stringify(updated));
+  };
+
+
 
   const getStatusInfo = (status, registrationId) => {
     let displayStatus = statusMap[registrationId] || status;
@@ -147,31 +172,31 @@ const DonationConfirm = () => {
   };
 
   const handleStatusChange = (id, newStatus) => {
-  let apiUrl = "";
+    let apiUrl = "";
 
-  if (newStatus === "Đang xử lý...") {
-    apiUrl = `${API_BASE}/api/donation/confirm?register_id=${id}`;
-  } else if (newStatus === "Chưa nhập dữ liệu") {
-    apiUrl = `${API_BASE}/api/donation/mark-donated?register_id=${id}`;
-  } else if (newStatus === "Đã hủy") {
-    apiUrl = `${API_BASE}/api/donation/cancel?register_id=${id}`;
-  }
+    if (newStatus === "Đang xử lý...") {
+      apiUrl = `${API_BASE}/api/donation/confirm?register_id=${id}`;
+    } else if (newStatus === "Chưa nhập dữ liệu") {
+      apiUrl = `${API_BASE}/api/donation/mark-donated?register_id=${id}`;
+    } else if (newStatus === "Đã hủy") {
+      apiUrl = `${API_BASE}/api/donation/cancel?register_id=${id}`;
+    }
 
-  if (apiUrl) {
-    axios
-      .put(apiUrl, null, {
-        headers: getAuthHeader(),
-      })
-      .then(() => {
-        window.location.reload();
-      })
-      .catch((err) => {
-        console.error("❌ Không thể cập nhật trạng thái:", err);
-      });
-  } else {
-    console.warn("⚠️ Trạng thái không hợp lệ:", newStatus);
-  }
-};
+    if (apiUrl) {
+      axios
+        .put(apiUrl, null, {
+          headers: getAuthHeader(),
+        })
+        .then(() => {
+          window.location.reload();
+        })
+        .catch((err) => {
+          console.error("❌ Không thể cập nhật trạng thái:", err);
+        });
+    } else {
+      console.warn("⚠️ Trạng thái không hợp lệ:", newStatus);
+    }
+  };
 
   const { TextArea } = Input;
 
@@ -215,16 +240,16 @@ const DonationConfirm = () => {
     };
 
     return (
-     <Form
-  layout="vertical"
-  form={form}
-  onFinish={handleFinish}
-  initialValues={{
-    status: "PENDING",
-    rh: "+",
-    collectedAt: dayjs(),
-  }}
->
+      <Form
+        layout="vertical"
+        form={form}
+        onFinish={handleFinish}
+        initialValues={{
+          status: "PENDING",
+          rh: "+",
+          collectedAt: dayjs(),
+        }}
+      >
 
 
         <Form.Item
@@ -344,6 +369,7 @@ const DonationConfirm = () => {
       setSavedVolumes(updated);
       localStorage.setItem("savedVolumes", JSON.stringify(updated));
       handleStatusChange(selectedDonation.registrationId, "Đã nhập dữ liệu");
+      updateStatusMap(selectedDonation.registrationId, "Đã nhập dữ liệu");
       setModalVisible(false);
 
       // ✅ 2. Xác định phương pháp tách
@@ -444,9 +470,11 @@ const DonationConfirm = () => {
         params: { registrationId: regId }
       })
       .then((res) => {
+        console.log("🎯 Dữ liệu trả về:", res.data);
         setHealthCheckForm(res.data);             // Gán dữ liệu vào state
-        form.setFieldsValue(res.data);            // Nếu dùng Form để nhập
-        setHealthModalVisible(true);              // ✅ Mở modal sau khi có dữ liệu
+        healthForm.setFieldsValue(res.data);           // Nếu dùng Form để nhập
+        setHealthModalVisible(true);   
+        console.log("🎯 Dữ liệu trả về:", res.data);           // ✅ Mở modal sau khi có dữ liệu
       })
       .catch((err) => {
         if (err.response?.status === 404) {
@@ -488,45 +516,44 @@ const DonationConfirm = () => {
       })
       .finally(() => setHealthFormLoading(false));
   };
-const handleUpdateHealthCheck = () => {
-  form.validateFields()
-    .then(values => {
-      // 🧹 Loại bỏ các field không có trong HealthCheckFormDTO
-      const {
-        total,
-        redCellsMl,
-        plateletsMl,
-        plasmaMl,
-        bloodType,
-        ...cleanedValues
-      } = values;
+  const handleUpdateHealthCheck = () => {
+    healthForm.validateFields()
+      .then(values => {
+        const {
+          total,
+          redCellsMl,
+          plateletsMl,
+          plasmaMl,
+          bloodType,
+          ...cleanedValues
+        } = values;
 
-      const payload = {
-        ...healthCheckForm,
-        ...cleanedValues
-      };
+        const payload = {
+          ...healthCheckForm,
+          ...cleanedValues
+        };
 
-      axios.put(`${API_BASE}/api/health-check/update`, payload, {
-        headers: getAuthHeader()
-      })
-        .then(() => {
-          notification.success({
-            message: "Cập nhật thành công",
-            description: "Phiếu khám sức khỏe đã được cập nhật."
-          });
-          setHealthModalVisible(false);
+        axios.put(`${API_BASE}/api/health-check/update`, payload, {
+          headers: getAuthHeader()
         })
-        .catch(() => {
-          notification.error({
-            message: "Lỗi cập nhật",
-            description: "Không thể cập nhật phiếu khám sức khỏe."
+          .then(() => {
+            notification.success({
+              message: "Cập nhật thành công",
+              description: "Phiếu khám sức khỏe đã được cập nhật."
+            });
+            setHealthModalVisible(false);
+          })
+          .catch(() => {
+            notification.error({
+              message: "Lỗi cập nhật",
+              description: "Không thể cập nhật phiếu khám sức khỏe."
+            });
           });
-        });
-    })
-    .catch(err => {
-      console.log("❌ Validation failed:", err);
-    });
-};
+      })
+      .catch(err => {
+        console.log("❌ Validation failed:", err);
+      });
+  };
 
 
 
@@ -570,8 +597,8 @@ const handleUpdateHealthCheck = () => {
           <div style={{ fontSize: '12px', color: '#666' }}>
             ID: {record.userId} | SĐT: {record.phone || 'N/A'}
           </div>
-          <Tag color="blue" size="small">{record.bloodType || 'N/A'}</Tag>
-          <Tag color="green" size="small">{record.weight || 'N/A'}kg</Tag>
+          {/* <Tag color="blue" size="small">{record.bloodType || 'N/A'}</Tag>
+          <Tag color="green" size="small">{record.weight || 'N/A'}kg</Tag> */}
         </div>
       )
     },
@@ -586,7 +613,7 @@ const handleUpdateHealthCheck = () => {
           {text ? (
             <Tag color="orange">#{text}</Tag>
           ) : (
-            <Text type="secondary">Chưa có</Text>
+            <Text type="secondary"> </Text>
           )}
           <br />
           <Button
@@ -596,14 +623,7 @@ const handleUpdateHealthCheck = () => {
           >
             Xem
           </Button>
-          <Button
-            size="small"
-            type="link"
-            style={{ color: '#52c41a' }}
-            onClick={() => handleCreateHealthCheck(record)}
-          >
-            Tạo phiếu
-          </Button>
+
         </>
       )
     }
@@ -669,108 +689,119 @@ const handleUpdateHealthCheck = () => {
       }
     },
     {
-  title: 'Thao tác',
-  key: 'actions',
-  width: 180,
-  render: (_, record) => {
-    const statusInfo = getStatusInfo(record.status, record.registrationId);
-    const isCancelled = statusInfo.text === "Đã hủy";
+      title: 'Thao tác',
+      key: 'actions',
+      width: 180,
+      render: (_, record) => {
+        const statusInfo = getStatusInfo(record.status, record.registrationId);
+        const isCancelled = statusInfo.text === "Đã hủy";
 
-    if (isCancelled) {
-      return <Text type="secondary">Đã hủy</Text>;
+        if (isCancelled) {
+          return <Text type="secondary">Đã hủy</Text>;
+        }
+
+        const actions = [];
+
+        if (statusInfo.text === "Đang chờ") {
+          actions.push(
+            <Button
+              key="confirm"
+              type="primary"
+              size="small"
+              icon={<CheckCircleOutlined />}
+              onClick={() => {
+                handleStatusChange(record.registrationId, "Đang xử lý...");
+                handleCreateHealthCheck(record);
+              }}
+            >
+              Xác nhận
+            </Button>
+          );
+        } else if (statusInfo.text === "Đang xử lý") {
+          actions.push(
+            <Button
+              key="complete"
+              type="default"
+              size="small"
+              style={{ backgroundColor: '#faad14', borderColor: '#faad14', color: 'white' }}
+              icon={<CheckCircleOutlined />}
+              onClick={() => handleStatusChange(record.registrationId, "Chưa nhập dữ liệu")}
+            >
+              Hoàn thành
+            </Button>
+          );
+        } else if (statusInfo.text === "Chưa nhập dữ liệu") {
+          actions.push(
+            <Button
+              key="input"
+              type="primary"
+              size="small"
+              icon={<EditOutlined />}
+              onClick={() => {
+                handleOpenModal(record, "edit");
+
+                // Gán trạng thái tạm vào statusMap để UI chuyển sang "Đã nhập dữ liệu"
+                setStatusMap(prev => ({
+                  ...prev,
+                  [record.registrationId]: "DATA_ENTERED"
+                }));
+              }}
+            >
+              Nhập máu
+            </Button>
+          );
+        } else if (statusInfo.text === "Đã nhập dữ liệu") {
+          actions.push(
+            <Button
+              key="view"
+              size="small"
+              icon={<EyeOutlined />}
+              onClick={() => handleOpenModal(record, "view")}
+              style={{ marginRight: 4 }}
+            >
+              Xem
+            </Button>
+          );
+          actions.push(
+            <Button
+              key="edit"
+              size="small"
+              icon={<EditOutlined />}
+              onClick={() => handleOpenModal(record, "edit")}
+            >
+              Sửa
+            </Button>
+          );
+        }
+
+        return <Space size="small">{actions}</Space>;
+      }
+    },
+    {
+      title: 'Hủy',
+      key: 'cancel',
+      width: 80,
+      align: 'center',
+      render: (_, record) => {
+        const statusInfo = getStatusInfo(record.status, record.registrationId);
+
+        if (statusInfo.text === "Đã hủy") {
+          return null;
+        }
+
+        return (
+          <Popconfirm
+            title="Xác nhận hủy"
+            description="Bạn có chắc chắn muốn hủy đăng ký hiến máu này?"
+            onConfirm={() => handleStatusChange(record.registrationId, "Đã hủy")}
+            okText="Xác nhận"
+            cancelText="Không"
+          >
+            <Button danger size="small" icon={<DeleteOutlined />} />
+          </Popconfirm>
+        );
+      }
     }
-
-    const actions = [];
-
-    if (statusInfo.text === "Đang chờ") {
-      actions.push(
-        <Button
-          key="confirm"
-          type="primary"
-          size="small"
-          icon={<CheckCircleOutlined />}
-          onClick={() => handleStatusChange(record.registrationId, "Đang xử lý...")}
-        >
-          Xác nhận
-        </Button>
-      );
-    } else if (statusInfo.text === "Đang xử lý") {
-      actions.push(
-        <Button
-          key="complete"
-          type="default"
-          size="small"
-          style={{ backgroundColor: '#faad14', borderColor: '#faad14', color: 'white' }}
-          icon={<CheckCircleOutlined />}
-          onClick={() => handleStatusChange(record.registrationId, "Chưa nhập dữ liệu")}
-        >
-          Hoàn thành
-        </Button>
-      );
-    } else if (statusInfo.text === "Chưa nhập dữ liệu") {
-      actions.push(
-        <Button
-          key="input"
-          type="primary"
-          size="small"
-          icon={<EditOutlined />}
-          onClick={() => handleOpenModal(record, "edit")}
-        >
-          Nhập máu
-        </Button>
-      );
-    } else if (statusInfo.text === "Đã nhập dữ liệu") {
-      actions.push(
-        <Button
-          key="view"
-          size="small"
-          icon={<EyeOutlined />}
-          onClick={() => handleOpenModal(record, "view")}
-          style={{ marginRight: 4 }}
-        >
-          Xem
-        </Button>
-      );
-      actions.push(
-        <Button
-          key="edit"
-          size="small"
-          icon={<EditOutlined />}
-          onClick={() => handleOpenModal(record, "edit")}
-        >
-          Sửa
-        </Button>
-      );
-    }
-
-    return <Space size="small">{actions}</Space>;
-  }
-},
-{
-  title: 'Hủy',
-  key: 'cancel',
-  width: 80,
-  align: 'center',
-  render: (_, record) => {
-    const statusInfo = getStatusInfo(record.status, record.registrationId);
-
-    if (statusInfo.text === "Đã hủy") {
-      return null;
-    }
-
-    return (
-      <Popconfirm
-        title="Xác nhận hủy"
-        description="Bạn có chắc chắn muốn hủy đăng ký hiến máu này?"
-        onConfirm={() => handleStatusChange(record.registrationId, "Đã hủy")}
-        okText="Xác nhận"
-        cancelText="Không"
-      >
-        <Button danger size="small" icon={<DeleteOutlined />} />
-      </Popconfirm>
-    );
-  }
-}
 
   ];
 
@@ -1085,7 +1116,7 @@ const handleUpdateHealthCheck = () => {
             <Text>Đang tải dữ liệu...</Text>
           </div>
         ) : (
-          <Form form={form} layout="vertical">
+          <Form form={healthForm} layout="vertical">
             <Row gutter={16}>
               <Col span={12}>
                 <Form.Item name="heightCm" label="Chiều cao (cm)">
@@ -1126,8 +1157,12 @@ const handleUpdateHealthCheck = () => {
                 </Form.Item>
               </Col>
               <Col span={12}>
-                <Form.Item name="isEligible" label="Đủ điều kiện hiến máu?" valuePropName="checked">
-                  <Switch />
+                <Form.Item
+                  name="isEligible"
+                  label="Đủ điều kiện hiến máu?"
+                  valuePropName="checked"
+                >
+                  <Switch checkedChildren="Có" unCheckedChildren="Không" />
                 </Form.Item>
               </Col>
             </Row>

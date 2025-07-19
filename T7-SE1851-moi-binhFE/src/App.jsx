@@ -45,6 +45,7 @@ import DonationConfirm from "./components/DonationConfirm";
 import StaffDonationHistory from "./components/StaffDonationHistory";
 import InventoryChart from "./components/InventoryChart";
 import StaffStatistics from "./components/StaffStatistics";
+import BloodUnitList from "./components/BloodUnitList"; 
 import UrgentRequests from "./components/UrgentRequests"; // chỉ import 1 lần
 
 // 👑 Quản trị viên
@@ -187,12 +188,14 @@ const App = () => {
             <Route index element={<BoardStaff />} />
             <Route path="requests" element={<BloodRequestForm />} />
             <Route path="donation-confirm" element={<DonationConfirm />} />
-            <Route path="donation-history" element={<StaffDonationHistory />} />
+            {/* <Route path="donation-history" element={<StaffDonationHistory />} /> */}
+            <Route path="donation-history" element={<DonationHistory />} />
             <Route path="inventory" element={<InventoryChart />} />
             <Route path="statistics" element={<StaffStatistics />} />
             <Route path="urgent-requests" element={<UrgentRequests />} />
             <Route path="vnpay" element={<VnPayPaymentForm/>} />
              <Route path="separation-dashboard" element={<SeparationDashboard />} />
+             <Route path="unit" element={<BloodUnitList />} />
           </Route>
 
           {/* User */}
@@ -206,6 +209,7 @@ const App = () => {
             {/* <Route path="roles" element={<BloodRoles />} /> */}
             <Route path="urgent" element={<UrgentDonationWrapper />} />
             <Route path="urgent-register" element={<UrgentDonationRegister />} />
+            
           </Route>
 
           {/* Blog - Notification - Thanh toán */}

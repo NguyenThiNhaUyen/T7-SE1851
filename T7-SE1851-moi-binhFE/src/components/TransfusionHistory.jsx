@@ -48,14 +48,14 @@ const AdminBloodRequests = () => {
 
   // Cấu hình hiển thị trạng thái
   const statusConfig = {
-    PENDING: { color: 'warning', text: 'CHỜ DUYỆT', icon: <ExclamationCircleOutlined /> },
+    PENDING: { color: 'warning', text: 'ĐÃ HOÀN THÀNH', icon: <ExclamationCircleOutlined /> },
     APPROVED: { color: 'success', text: 'ĐÃ DUYỆT', icon: <CheckCircleOutlined /> },
     REJECTED: { color: 'error', text: 'TỪ CHỐI', icon: <ExclamationCircleOutlined /> },
     WAITING: { color: 'processing', text: 'CHỜ MÁU', icon: <ClockCircleOutlined /> }
   };
 
   // TODO: MOCK DATA -- XÓA KHI TÍCH HỢP API
-  // Dữ liệu mẫu: Đơn từ staff gửi lên, mặc định là CHỜ DUYỆT
+  // Dữ liệu mẫu: Đơn từ staff gửi lên, mặc định là ĐÃ HOÀN THÀNH
   const [bloodRequests, setBloodRequests] = useState([]);
   const [loading, setLoading] = useState(false);
 useEffect(() => {
@@ -66,7 +66,7 @@ const fetchBloodRequests = async () => {
   try {
     setLoading(true);
     const token = localStorage.getItem("token");
-    const res = await axios.get("http://localhost:8080/api/blood-requests/admin", {
+    const res = await axios.get("http://localhost:8080/api/blood-requests/admin/requests/completed", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -87,7 +87,7 @@ const mapTriageToColor = {
 };
 
 const mapStatusToTag = {
-  PENDING: { color: 'warning', label: 'CHỜ DUYỆT' },
+  PENDING: { color: 'warning', label: 'ĐÃ HOÀN THÀNH' },
   APPROVED: { color: 'success', label: 'ĐÃ DUYỆT' },
   REJECTED: { color: 'error', label: 'TỪ CHỐI' },
   COMPLETED: { color: 'cyan', label: 'ĐÃ HOÀN THÀNH' },
@@ -110,39 +110,38 @@ const bloodComponentMap = {
 
     // Chuẩn hoá dữ liệu
 const mapped = res.data.map((item) => ({
-  id: item.bloodRequestId,
-  patientName: item.patientName || '—',
-  bloodType: bloodTypeMap[item.bloodTypeId] || `#${item.bloodTypeId}`,
-
-  age: item.patientAge || '—',
-  volume: `${item.quantityMl}ml`,
-  priority: mapTriageToColor[item.triageLevel]?.label || 'Không rõ',
-  status: item.status,
-  createdDate: formatDate(item.createdAt),
-  requester: {
-    name: `#${item.requesterId}`,
-    phone: item.requesterPhone || '—',
-  },
-  reason: item.reason || '—',
-  bagCount: item.quantityBag || 1,
-  bloodComponent: bloodComponentMap[item.componentId] || `#${item.componentId}`,
-  notes: {
-    warning: item.warningNote || '',
-    special: item.specialNote || '',
-    emergency: item.emergencyNote || '',
-  },
-  processingTime: {
-    requestTime: formatDateTime(item.createdAt),
-    createdTime: formatDateTime(item.createdAt),
-    approvedTime: item.approvedAt ? formatDateTime(item.approvedAt) : '',
-    processingDuration: '—',
-  },
-  patientInfo: {
-    weight: item.patientWeight || 0,
-    phone: item.patientPhone || '',
-    donnorId: item.patientRecordCode || '',
-  },
-}));
+        id: item.bloodRequestId,
+        patientName: item.patientName || '—',
+        bloodTypeName: item.bloodTypeName || 'Không rõ', // ✅ Thêm dòng này
+        componentName: item.componentName || 'Không rõ', // ✅ Thêm dòng này
+        age: item.patientAge || '—',
+        volume: `${item.quantityMl}ml`,
+        priority: mapTriageToColor[item.triageLevel]?.label || 'Không rõ',
+        status: item.status,
+        createdDate: formatDate(item.createdAt),
+        requester: {
+          name: `#${item.requesterId}`,
+          phone: item.requesterPhone || '—',
+        },
+        reason: item.reason || '—',
+        bagCount: item.quantityBag || 1,
+        notes: {
+          warning: item.warningNote || '',
+          special: item.specialNote || '',
+          emergency: item.emergencyNote || '',
+        },
+        processingTime: {
+          requestTime: formatDateTime(item.createdAt),
+          createdTime: formatDateTime(item.createdAt),
+          approvedTime: item.approvedAt ? formatDateTime(item.approvedAt) : '',
+          processingDuration: '—',
+        },
+        patientInfo: {
+          weight: item.patientWeight || 0,
+          phone: item.patientPhone || '',
+          donnorId: item.patientRecordCode || '',
+        },
+      }));
 
 
     setBloodRequests(mapped);
@@ -351,28 +350,26 @@ const handleStatusChange = async (recordId, newStatus) => {
     },
     {
       title: 'Nhóm máu',
-      dataIndex: 'bloodType',
-      key: 'bloodType',
-      width: 100,
+      dataIndex: 'bloodTypeName',
+      key: 'bloodTypeName',
       align: 'center',
       render: (text) => (
         <Tag color="red" className="font-semibold">
-          {text}
+          {text || 'Không rõ'}
         </Tag>
       ),
     },
     {
-      title: 'Thành phần máu',
-      dataIndex: 'bloodComponent',
-      key: 'bloodComponent',
-      width: 150,
-      align: 'center',
-      render: (text) => (
-        <Tag color="blue" className="font-semibold">
-          {text}
-        </Tag>
-      ),
-    },
+          title: 'Thành phần máu',
+          dataIndex: 'componentName',
+          key: 'componentName',
+          align: 'center',
+          render: (text) => (
+            <Tag color="blue" className="font-semibold">
+              {text || 'Không rõ'}
+            </Tag>
+          ),
+        },
     {
       title: 'Tuổi',
       dataIndex: 'age',

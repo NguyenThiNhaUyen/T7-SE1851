@@ -21,7 +21,7 @@ const DonationHistory = () => {
   const [history, setHistory] = useState([]);
   const [selected, setSelected] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
-
+const donatedHistory = history.filter((item) => item.status === "DONATED");
   useEffect(() => {
   const token = localStorage.getItem("token"); // hoặc nơi bạn lưu token
   axios
@@ -68,15 +68,15 @@ const DonationHistory = () => {
       title: "🏥 Địa điểm",
       dataIndex: "location",
     },
-    {
-      title: "🩸 Thể tích",
-      dataIndex: "volume_ml",
-      render: (v) => `${v}ml`,
-    },
-    {
-      title: "🧬 Nhóm máu",
-      dataIndex: "blood_type",
-    },
+    // {
+    //   title: "🩸 Thể tích",
+    //   dataIndex: "volume_ml",
+    //   render: (v) => `${v}ml`,
+    // },
+    // {
+    //   title: "🧬 Nhóm máu",
+    //   dataIndex: "blood_type",
+    // },
     {
       title: "📦 Trạng thái",
       dataIndex: "status",
@@ -94,7 +94,8 @@ const DonationHistory = () => {
         <Col>
           <Title level={3}>📊 Lịch sử hiến máu</Title>
           <p>
-            Tổng số lượt hiến máu: <strong>{history.length}</strong>
+            Tổng số lượt hiến máu: <strong>{history.filter(item => item.status === "DONATED").length}</strong>
+
           </p>
         </Col>
         <Col>
@@ -110,7 +111,7 @@ const DonationHistory = () => {
 
       <Table
         columns={columns}
-        dataSource={history}
+        dataSource={history.filter((item) => item.status === "DONATED")}
         rowKey={(record) => record.id}
         onRow={(record) => ({
           onClick: () => {
@@ -131,20 +132,20 @@ const DonationHistory = () => {
         {selected && (
           <Descriptions column={1} bordered size="small">
             <Descriptions.Item label="👤 Người hiến">
-              {selected.donor_name || "—"}
-            </Descriptions.Item>
+  {selected.fullName || "—"}
+</Descriptions.Item>
             <Descriptions.Item label="🗓 Ngày hiến">
               {dayjs(selected.donation_date).format("DD/MM/YYYY")}
             </Descriptions.Item>
             <Descriptions.Item label="🏥 Địa điểm">{selected.location}</Descriptions.Item>
-            <Descriptions.Item label="🧬 Nhóm máu">{selected.blood_type}</Descriptions.Item>
-            <Descriptions.Item label="🩸 Thể tích">{selected.volume_ml} ml</Descriptions.Item>
+            {/* <Descriptions.Item label="🧬 Nhóm máu">{selected.blood_type}</Descriptions.Item>
+            <Descriptions.Item label="🩸 Thể tích">{selected.volume_ml} ml</Descriptions.Item> */}
             <Descriptions.Item label="📝 Ghi chú">{selected.note || "Không có"}</Descriptions.Item>
-            <Descriptions.Item label="🧪 Đơn vị máu sinh ra">
+            {/* <Descriptions.Item label="🧪 Đơn vị máu sinh ra">
               {(selected.blood_units && selected.blood_units.length > 0)
                 ? selected.blood_units.join(", ")
                 : "Chưa có"}
-            </Descriptions.Item>
+            </Descriptions.Item> */}
           </Descriptions>
         )}
       </Modal>

@@ -71,15 +71,15 @@ const MemberDonationHistory = () => {
       title: "🏥 Địa điểm",
       dataIndex: "location",
     },
-    {
-      title: "🩸 Thể tích",
-      dataIndex: "volume_ml",
-      render: (v) => `${v}ml`,
-    },
-    {
-      title: "🧬 Nhóm máu",
-      dataIndex: "blood_type",
-    },
+    // {
+    //   title: "🩸 Thể tích",
+    //   dataIndex: "volume_ml",
+    //   render: (v) => `${v}ml`,
+    // },
+    // {
+    //   title: "🧬 Nhóm máu",
+    //   dataIndex: "blood_type",
+    // },
     {
       title: "📦 Trạng thái",
       dataIndex: "status",

@@ -176,19 +176,15 @@ const slotIdMap = {
         </Text>
         <Divider />
         <Space direction="vertical" style={{ width: "100%" }} size="large">
-          <div>
-            <Text strong>📍 Chọn địa điểm hiến máu</Text>
-            <Select
-              style={{ width: "100%", marginTop: 8 }}
-              placeholder="VD: BV Chợ Rẫy, TP.HCM"
-              value={selectedLocation}
-              onChange={(value) => setSelectedLocation(value)}
-            >
-              <Option value="BV Chợ Rẫy">BV Chợ Rẫy</Option>
-              <Option value="BV Huyết học TP.HCM">BV Huyết học TP.HCM</Option>
-              <Option value="FPTU Campus">FPTU Campus</Option>
-            </Select>
-          </div>
+<div>
+  <Text strong>📍 Địa điểm hiến máu</Text>
+  <Input
+    value="FPTU Campus"
+    readOnly
+    style={{ width: "100%", marginTop: 8 }}
+  />
+</div>
+
 
           <div>
             <Text strong>📅 Chọn ngày</Text>

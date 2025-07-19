@@ -560,13 +560,13 @@ const BloodRequestForm = () => {
                         rules={requiredMessage('loại chế phẩm')}
                       >
                         <Select size="large" placeholder="Chọn chế phẩm">
-                          <Option value={1}>
+                          <Option value={3}>
                             <Badge color="red" text="Hồng cầu (PRBC)" />
                           </Option>
                           <Option value={2}>
                             <Badge color="yellow" text="Huyết tương" />
                           </Option>
-                          <Option value={3}>
+                          <Option value={1}>
                             <Badge color="blue" text="Tiểu cầu" />
                           </Option>
                         </Select>
