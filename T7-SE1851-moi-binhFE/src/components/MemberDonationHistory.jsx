@@ -14,15 +14,22 @@ import { DownloadOutlined } from "@ant-design/icons";
 import axios from "axios";
 import dayjs from "dayjs";
 import * as XLSX from "xlsx";
-import { useParams } from "react-router-dom"; // ✅ THÊM DÒNG NÀY
+import { useParams } from "react-router-dom";
+import AuthService from "../services/auth.service"; // 👈 Thêm dòng này
 
 const { Title } = Typography;
 
 const MemberDonationHistory = () => {
-  const { id: userId } = useParams(); // ✅ LẤY USER ID TỪ LINK
+  const { id } = useParams();
+  const [userId, setUserId] = useState(null);
   const [history, setHistory] = useState([]);
   const [selected, setSelected] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+
+  useEffect(() => {
+    const currentUser = AuthService.getCurrentUser();
+    setUserId(id || currentUser?.userId); // 👈 Ưu tiên URL, fallback từ auth
+  }, [id]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -71,15 +78,6 @@ const MemberDonationHistory = () => {
       title: "🏥 Địa điểm",
       dataIndex: "location",
     },
-    // {
-    //   title: "🩸 Thể tích",
-    //   dataIndex: "volume_ml",
-    //   render: (v) => `${v}ml`,
-    // },
-    // {
-    //   title: "🧬 Nhóm máu",
-    //   dataIndex: "blood_type",
-    // },
     {
       title: "📦 Trạng thái",
       dataIndex: "status",

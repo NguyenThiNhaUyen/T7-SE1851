@@ -17,7 +17,7 @@ import dayjs from "dayjs";
 import axios from "axios";
 import AuthService from "../services/auth.service";
 import { getAuthHeader } from "../services/user.service";
-
+import { useNavigate } from "react-router-dom";
 const { Title, Text } = Typography;
 const { Option } = Select;
 
@@ -53,12 +53,12 @@ const DonationRegister = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null); // slot.time
   const [selectedSlotId, setSelectedSlotId] = useState(null); // slot.slotId
-  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [selectedLocation, setSelectedLocation] = useState("FPTU Campus");
   const [loading, setLoading] = useState(false);
   const [availableSlots, setAvailableSlots] = useState({});
   const currentUser = AuthService.getCurrentUser();
   const slots = generateSlots();
-
+const navigate = useNavigate();
   useEffect(() => {
   const fetchSlotsStatus = async () => {
     if (!selectedDate) return;
@@ -154,10 +154,14 @@ const slotIdMap = {
         { headers: getAuthHeader() }
       );
       message.success("✅ Đăng ký hiến máu thành công!");
+
       setSelectedDate(null);
       setSelectedSlot(null);
       setSelectedSlotId(null);
       setSelectedLocation(null);
+          setTimeout(() => {
+     navigate(`/user/${currentUser.userId}/donation-history`);
+    }, 1000);
     } catch (err) {
       const errorMsg = err.response?.data?.message || "Đăng ký thất bại.";
       message.error(`❌ ${errorMsg}`);
