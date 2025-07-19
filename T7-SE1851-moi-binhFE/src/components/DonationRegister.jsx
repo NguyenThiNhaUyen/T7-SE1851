@@ -9,6 +9,7 @@ import {
   Select,
   Row,
   Col,
+  Input,
   Space,
 } from "antd";
 import { ScheduleOutlined } from "@ant-design/icons";
@@ -176,6 +177,7 @@ const slotIdMap = {
         </Text>
         <Divider />
         <Space direction="vertical" style={{ width: "100%" }} size="large">
+
 <div>
   <Text strong>📍 Địa điểm hiến máu</Text>
   <Input
@@ -184,7 +186,6 @@ const slotIdMap = {
     style={{ width: "100%", marginTop: 8 }}
   />
 </div>
-
 
           <div>
             <Text strong>📅 Chọn ngày</Text>
