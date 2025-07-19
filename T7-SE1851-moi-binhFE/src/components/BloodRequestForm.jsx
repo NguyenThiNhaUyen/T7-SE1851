@@ -136,7 +136,19 @@ const BloodRequestForm = () => {
   setFormProgress(progress);
 };
 
+const unitCount = Form.useWatch('unit_count', form);
+const bloodComponentId = Form.useWatch('bloodComponentId', form);
 
+useEffect(() => {
+  if (!unitCount || !bloodComponentId) return;
+
+  let volume = 0;
+  if (bloodComponentId === 3) volume = unitCount * 250;
+  else if (bloodComponentId === 2) volume = unitCount * 200;
+  else if (bloodComponentId === 1) volume = unitCount * 50;
+
+  form.setFieldsValue({ quantity_ml: volume });
+}, [unitCount, bloodComponentId]);
   const validateForm = (values) => {
     const age = parseInt(values.age);
     const weight = parseFloat(values.weight);
@@ -146,7 +158,7 @@ const BloodRequestForm = () => {
     if (!(age > 0 && age <= 120)) return "Tuổi phải trong khoảng 1 - 120.";
     if (!(weight >= 3 && weight <= 300)) return "Cân nặng phải từ 3kg đến 300kg.";
     if (!(units > 0 && Number.isInteger(units))) return "Số túi phải là số nguyên dương.";
-    if (!(quantity === units * 250 || quantity === units * 500)) return "Thể tích phải khớp với số túi.";
+    // if (!(quantity === units * 250 || quantity === units * 500)) return "Thể tích phải khớp với số túi.";
     if (values.contact && !/^0\d{9}$/.test(values.contact)) return "Số điện thoại không hợp lệ.";
     return null;
   };
@@ -199,7 +211,7 @@ const BloodRequestForm = () => {
       }
     );
 
-    message.success("✅ Gửi yêu cầu máu thành công!");
+    message.success("Gửi yêu cầu máu thành công!");
     setFormData(prev => ({ ...prev, ...values, submitted_at: new Date() }));
     setCurrentStep(2);
   } catch (err) {
@@ -577,17 +589,17 @@ const BloodRequestForm = () => {
                       <Form.Item
                         label={
                           <Space>
-                            <span>Số túi</span>
+                            <span>Số đơn vi máu</span>
                           </Space>
                         }
                         name="unit_count"
-                        rules={requiredMessage('số túi')}
+                        rules={requiredMessage('Số đơn vi máu')}
                       >
                         <Input
                           size="large"
                           type="number"
                           min={1}
-                          placeholder="Túi"
+                          placeholder="Đơn vị"
                         />
                       </Form.Item>
                     </Col>
@@ -627,9 +639,6 @@ const BloodRequestForm = () => {
                           </Option>
                           <Option value="KHAN_CAP">
                             <Badge color="orange" text="Khẩn cấp" />
-                          </Option>
-                          <Option value="CAP_CUU">
-                            <Badge color="red" text="Cấp cứu" />
                           </Option>
                         </Select>
                       </Form.Item>
@@ -1015,8 +1024,7 @@ const BloodRequestForm = () => {
                         <strong>Mức độ ưu tiên:</strong>
                         <span style={{
                           color: '#fff',
-                          backgroundColor: formData.urgency_level === 'Cấp cứu' ? '#ff4d4f' :
-                            formData.urgency_level === 'Khẩn cấp' ? '#faad14' : '#52c41a',
+                          backgroundColor: formData.urgency_level === 'Khẩn cấp' ? '#faad14' : '#52c41a',
                           padding: '2px 8px',
                           borderRadius: '4px',
                           fontWeight: 'bold',

@@ -82,7 +82,6 @@ const AdminBloodRequests = () => {
 
       const mapTriageToColor = {
         RED: { color: 'red', label: 'KHẨN CẤP' },
-        YELLOW: { color: 'orange', label: 'GẤP' },
         GREEN: { color: 'green', label: 'BÌNH THƯỜNG' },
       };
 
@@ -112,6 +111,7 @@ const AdminBloodRequests = () => {
       };
 
       // Chuẩn hoá dữ liệu
+      
       const mapped = res.data.map((item) => ({
         id: item.bloodRequestId,
         patientName: item.patientName || '—',
@@ -120,6 +120,7 @@ const AdminBloodRequests = () => {
         age: item.patientAge || '—',
         volume: `${item.quantityMl}ml`,
         priority: mapTriageToColor[item.triageLevel]?.label || 'Không rõ',
+        urgencyLevel: item.urgencyLevel,
         status: item.status,
         createdDate: formatDate(item.createdAt),
         requester: {
@@ -400,13 +401,14 @@ const AdminBloodRequests = () => {
       key: 'priority',
       width: 100,
       align: 'center',
-      render: (priority) => {
-        const config = {
-          RED: { color: 'red', icon: <AlertOutlined />, text: 'KHẨN CẤP' },
-          YELLOW: { color: 'orange', icon: <WarningOutlined />, text: 'GẤP' },
-          GREEN: { color: 'green', icon: <CheckCircleOutlined />, text: 'BÌNH THƯỜNG' }
-        };
-        const { color, icon, text } = config[priority] || config.GREEN;
+      render: (_, record) => {
+  const urgency = record.urgencyLevel; // 🔁 Lấy đúng key từ API
+  const config = {
+    KHAN_CAP: { color: 'red', icon: <AlertOutlined />, text: 'KHẨN CẤP' },
+    BINH_THUONG: { color: 'green', icon: <CheckCircleOutlined />, text: 'BÌNH THƯỜNG' }
+  };
+  const { color, icon, text } = config[urgency] || config.BINH_THUONG;
+
         return (
           <Badge status="processing" color={color}>
             <Tag color={color} icon={icon} className="font-semibold">
@@ -759,11 +761,7 @@ const AdminBloodRequests = () => {
                         );
                       })()}
                     </Descriptions.Item>
-                    <Descriptions.Item label="Mức độ khẩn cấp">
-                      <Tag color="red" icon={<AlertOutlined />}>
-                        KHẨN CẤP
-                      </Tag>
-                    </Descriptions.Item>
+                    
                     <Descriptions.Item label="Mức ưu tiên làm sàng">
                       <Badge status="error" text="RED" />
                     </Descriptions.Item>

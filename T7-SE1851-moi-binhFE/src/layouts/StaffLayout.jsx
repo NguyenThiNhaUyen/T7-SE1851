@@ -35,8 +35,8 @@ const StaffLayout = () => {
     { key: 'unit', icon: <HistoryOutlined />, label: 'Quản lý kho máu', path: '/staff/unit' },
     // { key: 'separation-dashboard', icon: <DeploymentUnitOutlined />, label: 'Dashboard tách máu', path: '/staff/separation-dashboard' },
     { key: 'statistics', icon: <BarChartOutlined />, label: 'Thống kê', path: '/staff/statistics' },
-    { key: 'urgent-requests', icon: <AlertOutlined />, label: 'Yêu cầu khẩn cấp', path: '/staff/urgent-requests' },
-    { key: 'vnpay', icon: <AlertOutlined />, label: 'thanh toan', path: '/staff/vnpay' },
+    { key: 'urgent-requests', icon: <AlertOutlined />, label: 'Duyệt danh sách khẩn cấp', path: '/staff/urgent-requests' },
+    { key: 'vnpay', icon: <AlertOutlined />, label: 'Thanh toán', path: '/staff/vnpay' },
   ];
 
   // keep selectedKey in sync with current URL

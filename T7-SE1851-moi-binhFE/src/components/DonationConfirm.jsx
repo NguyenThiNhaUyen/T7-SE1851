@@ -57,65 +57,70 @@ const DonationConfirm = () => {
     loadDonations();
   }, [selectedDate]); // load lại khi đổi ngày
 
-  const loadDonations = () => {
-    setLoading(true);
-    axios
-      .get(`${API_BASE}/api/donation`, {
-        headers: getAuthHeader(),
-      })
-      .then((res) => {
-        console.log("📦 Dữ liệu nhận được:", res.data);
-        const data = res.data || [];
-        setDonations(data);
+const loadDonations = () => {
+  setLoading(true);
+  axios
+    .get(`${API_BASE}/api/donation`, {
+      headers: getAuthHeader(),
+    })
+    .then((res) => {
+      console.log("📦 Dữ liệu nhận được:", res.data);
+      let data = res.data || [];
 
-        // ✅ Lọc theo ngày nếu có selectedDate
-        const selectedStr = selectedDate.format("YYYY-MM-DD");
-        const filtered = data.filter(item => {
-          if (Array.isArray(item.scheduledDate) && item.scheduledDate.length >= 3) {
-            const [year, month, day] = item.scheduledDate;
-            const itemStr = dayjs(`${year}-${month}-${day}`).format("YYYY-MM-DD");
-            return itemStr === selectedStr;
-          }
-          return false;
-        });
+      // ✅ Sắp xếp theo ngày mới nhất → cũ nhất
+      data.sort((a, b) => new Date(b.scheduledDate) - new Date(a.scheduledDate));
 
-        setFilteredDonations(filtered);
-        setLoading(false);
+      setDonations(data);
 
+      // ✅ Lọc theo ngày nếu có selectedDate
+      const selectedStr = selectedDate.format("YYYY-MM-DD");
+      const filtered = data.filter(item => {
+        if (Array.isArray(item.scheduledDate) && item.scheduledDate.length >= 3) {
+          const [year, month, day] = item.scheduledDate;
+          const itemStr = dayjs(`${year}-${month}-${day}`).format("YYYY-MM-DD");
+          return itemStr === selectedStr;
+        }
+        return false;
+      });
+
+      setFilteredDonations(filtered);
+      setLoading(false);
+
+      notification.success({
+        message: 'Thành công',
+        description: 'Tải danh sách hiến máu thành công',
+        icon: <HeartOutlined style={{ color: '#ff4d4f' }} />
+      });
+    })
+    .catch((err) => {
+      setLoading(false);
+      if (err.response) {
+        if (err.response.status === 401) {
+          notification.error({
+            message: 'Lỗi xác thực',
+            description: 'Chưa xác thực (401 Unauthorized)'
+          });
+        } else if (err.response.status === 403) {
+          notification.error({
+            message: 'Không có quyền',
+            description: 'Không có quyền truy cập (403 Forbidden)'
+          });
+        } else {
+          notification.error({
+            message: 'Lỗi máy chủ',
+            description: `Lỗi máy chủ: ${err.response.status}`
+          });
+        }
+      } else {
         notification.success({
           message: 'Thành công',
           description: 'Tải danh sách hiến máu thành công',
           icon: <HeartOutlined style={{ color: '#ff4d4f' }} />
         });
-      })
-      .catch((err) => {
-        setLoading(false);
-        if (err.response) {
-          if (err.response.status === 401) {
-            notification.error({
-              message: 'Lỗi xác thực',
-              description: 'Chưa xác thực (401 Unauthorized)'
-            });
-          } else if (err.response.status === 403) {
-            notification.error({
-              message: 'Không có quyền',
-              description: 'Không có quyền truy cập (403 Forbidden)'
-            });
-          } else {
-            notification.error({
-              message: 'Lỗi máy chủ',
-              description: `Lỗi máy chủ: ${err.response.status}`
-            });
-          }
-        } else {
-          notification.success({
-            message: 'Thành công',
-            description: 'Tải danh sách hiến máu thành công',
-            icon: <HeartOutlined style={{ color: '#ff4d4f' }} />
-          });
-        }
-      });
-  };
+      }
+    });
+};
+
 
   const [modalVisible, setModalVisible] = useState(false);
   const [suggestModalVisible, setSuggestModalVisible] = useState(false);
@@ -298,9 +303,9 @@ const DonationConfirm = () => {
           <InputNumber style={{ width: "100%" }} />
         </Form.Item>
 
-        <Form.Item name="hematocrit" label="Hematocrit (%)">
+        {/* <Form.Item name="hematocrit" label="Hematocrit (%)">
           <InputNumber step={0.01} style={{ width: "100%" }} />
-        </Form.Item>
+        </Form.Item> */}
 
         <Form.Item
           name="collectedAt"
@@ -474,7 +479,7 @@ const DonationConfirm = () => {
         setHealthCheckForm(res.data);             // Gán dữ liệu vào state
         healthForm.setFieldsValue(res.data);           // Nếu dùng Form để nhập
         setHealthModalVisible(true);   
-        console.log("🎯 Dữ liệu trả về:", res.data);           // ✅ Mở modal sau khi có dữ liệu
+           // ✅ Mở modal sau khi có dữ liệu
       })
       .catch((err) => {
         if (err.response?.status === 404) {
@@ -603,7 +608,7 @@ const DonationConfirm = () => {
       )
     },
     {
-      title: 'Sức khỏe',
+      title: 'Khám Sức khỏe',
       dataIndex: 'requestId',
       key: 'requestId',
       align: 'center',
@@ -621,7 +626,7 @@ const DonationConfirm = () => {
             type="link"
             onClick={() => handleViewHealthCheck(record)}
           >
-            Xem
+            Xem phiếu khám
           </Button>
 
         </>
