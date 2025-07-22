@@ -95,8 +95,6 @@ const handleSelectUnits = (units) => {
     WAITING: { color: 'processing', text: 'CHỜ MÁU', icon: <ClockCircleOutlined /> }
   };
 
-  // TODO: MOCK DATA -- XÓA KHI TÍCH HỢP API
-  // Dữ liệu mẫu: Đơn từ staff gửi lên, mặc định là CHỜ DUYỆT
   const [bloodRequests, setBloodRequests] = useState([]);
   const [loading, setLoading] = useState(false);
 useEffect(() => {

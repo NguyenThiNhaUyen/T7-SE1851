@@ -57,69 +57,69 @@ const DonationConfirm = () => {
     loadDonations();
   }, [selectedDate]); // load lại khi đổi ngày
 
-const loadDonations = () => {
-  setLoading(true);
-  axios
-    .get(`${API_BASE}/api/donation`, {
-      headers: getAuthHeader(),
-    })
-    .then((res) => {
-      console.log("📦 Dữ liệu nhận được:", res.data);
-      let data = res.data || [];
+  const loadDonations = () => {
+    setLoading(true);
+    axios
+      .get(`${API_BASE}/api/donation`, {
+        headers: getAuthHeader(),
+      })
+      .then((res) => {
+        console.log("📦 Dữ liệu nhận được:", res.data);
+        let data = res.data || [];
 
-      // ✅ Sắp xếp theo ngày mới nhất → cũ nhất
-      data.sort((a, b) => new Date(b.scheduledDate) - new Date(a.scheduledDate));
+        // ✅ Sắp xếp theo ngày mới nhất → cũ nhất
+        data.sort((a, b) => new Date(b.scheduledDate) - new Date(a.scheduledDate));
 
-      setDonations(data);
+        setDonations(data);
 
-      // ✅ Lọc theo ngày nếu có selectedDate
-      const selectedStr = selectedDate.format("YYYY-MM-DD");
-      const filtered = data.filter(item => {
-        if (Array.isArray(item.scheduledDate) && item.scheduledDate.length >= 3) {
-          const [year, month, day] = item.scheduledDate;
-          const itemStr = dayjs(`${year}-${month}-${day}`).format("YYYY-MM-DD");
-          return itemStr === selectedStr;
-        }
-        return false;
-      });
+        // ✅ Lọc theo ngày nếu có selectedDate
+        const selectedStr = selectedDate.format("YYYY-MM-DD");
+        const filtered = data.filter(item => {
+          if (Array.isArray(item.scheduledDate) && item.scheduledDate.length >= 3) {
+            const [year, month, day] = item.scheduledDate;
+            const itemStr = dayjs(`${year}-${month}-${day}`).format("YYYY-MM-DD");
+            return itemStr === selectedStr;
+          }
+          return false;
+        });
 
-      setFilteredDonations(filtered);
-      setLoading(false);
+        setFilteredDonations(filtered);
+        setLoading(false);
 
-      notification.success({
-        message: 'Thành công',
-        description: 'Tải danh sách hiến máu thành công',
-        icon: <HeartOutlined style={{ color: '#ff4d4f' }} />
-      });
-    })
-    .catch((err) => {
-      setLoading(false);
-      if (err.response) {
-        if (err.response.status === 401) {
-          notification.error({
-            message: 'Lỗi xác thực',
-            description: 'Chưa xác thực (401 Unauthorized)'
-          });
-        } else if (err.response.status === 403) {
-          notification.error({
-            message: 'Không có quyền',
-            description: 'Không có quyền truy cập (403 Forbidden)'
-          });
-        } else {
-          notification.error({
-            message: 'Lỗi máy chủ',
-            description: `Lỗi máy chủ: ${err.response.status}`
-          });
-        }
-      } else {
         notification.success({
           message: 'Thành công',
           description: 'Tải danh sách hiến máu thành công',
           icon: <HeartOutlined style={{ color: '#ff4d4f' }} />
         });
-      }
-    });
-};
+      })
+      .catch((err) => {
+        setLoading(false);
+        if (err.response) {
+          if (err.response.status === 401) {
+            notification.error({
+              message: 'Lỗi xác thực',
+              description: 'Chưa xác thực (401 Unauthorized)'
+            });
+          } else if (err.response.status === 403) {
+            notification.error({
+              message: 'Không có quyền',
+              description: 'Không có quyền truy cập (403 Forbidden)'
+            });
+          } else {
+            notification.error({
+              message: 'Lỗi máy chủ',
+              description: `Lỗi máy chủ: ${err.response.status}`
+            });
+          }
+        } else {
+          notification.success({
+            message: 'Thành công',
+            description: 'Tải danh sách hiến máu thành công',
+            icon: <HeartOutlined style={{ color: '#ff4d4f' }} />
+          });
+        }
+      });
+  };
 
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -133,9 +133,10 @@ const loadDonations = () => {
   const [healthFormLoading, setHealthFormLoading] = useState(false);
   const [selectedRegisterId, setSelectedRegisterId] = useState(null);
   const [selectedDonationId, setSelectedDonationId] = useState(null);
-
+  const [editBloodBagModalVisible, setEditBloodBagModalVisible] = useState(false);
+const [selectedBloodBag, setSelectedBloodBag] = useState(null);
   const [savedVolumes, setSavedVolumes] = useState(() => {
-    const saved = localStorage.getItem("savedVolumes");
+    const saved = localStorage.getItem("savedVolumes"); 
     return saved ? JSON.parse(saved) : {};
   });
 
@@ -200,6 +201,135 @@ const loadDonations = () => {
         });
     } else {
       console.warn("⚠️ Trạng thái không hợp lệ:", newStatus);
+    }
+  };
+const UpdateBloodBagForm = ({ bloodBag, onClose }) => {
+  const [form] = Form.useForm();
+
+  const handleFinish = (values) => {
+    const payload = {
+      ...values,
+    };
+
+    axios.put(`${API_BASE}/api/blood-bags/${bloodBag.bloodBagId}`, payload, {
+      headers: getAuthHeader(),
+    })
+    .then(() => {
+      notification.success({ message: "Cập nhật thành công" });
+      onClose?.();
+    })
+    .catch(() => {
+      notification.error({ message: "Lỗi cập nhật túi máu" });
+    });
+  };
+
+  return (
+    <Form
+      layout="vertical"
+      form={form}
+      onFinish={handleFinish}
+      initialValues={{
+        ...bloodBag,
+      }}
+    >
+      <Form.Item
+        name="bloodType"
+        label="Nhóm máu"
+        rules={[{ required: true, message: "Chọn nhóm máu" }]}
+      >
+        <Select placeholder="Chọn nhóm máu">
+          <Option value="1">A+</Option>
+          <Option value="2">A−</Option>
+          <Option value="3">B+</Option>
+          <Option value="4">B−</Option>
+          <Option value="5">AB+</Option>
+          <Option value="6">AB−</Option>
+          <Option value="7">O+</Option>
+          <Option value="8">O−</Option>
+        </Select>
+      </Form.Item>
+
+      <Form.Item
+        name="rh"
+        label="Rh"
+        rules={[{ required: true }]}
+      >
+        <Select>
+          <Option value="D+">D+</Option>
+          <Option value="D-">D-</Option>
+        </Select>
+      </Form.Item>
+
+      <Form.Item
+        name="volume"
+        label="Thể tích (ml)"
+        rules={[{ required: true, type: "number", min: 0 }]}
+      >
+        <InputNumber style={{ width: "100%" }} />
+      </Form.Item>
+
+
+
+      <Form.Item name="testStatus" label="Trạng thái xét nghiệm">
+        <Select>
+          <Option value="PENDING">PENDING</Option>
+          <Option value="PASSED">PASSED</Option>
+          <Option value="FAILED">FAILED</Option>
+        </Select>
+      </Form.Item>
+
+      <Form.Item name="status" label="Trạng thái túi máu">
+        <Select>
+          <Option value="COLLECTED">COLLECTED</Option>
+          <Option value="SEPARATED">SEPARATED</Option>
+          <Option value="USED">USED</Option>
+        </Select>
+      </Form.Item>
+
+      <Form.Item name="note" label="Ghi chú">
+        <Input.TextArea rows={3} />
+      </Form.Item>
+
+      <Form.Item>
+        <Button type="primary" htmlType="submit" block>
+          Cập nhật
+        </Button>
+      </Form.Item>
+    </Form>
+  );
+};
+
+
+  const handleClickCreateBloodBag = async (record) => {
+    const regId = record.registrationId;
+
+    try {
+      const res = await axios.get(`${API_BASE}/api/blood-bags/by-registration`, {
+        headers: getAuthHeader(),
+        params: { registrationId: regId },
+      });
+
+      const bloodBags = res.data || [];
+
+      if (bloodBags.length > 0) {
+        notification.info({
+          message: "Đã có túi máu",
+          description: `Túi máu đã tạo: ${bloodBags[0].bagCode}`,
+        });
+
+        // TODO: Có thể mở modal hiển thị thông tin túi máu thay vì tạo mới
+        return;
+      }
+
+      // Nếu chưa có túi máu → mở form tạo
+      setSelectedDonation(record);
+      setSelectedDonationId(record.donationId);
+      setCreateModalVisible(true);
+    } catch (err) {
+      notification.error({
+        message: "Lỗi kiểm tra túi máu",
+        description: "Không thể kiểm tra trạng thái túi máu.",
+      });
     }
   };
 
@@ -303,10 +433,6 @@ const loadDonations = () => {
           <InputNumber style={{ width: "100%" }} />
         </Form.Item>
 
-        {/* <Form.Item name="hematocrit" label="Hematocrit (%)">
-          <InputNumber step={0.01} style={{ width: "100%" }} />
-        </Form.Item> */}
-
         <Form.Item
           name="collectedAt"
           label="Ngày lấy máu"
@@ -353,19 +479,28 @@ const loadDonations = () => {
     { id: 7, label: "O+" },
     { id: 8, label: "O-" }
   ];
-  const handleOpenModal = (item, mode = "edit") => {
-    setSelectedDonation(item);
-    setModalMode(mode);
-    const savedData = savedVolumes[item.registrationId] || {
-      total: "",
-      redCells: "",
-      platelets: "",
-      plasma: "",
-      bloodType: ""
-    };
-    form.setFieldsValue(savedData);
-    setModalVisible(true);
-  };
+const handleOpenModal = (item, mode = "edit") => {
+  setSelectedDonation(item);
+  setModalMode(mode);
+
+  const savedData = savedVolumes[item.registrationId] || {};
+
+  const defaults = {};
+  if (selectedBloodBag && selectedBloodBag.registrationId === item.registrationId) {
+    defaults.total = selectedBloodBag.volume;
+    defaults.bloodType = Number(selectedBloodBag.bloodType);
+  }
+
+  form.setFieldsValue({
+    total: savedData.total || defaults.total || "",
+    bloodType: savedData.bloodType || defaults.bloodType || "",
+    redCellsMl: savedData.redCellsMl || "",
+    plateletsMl: savedData.plateletsMl || "",
+    plasmaMl: savedData.plasmaMl || "",
+  });
+
+  setModalVisible(true);
+};
 
   const handleSaveVolume = () => {
     form.validateFields().then(values => {
@@ -468,7 +603,7 @@ const loadDonations = () => {
     const regId = record.registrationId;
     setSelectedRegisterId(regId);
     setHealthFormLoading(true);
-
+    console.log("Gọi với ID:", regId);
     axios
       .get(`${API_BASE}/api/health-check`, {
         headers: getAuthHeader(),
@@ -478,8 +613,8 @@ const loadDonations = () => {
         console.log("🎯 Dữ liệu trả về:", res.data);
         setHealthCheckForm(res.data);             // Gán dữ liệu vào state
         healthForm.setFieldsValue(res.data);           // Nếu dùng Form để nhập
-        setHealthModalVisible(true);   
-           // ✅ Mở modal sau khi có dữ liệu
+        setHealthModalVisible(true);
+        // ✅ Mở modal sau khi có dữ liệu
       })
       .catch((err) => {
         if (err.response?.status === 404) {
@@ -521,6 +656,63 @@ const loadDonations = () => {
       })
       .finally(() => setHealthFormLoading(false));
   };
+  //   const handleUpdateHealthCheck = () => {
+  //     healthForm.validateFields()
+  //       .then(values => {
+  //         const {
+  //           total,
+  //           redCellsMl,
+  //           plateletsMl,
+  //           plasmaMl,
+  //           bloodType,
+  //           ...cleanedValues
+  //         } = values;
+
+  //         const payload = {
+  //           ...healthCheckForm,
+  //           ...cleanedValues
+  //         };
+
+  //         axios.put(`${API_BASE}/api/health-check/update`, payload, {
+  //           headers: getAuthHeader(),
+  //           params: { registrationId: regId }
+  //         })
+  //           .then(() => {
+  //             notification.success({
+  //               message: "Cập nhật thành công",
+  //               description: "Phiếu khám sức khỏe đã được cập nhật."
+  //             });
+  //             setHealthModalVisible(false);
+  //           })
+  //           .catch(() => {
+  //             notification.error({
+  //               message: "Lỗi cập nhật",
+  //               description: "Không thể cập nhật phiếu khám sức khỏe."
+  //             });
+  //           });
+  //       })
+  //       .catch(err => {
+  //         console.log("❌ Validation failed:", err);
+  //       });
+  //   };
+
+  // const handleSubmitHealthCheck = (formData) => {
+  //   axios.post(`${API_BASE}/api/health-check/submit`, formData, {
+  //     headers: getAuthHeader(),
+  //   })
+  //   .then((res) => {
+  //     notification.success({
+  //       message: "Gửi thành công",
+  //     });
+  //     // Cập nhật state nếu cần
+  //   })
+  //   .catch((err) => {
+  //     notification.error({
+  //       message: "Lỗi gửi phiếu khám",
+  //       description: "Không thể gửi phiếu khám sức khỏe.",
+  //     });
+  //   });
+  // };
   const handleUpdateHealthCheck = () => {
     healthForm.validateFields()
       .then(values => {
@@ -534,8 +726,8 @@ const loadDonations = () => {
         } = values;
 
         const payload = {
-          ...healthCheckForm,
-          ...cleanedValues
+          ...healthCheckForm,               // giữ lại id + registrationId
+          ...values                         // ghi đè các field người dùng đã nhập
         };
 
         axios.put(`${API_BASE}/api/health-check/update`, payload, {
@@ -559,7 +751,6 @@ const loadDonations = () => {
         console.log("❌ Validation failed:", err);
       });
   };
-
 
 
   const handleApplySuggestion = () => {
@@ -609,7 +800,7 @@ const loadDonations = () => {
     },
     {
       title: 'Khám Sức khỏe',
-      dataIndex: 'requestId',
+      dataIndex: 'registrationId',
       key: 'requestId',
       align: 'center',
       width: 180,
@@ -634,27 +825,46 @@ const loadDonations = () => {
     }
     ,
 
-    {
-      title: 'Túi máu',
-      dataIndex: 'bloodBagId',
-      key: 'bloodBagId',
-      align: 'center',
-      width: 160,
-      render: (_, record) => (
-        <Button
-          size="small"
-          type="primary"
-          onClick={() => {
-            console.log("🧪 selectedDonation = ", record); // THÊM Ở ĐÂY
-            setSelectedDonation(record); // record là 1 dòng trong bảng
+{
+  title: 'Túi máu',
+  dataIndex: 'bloodBagId',
+  key: 'bloodBagId',
+  align: 'center',
+  width: 160,
+  render: (_, record) => (
+    <Button
+      size="small"
+      type="primary"
+      onClick={async () => {
+        try {
+          const res = await axios.get(`${API_BASE}/api/blood-bags/by-registration`, {
+            headers: getAuthHeader(),
+            params: { registrationId: record.registrationId },
+          });
+
+          const existing = res.data;
+          if (existing && existing.length > 0) {
+            // ✅ Đã có túi máu → mở modal cập nhật
+            setSelectedBloodBag(existing[0]);
+            setEditBloodBagModalVisible(true); // <-- Modal cập nhật
+          } else {
+            // ✅ Chưa có → cho phép tạo
+            setSelectedDonation(record);
             setSelectedDonationId(record.donationId);
-            setCreateModalVisible(true);
-          }}
-        >
-          Tạo
-        </Button>
-      )
-    }
+            setCreateModalVisible(true); // <-- Modal tạo mới
+          }
+        } catch (error) {
+          notification.error({
+            message: 'Lỗi',
+            description: 'Không thể kiểm tra túi máu.',
+          });
+        }
+      }}
+    >
+      {record.bloodBagId ? 'Xem / Sửa' : 'Tạo'}
+    </Button>
+  )
+}
 
 
     ,
@@ -899,130 +1109,143 @@ const loadDonations = () => {
       </Card>
 
       {/* Modal nhập/xem lượng máu */}
-      <Modal
-        title={
-          <div style={{ textAlign: 'center' }}>
-            <MedicineBoxOutlined style={{ marginRight: 8, color: '#ff4d4f' }} />
-            {modalMode === "view" ? "Xem thông tin lượng máu" : "Nhập thông tin lượng máu"}
-          </div>
-        }
-        open={modalVisible}
-        onCancel={() => setModalVisible(false)}
-        width={600}
-        footer={null}
+     <Modal
+  title={
+    <div style={{ textAlign: 'center' }}>
+      <MedicineBoxOutlined style={{ marginRight: 8, color: '#ff4d4f' }} />
+      {modalMode === "view" ? "Xem thông tin lượng máu" : "Nhập thông tin lượng máu"}
+    </div>
+  }
+  open={modalVisible}
+  onCancel={() => setModalVisible(false)}
+  width={600}
+  footer={null}
+>
+  {selectedDonation && (
+    <>
+      <Alert
+        message={`Người hiến: ${selectedDonation.donorName || `User ${selectedDonation.userId}`}`}
+        description={`Ngày hiến: ${new Date(selectedDonation.scheduledDate).toLocaleString('vi-VN')}`}
+        type="info"
+        showIcon
+        style={{ marginBottom: 24 }}
+      />
+
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={handleSaveVolume}
       >
-        {selectedDonation && (
-          <>
-            <Alert
-              message={`Người hiến: ${selectedDonation.donorName || `User ${selectedDonation.userId}`}`}
-              description={`Ngày hiến: ${new Date(selectedDonation.scheduledDate).toLocaleString('vi-VN')}`}
-              type="info"
-              showIcon
-              style={{ marginBottom: 24 }}
-            />
-
-            <Form
-              form={form}
-              layout="vertical"
-              onFinish={handleSaveVolume}
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item
+              label="Tổng lượng máu (ml)"
+              name="total"
+              rules={[
+                { required: true, message: 'Vui lòng nhập tổng lượng máu' },
+                {
+                  validator: (_, value) => {
+                    const { redCellsMl = 0, plateletsMl = 0, plasmaMl = 0 } = form.getFieldsValue();
+                    const sum = (redCellsMl || 0) + (plateletsMl || 0) + (plasmaMl || 0);
+                    if (value === undefined || value >= sum) return Promise.resolve();
+                    return Promise.reject(new Error("Tổng thành phần không được lớn hơn tổng lượng máu"));
+                  }
+                }
+              ]}
             >
-              <Row gutter={16}>
-                <Col span={12}>
-                  <Form.Item
-                    label="Tổng lượng máu (ml)"
-                    name="total"
-                    rules={[{ required: true, message: 'Vui lòng nhập tổng lượng máu' }]}
-                  >
-                    <InputNumber
-                      min={0}
-                      max={650}
-                      style={{ width: '100%' }}
-                      placeholder="Nhập tổng lượng"
-                      disabled={modalMode === "view"}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item
-                    label="Nhóm máu"
-                    name="bloodType"
-                    rules={[{ required: true, message: 'Vui lòng chọn nhóm máu' }]}
-                  >
-                    <Select placeholder="Chọn nhóm máu" disabled={modalMode === "view"}>
-                      {bloodTypeOptions.map(type => (
-                        <Option key={type.id} value={type.id}>{type.label}</Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                </Col>
-              </Row>
+              <InputNumber
+                min={0}
+                max={650}
+                style={{ width: '100%' }}
+                placeholder="Nhập tổng lượng"
+                disabled={modalMode === "view"}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              label="Nhóm máu"
+              name="bloodType"
+              rules={[{ required: true, message: 'Vui lòng chọn nhóm máu' }]}
+            >
+              <Select placeholder="Chọn nhóm máu" disabled={modalMode === "view"}>
+                {bloodTypeOptions.map(type => (
+                  <Option key={type.id} value={type.id}>{type.label}</Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Col>
+        </Row>
 
-              <Divider orientation="left">Chi tiết thành phần</Divider>
+        <Divider orientation="left">Chi tiết thành phần</Divider>
 
-              <Row gutter={16}>
-                <Col span={8}>
-                  <Form.Item label="Hồng cầu (ml)" name="redCellsMl">
-                    <InputNumber
-                      min={0}
-                      max={650}
-                      style={{ width: '100%' }}
-                      disabled={modalMode === "view"}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col span={8}>
-                  <Form.Item label="Tiểu cầu (ml)" name="plateletsMl">
-                    <InputNumber
-                      min={0}
-                      max={650}
-                      style={{ width: '100%' }}
-                      disabled={modalMode === "view"}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col span={8}>
-                  <Form.Item label="Huyết tương (ml)" name="plasmaMl">
-                    <InputNumber
-                      min={0}
-                      max={650}
-                      style={{ width: '100%' }}
-                      disabled={modalMode === "view"}
-                    />
-                  </Form.Item>
-                </Col>
-              </Row>
+        <Row gutter={16}>
+          <Col span={8}>
+            <Form.Item label="Hồng cầu (ml)" name="redCellsMl">
+              <InputNumber
+                min={0}
+                max={650}
+                style={{ width: '100%' }}
+                disabled={modalMode === "view"}
+                onChange={() => form.validateFields(['total'])}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item label="Tiểu cầu (ml)" name="plateletsMl">
+              <InputNumber
+                min={0}
+                max={650}
+                style={{ width: '100%' }}
+                disabled={modalMode === "view"}
+                onChange={() => form.validateFields(['total'])}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item label="Huyết tương (ml)" name="plasmaMl">
+              <InputNumber
+                min={0}
+                max={650}
+                style={{ width: '100%' }}
+                disabled={modalMode === "view"}
+                onChange={() => form.validateFields(['total'])}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
 
+        <Divider />
 
-              <Divider />
+        <Row justify="end" gutter={8}>
+          {modalMode === "edit" && (
+            <>
+              <Col>
+                <Button
+                  icon={<BulbOutlined />}
+                  onClick={() => setSuggestModalVisible(true)}
+                >
+                  Gợi ý
+                </Button>
+              </Col>
+              <Col>
+                <Button type="primary" htmlType="submit">
+                  Lưu thông tin
+                </Button>
+              </Col>
+            </>
+          )}
+          <Col>
+            <Button onClick={() => setModalVisible(false)}>
+              Đóng
+            </Button>
+          </Col>
+        </Row>
+      </Form>
+    </>
+  )}
+</Modal>
 
-              <Row justify="end" gutter={8}>
-                {modalMode === "edit" && (
-                  <>
-                    <Col>
-                      <Button
-                        icon={<BulbOutlined />}
-                        onClick={() => setSuggestModalVisible(true)}
-                      >
-                        Gợi ý
-                      </Button>
-                    </Col>
-                    <Col>
-                      <Button type="primary" htmlType="submit">
-                        Lưu thông tin
-                      </Button>
-                    </Col>
-                  </>
-                )}
-                <Col>
-                  <Button onClick={() => setModalVisible(false)}>
-                    Đóng
-                  </Button>
-                </Col>
-              </Row>
-            </Form>
-          </>
-        )}
-      </Modal>
 
       {/* Modal gợi ý */}
       <Modal
@@ -1217,6 +1440,23 @@ const loadDonations = () => {
           </Form>
         )}
       </Modal>
+      <Modal
+        open={editBloodBagModalVisible}
+        onCancel={() => setEditBloodBagModalVisible(false)}
+        footer={null}
+        title={`Cập nhật túi máu: ${selectedBloodBag?.bagCode}`}
+      >
+        {selectedBloodBag && (
+          <UpdateBloodBagForm
+            bloodBag={selectedBloodBag}
+            onClose={() => {
+              setEditBloodBagModalVisible(false);
+              loadDonations(); // reload bảng nếu cần
+            }}
+          />
+        )}
+      </Modal>
+
       <Modal
         title="Tạo túi máu mới"
         open={createModalVisible}
