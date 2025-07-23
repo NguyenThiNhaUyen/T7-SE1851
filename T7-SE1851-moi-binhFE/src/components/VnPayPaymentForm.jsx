@@ -151,9 +151,9 @@ const bloodTypeReverseMap = {
 };
 
 const bloodComponentReverseMap = {
-  'Hồng cầu': 1,
+  'Hồng cầu': 3,
   'Huyết tương': 2,
-  'Tiểu cầu': 3,
+  'Tiểu cầu': 1,
 };
 
 const handleOpenModal = (record) => {
@@ -186,9 +186,9 @@ const bloodTypeMap = {
   8: 'O-',
 };
 const bloodComponentMap = {
-  1: 'Hồng cầu',
+  3: 'Hồng cầu',
   2: 'Huyết tương',
-  3: 'Tiểu cầu',
+  1: 'Tiểu cầu',
 };
 
 
@@ -498,9 +498,9 @@ const handleStatusChange = async (recordId, newStatus) => {
 };
 
 const bloodComponentReverseMap = {
-  'Hồng cầu': 1,
+  'Hồng cầu': 3,
   'Huyết tương': 2,
-  'Tiểu cầu': 3,
+  'Tiểu cầu': 1,
 };
         const selected = {
   componentId: record.componentId ?? bloodComponentReverseMap[record.componentName],
@@ -732,7 +732,7 @@ const bloodComponentReverseMap = {
       <div className="mb-6">
         <Title level={2} className="mb-2 text-gray-800">
           <HeartOutlined className="mr-3 text-red-500" />
-          Quản lý lịch sử truyền máu
+          Quản lý thanh toán
         </Title>
         <Text type="secondary" className="text-base">
           Theo dõi và quản lý các yêu cầu truyền máu trong hệ thống

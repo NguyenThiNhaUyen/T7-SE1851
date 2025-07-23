@@ -13,6 +13,7 @@ import {
   ExperimentOutlined,
   BarChartOutlined,
   AlertOutlined,
+  CheckCircleOutlined,
   MenuOutlined,
   HistoryOutlined,
 } from "@ant-design/icons";
@@ -34,9 +35,9 @@ const StaffLayout = () => {
     { key: 'donation-history', icon: <HistoryOutlined />, label: 'Lịch sử hiến máu', path: '/staff/donation-history' },
     { key: 'unit', icon: <HistoryOutlined />, label: 'Quản lý kho máu', path: '/staff/unit' },
     // { key: 'separation-dashboard', icon: <DeploymentUnitOutlined />, label: 'Dashboard tách máu', path: '/staff/separation-dashboard' },
-    { key: 'statistics', icon: <BarChartOutlined />, label: 'Thống kê', path: '/staff/statistics' },
+    // { key: 'statistics', icon: <BarChartOutlined />, label: 'Thống kê', path: '/staff/statistics' },
     { key: 'urgent-requests', icon: <AlertOutlined />, label: 'Duyệt danh sách khẩn cấp', path: '/staff/urgent-requests' },
-    { key: 'vnpay', icon: <AlertOutlined />, label: 'Thanh toán', path: '/staff/vnpay' },
+    { key: 'vnpay', icon: <CheckCircleOutlined />, label: 'Thanh toán', path: '/staff/vnpay' },
   ];
 
   // keep selectedKey in sync with current URL
