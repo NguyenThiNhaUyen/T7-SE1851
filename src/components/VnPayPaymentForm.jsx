@@ -36,7 +36,7 @@ import {
 import { CreditCardOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import axios from 'axios';
-import VnPayPaymentFormContent from "./VnPayPayment";
+import VnPayPaymentFormContent from "./VnPayPayment.jsx";
 import BloodUnitSelector from './BloodUnitSelector';
 
 
