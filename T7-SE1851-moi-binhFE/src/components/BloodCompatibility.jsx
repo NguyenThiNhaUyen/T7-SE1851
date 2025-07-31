@@ -33,7 +33,7 @@ import {
 } from 'antd';
 import { 
   HeartOutlined, 
-  ExperimentOutlined, 
+  ShareAltOutlined, 
   CheckCircleOutlined, 
   CloseCircleOutlined, 
   ExclamationCircleOutlined,
@@ -476,9 +476,9 @@ const BloodCompatibility = () => {
       <Header style={{ background: '#fff', padding: '0 24px', borderBottom: '1px solid #f0f0f0' }}>
         <Row justify="space-between" align="middle">
           <Col>
-            <Title level={2} style={{ margin: 0, color: '#1890ff' }}>
-              <ExperimentOutlined style={{ marginRight: 8 }} />
-              Hệ thống Kiểm tra Tương thích Truyền máu
+            <Title level={3} style={{ margin: 0, color: '#1890ff' }}>
+              <ShareAltOutlined style={{ marginRight: 8 }} />
+              Quy tắc tương thích
             </Title>
           </Col>
           <Col>

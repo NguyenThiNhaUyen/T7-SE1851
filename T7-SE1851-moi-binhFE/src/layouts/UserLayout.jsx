@@ -152,7 +152,7 @@ const UserLayout = () => {
                 {userInfo.first_name} {userInfo.last_name}
               </Title>
               <Text style={{ color: "#f0f0f0", fontSize: 12, display: "block" }}>
-                Nhóm máu: {userInfo.blood_type || "?"}
+               {userInfo.blood_type || " "}
               </Text>
             </>
           )}

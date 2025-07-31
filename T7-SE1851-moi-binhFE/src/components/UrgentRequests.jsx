@@ -87,13 +87,13 @@ const UrgentRequests = () => {
               onClick={() => rejectDonor(record.donorRegistryId)}
             />
           </Tooltip>
-          <Tooltip title="Xem chi tiết">
+          {/* <Tooltip title="Xem chi tiết">
             <Button
               icon={<InfoCircleOutlined />}
               onClick={() => setSelectedDonor(record)}
               style={{ marginLeft: 8 }}
             />
-          </Tooltip>
+          </Tooltip> */}
         </>
       ),
     }

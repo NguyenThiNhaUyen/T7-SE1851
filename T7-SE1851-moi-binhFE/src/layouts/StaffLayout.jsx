@@ -30,10 +30,12 @@ const StaffLayout = () => {
 
   const staffMenuItems = [
     { key: 'requests', icon: <ExclamationCircleOutlined />, label: 'Yêu cầu truyền máu', path: '/staff/requests' },
+    { key: 'blood-requests', icon: <ExclamationCircleOutlined />, label: 'Yêu cầu máu', path: '/staff/blood-requests' },
     { key: 'donation-confirm', icon: <HeartOutlined />, label: 'Xác nhận hiến máu', path: '/staff/donation-confirm' },
     // { key: 'inventory', icon: <ExperimentOutlined />, label: 'Quản lý kho máu', path: '/staff/inventory' },
     { key: 'donation-history', icon: <HistoryOutlined />, label: 'Lịch sử hiến máu', path: '/staff/donation-history' },
-    { key: 'unit', icon: <HistoryOutlined />, label: 'Quản lý kho máu', path: '/staff/unit' },
+    { key: 'unit', icon: <ExperimentOutlined />, label: 'Quản lý kho máu', path: '/staff/unit' },
+    { key: 'unitused', icon: <ExperimentOutlined />, label: 'Quản lý kho máu Hết hạn sử dụng', path: '/staff/unitused' },
     // { key: 'separation-dashboard', icon: <DeploymentUnitOutlined />, label: 'Dashboard tách máu', path: '/staff/separation-dashboard' },
     // { key: 'statistics', icon: <BarChartOutlined />, label: 'Thống kê', path: '/staff/statistics' },
     { key: 'urgent-requests', icon: <AlertOutlined />, label: 'Duyệt danh sách khẩn cấp', path: '/staff/urgent-requests' },
@@ -42,7 +44,8 @@ const StaffLayout = () => {
 
   // keep selectedKey in sync with current URL
   useEffect(() => {
-    const active = staffMenuItems.find(item => pathname.startsWith(item.path));
+    const active = staffMenuItems.find(item => pathname === item.path);
+
     setSelectedKey(active?.key || '');
   }, [pathname]);
 

@@ -4,17 +4,16 @@ import axios from 'axios';
 
 const { Text } = Typography;
 
-// ✅ Hàm kiểm tra tương thích nhóm máu theo bloodTypeId
 const isCompatible = (donorId, recipientId) => {
   const compatibilityMap = {
-    1: [1, 2, 7, 8],          // A+
-    2: [2, 8],                // A-
-    3: [3, 4, 7, 8],          // B+
-    4: [4, 8],                // B-
+    1: [1, 2, 7, 8], // A+
+    2: [2, 8],       // A-
+    3: [3, 4, 7, 8], // B+
+    4: [4, 8],       // B-
     5: [1, 2, 3, 4, 5, 6, 7, 8], // AB+
-    6: [2, 4, 6, 8],          // AB-
-    7: [7, 8],                // O+
-    8: [8],                   // O-
+    6: [2, 4, 6, 8], // AB-
+    7: [7, 8],       // O+
+    8: [8],          // O-
   };
   return compatibilityMap[recipientId]?.includes(donorId);
 };
@@ -34,7 +33,6 @@ const BloodUnitSelector = ({ id, onSelect }) => {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        // ✅ Lọc đơn vị máu tương thích theo quy luật truyền máu
         const filtered = res.data.filter(unit =>
           isCompatible(unit.bloodTypeId, bloodTypeId)
         );
@@ -50,6 +48,13 @@ const BloodUnitSelector = ({ id, onSelect }) => {
       fetchUnits();
     }
   }, [componentId, bloodTypeId]);
+
+  // ✅ Tổng dung tích theo nhóm máu
+  const volumeSummary = units.reduce((acc, unit) => {
+    const group = unit.bloodTypeName || 'Khác';
+    acc[group] = (acc[group] || 0) + unit.quantityMl;
+    return acc;
+  }, {});
 
   const columns = [
     {
@@ -70,6 +75,8 @@ const BloodUnitSelector = ({ id, onSelect }) => {
       dataIndex: 'bloodTypeName',
       key: 'bloodTypeName',
       width: 80,
+      sorter: (a, b) => a.bloodTypeName.localeCompare(b.bloodTypeName),
+      defaultSortOrder: 'ascend',
     },
     {
       title: 'Thành phần',
@@ -83,6 +90,8 @@ const BloodUnitSelector = ({ id, onSelect }) => {
       dataIndex: 'quantityMl',
       key: 'quantityMl',
       width: 100,
+      sorter: (a, b) => b.quantityMl - a.quantityMl,
+      defaultSortOrder: 'descend',
     },
     {
       title: 'Ngày tạo',
@@ -117,7 +126,7 @@ const BloodUnitSelector = ({ id, onSelect }) => {
   };
 
   return (
-    <div style={{ maxHeight: 400, overflowY: 'auto' }}>
+    <div style={{ maxHeight: 500, overflowY: 'auto' }}>
       <Table
         rowKey={record => record.id ?? record.unitCode}
         dataSource={units}
@@ -127,6 +136,18 @@ const BloodUnitSelector = ({ id, onSelect }) => {
         scroll={{ x: 'max-content' }}
         size="small"
         locale={{ emptyText: 'Không có đơn vị máu phù hợp' }}
+        footer={() => (
+          <div style={{ marginTop: 8 }}>
+            <Text strong>Tổng dung tích theo nhóm máu:</Text>
+            <ul style={{ margin: '8px 0', paddingLeft: 20 }}>
+              {Object.entries(volumeSummary).map(([group, total]) => (
+                <li key={group}>
+                  <Text type="secondary">{group}:</Text> <Text strong>{total} ml</Text>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       />
 
       <Button

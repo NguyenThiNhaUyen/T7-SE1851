@@ -42,48 +42,7 @@ const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, showUserBoard, lo
     // const currentUser = AuthService.getCurrentUser();
 
     // Mock notification data - XÓA SAU KHI TÍCH HỢP API THẬT
-    const [notifications, setNotifications] = useState([
-        // {
-        //     id: 1,
-        //     type: 'blood_request', // blood_request, donation_success, system, reminder
-        //     title: 'Yêu cầu hiến máu khẩn cấp',
-        //     message: 'Bệnh viện Chợ Rẫy cần máu nhóm O+ khẩn cấp cho ca phẫu thuật',
-        //     time: '2 phút trước',
-        //     isRead: false,
-        //     avatar: '/hospital-avatar.jpg',
-        //     link: '/blood-requests/123'
-        // },
-        // {
-        //     id: 2,
-        //     type: 'donation_success',
-        //     title: 'Hiến máu thành công',
-        //     message: 'Cảm ơn bạn đã hiến máu tại trung tâm hiến máu TP.HCM hôm qua',
-        //     time: '1 giờ trước',
-        //     isRead: false,
-        //     avatar: '/donation-center-avatar.jpg',
-        //     link: '/donation-history/456'
-        // },
-        // {
-        //     id: 3,
-        //     type: 'reminder',
-        //     title: 'Nhắc nhở hiến máu',
-        //     message: 'Đã đến thời gian bạn có thể hiến máu trở lại (sau 3 tháng)',
-        //     time: '3 giờ trước',
-        //     isRead: true,
-        //     avatar: null,
-        //     link: '/schedule-donation'
-        // },
-        // {
-        //     id: 4,
-        //     type: 'system',
-        //     title: 'Cập nhật hệ thống',
-        //     message: 'Hệ thống sẽ bảo trì từ 2:00 - 4:00 sáng ngày mai',
-        //     time: '1 ngày trước',
-        //     isRead: true,
-        //     avatar: null,
-        //     link: null
-        // }
-    ]);
+    const [notifications, setNotifications] = useState([]);
 
     // Đếm thông báo chưa đọc
     const unreadCount = notifications.filter(n => !n.isRead).length;

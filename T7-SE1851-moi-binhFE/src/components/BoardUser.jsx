@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Card, Descriptions, Typography, Alert, Spin } from "antd";
 import { UserOutlined } from "@ant-design/icons";
-import AuthService from "../services/auth.service";
-import UserService from "../services/user.service";
+import { getAuthHeader } from "../services/user.service";
+import axios from "axios";
 
 const { Title } = Typography;
 
@@ -11,16 +11,19 @@ const BoardUser = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const currentUser = AuthService.getCurrentUser();
+    const fetchProfile = async () => {
+      try {
+        const res = await axios.get("http://localhost:8080/api/userprofiles/me", {
+          headers: getAuthHeader(),
+        });
+        setUserDetail(res.data);
+      } catch (err) {
+        console.error("❌ Không thể tải hồ sơ:", err);
+        setError("Không thể tải thông tin người dùng.");
+      }
+    };
 
-    if (!currentUser || !currentUser.userId) {
-      setError("Vui lòng đăng nhập để truy cập.");
-      return;
-    }
-
-    UserService.getUserById(currentUser.userId)
-      .then((res) => setUserDetail(res.data))
-      .catch(() => setError("Không thể tải thông tin người dùng."));
+    fetchProfile();
   }, []);
 
   return (
@@ -51,11 +54,13 @@ const BoardUser = () => {
               labelStyle={{ fontWeight: 600, width: "30%" }}
             >
               <Descriptions.Item label="Họ tên">
-                {userDetail.first_name} {userDetail.last_name}
+                {userDetail.fullName}
               </Descriptions.Item>
               <Descriptions.Item label="Email">{userDetail.email}</Descriptions.Item>
-              <Descriptions.Item label="Nhóm máu">{userDetail.blood_type || "Chưa cập nhật"}</Descriptions.Item>
-              <Descriptions.Item label="Địa chỉ">{userDetail.address}</Descriptions.Item>
+              <Descriptions.Item label="Nhóm máu">
+                {userDetail.bloodType || "Chưa cập nhật"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Địa chỉ">{userDetail.addressFull}</Descriptions.Item>
               <Descriptions.Item label="Số điện thoại">{userDetail.phone}</Descriptions.Item>
             </Descriptions>
           )}

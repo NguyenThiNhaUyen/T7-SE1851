@@ -16,7 +16,6 @@ import {
   Tooltip,
   Row,
   Col,
-  Layout,
   message
 } from 'antd';
 import {
@@ -35,50 +34,18 @@ import {
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import axios from 'axios';
-import BloodUnitSelector from './BloodUnitSelector';
-const { Header, Content } = Layout;
 const { Title, Text } = Typography;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
-const AdminBloodRequests = () => {
+const StaffBloodRequests = () => {
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [dateRange, setDateRange] = useState(null);
   const [timePeriod, setTimePeriod] = useState('custom');
-  const [selectedUnits, setSelectedUnits] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentRecord, setCurrentRecord] = useState(null);
-  const handleConfirmUnits = () => {
-  const simplifiedUnits = selectedUnits.map(unit => ({
-    bloodUnitId: unit.bloodUnitId,
-    quantityMl: unit.quantityMl,
-    componentId: unit.componentId,
-  }));
 
-  setSelectedUnits(simplifiedUnits); // biến global state hoặc props callback
-  setShowPaymentModal(true); // mở modal thanh toán
-};
-const handleUnitSelected = (units) => {
-  console.log("Đơn vị máu được chọn:", units);
-
-  const simplified = units.map(unit => ({
-    bloodUnitId: unit.bloodUnitId || unit.id,  // cần `bloodUnitId` đúng tên
-    bloodTypeName: unit.bloodTypeName,
-    componentName: unit.componentName,
-    quantityMl: unit.quantityMl || unit.volume || unit.quantity, // tuỳ theo tên
-    unitCode: unit.unitCode,
-  }));
-
-  setSelectedUnits(simplified); // ✅ đây là state gửi sang VnPayPayment
-  setIsModalOpen(false);
-};
-const handleSelectUnits = (units) => {
-  console.log("🩸 Đơn vị máu đã chọn:", units);
-  setSelectedUnits(units);
-};
   // Cấu hình hiển thị trạng thái
   const statusConfig = {
     PENDING: { color: 'warning', text: 'CHỜ DUYỆT', icon: <ExclamationCircleOutlined /> },
@@ -99,7 +66,7 @@ const handleSelectUnits = (units) => {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:8080/api/blood-requests/admin", {
+      const res = await axios.get("http://localhost:8080/api/blood-requests/Staff", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -138,18 +105,11 @@ const handleSelectUnits = (units) => {
         8: 'O-',
       };
       const bloodComponentMap = {
-        3: 'Hồng cầu',
+        1: 'Hồng cầu',
         2: 'Huyết tương',
-        1: 'Tiểu cầu',
+        3: 'Tiểu cầu',
       };
-      const openUnitSelector = (record) => {
-  setCurrentRecord(record);
-  setIsModalOpen(true);
-};
-const closeUnitSelector = () => {
-  setIsModalOpen(false);
-  setCurrentRecord(null);
-};
+
       // Chuẩn hoá dữ liệu
       
       const mapped = res.data.map((item) => ({
@@ -234,20 +194,7 @@ const closeUnitSelector = () => {
       fetchBloodRequests(); // load lại danh sách
     }
   };
-const handleOpenModal = (record) => {
-  const bloodTypeId = record.bloodTypeId ?? bloodTypeReverseMap[record.bloodTypeName];
-  const componentId = record.componentId ?? bloodComponentReverseMap[record.componentName];
 
-  console.log("✅ Converted to ID:", { bloodTypeId, componentId });
-
-  setCurrentRecord({
-    requestId: record.requestId,
-    bloodTypeId,
-    componentId
-  });
-
-  setIsModalOpen(true);
-};
 
   // Hàm xử lý chọn khoảng thời gian nhanh
   const handleTimePeriodChange = (value) => {
@@ -359,24 +306,21 @@ const handleOpenModal = (record) => {
 
       // ✅ Cập nhật modal nếu đang mở
       if (selectedRecord?.id === recordId) {
-  setSelectedRecord(prev => ({
-    ...prev,
-    status: updated.status || newStatus,
-    bloodType: record.bloodTypeName,        // ✅ thêm dòng này
-    bloodComponent: record.componentName,   // ✅ thêm dòng này
-    processingTime: {
-      ...prev.processingTime,
-      approvedTime: updated.approvedAt
-        ? dayjs(updated.approvedAt).format("DD/MM/YYYY HH:mm")
-        : now.format("DD/MM/YYYY HH:mm"),
-      processingDuration:
-        newStatus !== "PENDING"
-          ? now.diff(dayjs(prev.processingTime.createdTime, "DD/MM/YYYY HH:mm"), "minute") + "m"
-          : "—",
-    },
-  }));
-}
-
+        setSelectedRecord(prev => ({
+          ...prev,
+          status: updated.status || newStatus,
+          processingTime: {
+            ...prev.processingTime,
+            approvedTime: updated.approvedAt
+              ? dayjs(updated.approvedAt).format("DD/MM/YYYY HH:mm")
+              : now.format("DD/MM/YYYY HH:mm"),
+            processingDuration:
+              newStatus !== "PENDING"
+                ? now.diff(dayjs(prev.processingTime.createdTime, "DD/MM/YYYY HH:mm"), "minute") + "m"
+                : "—",
+          },
+        }));
+      }
 
       message.success("✅ Đã cập nhật trạng thái thành công.");
     } catch (error) {
@@ -388,21 +332,13 @@ const handleOpenModal = (record) => {
 
 
   const columns = [
-      {
-    title: 'STT',
-    width: 60,
-    align: 'center',
-    render: (_, __, index) => index + 1,
-  },
     {
-  title: 'ID',
-  dataIndex: 'id',
-  key: 'id',
-  width: 60,
-  align: 'center',
-  sorter: (a, b) => a.id - b.id,
-  defaultSortOrder: 'descend',
-},
+      title: 'ID',
+      dataIndex: 'id',
+      key: 'id',
+      width: 60,
+      align: 'center',
+    },
     {
       title: 'Bệnh nhân',
       dataIndex: 'patientName',
@@ -418,72 +354,6 @@ const handleOpenModal = (record) => {
         </div>
       ),
     },
-     {
-    title: 'Đơn vị máu sẵn có',
-    dataIndex: 'bloodUnitId',
-    key: 'bloodUnitId',
-   width: 250,
-    render: (_, record) => (
-    <div>
-    {record.selectedUnits && record.selectedUnits.length > 0 ? (
-      <>
-        <strong>{record.selectedUnits.map(u => u.unitCode).join(', ')}</strong><br />
-        <small>{record.bloodTypeName} - {record.componentName}</small><br />
-        <span>
-          {record.selectedUnits.reduce((sum, u) => sum + (u.quantityMl || 0), 0)} ml
-        </span>
-      </>
-    ) : (
-      <span style={{ color: 'gray' }}> </span>
-    )}
-    <br />
-    <button
-      style={{
-        marginTop: 6,
-        padding: '4px 8px',
-        backgroundColor: '#1677ff',
-        color: 'white',
-        border: 'none',
-        borderRadius: 4,
-        cursor: 'pointer'
-      }}
-      onClick={() => {
-        // ✅ Gọi setCurrentRecord trước
-        const bloodTypeReverseMap = {
-  'A+': 1,
-  'A-': 2,
-  'B+': 3,
-  'B-': 4,
-  'AB+': 5,
-  'AB-': 6,
-  'O+': 7,
-  'O-': 8,
-};
-
-const bloodComponentReverseMap = {
-  'Hồng cầu': 3,
-  'Huyết tương': 2,
-  'Tiểu cầu': 1,
-};
-        const selected = {
-  componentId: record.componentId ?? bloodComponentReverseMap[record.componentName],
-  bloodTypeId: record.bloodTypeId ?? bloodTypeReverseMap[record.bloodTypeName],
-  bloodTypeName: record.bloodTypeName,
-  componentName: record.componentName,
-   requestId: record.id ?? record.requestId ?? record.request?.id,
-};
-        console.log("💡 Xem cho:", selected);
-        setCurrentRecord(selected);
-        setIsModalOpen(true); // ✅ Gọi sau
-      }}
-    >
-      Xem
-    </button>
-  </div>
-)
-
-}
-,
     {
       title: 'Nhóm máu',
       dataIndex: 'bloodTypeName',
@@ -661,31 +531,18 @@ const bloodComponentReverseMap = {
 
 
   return (
-   <Layout style={{ minHeight: '100vh' }}>
-      <Header style={{ background: '#fff', padding: '0 24px', borderBottom: '1px solid #f0f0f0' }}>
-        <Row justify="space-between" align="middle">
-          <Col>
-            <Title level={3} style={{ margin: 0, color: '#1890ff' }}>
-              <ExclamationCircleOutlined style={{ marginRight: 8 }} />
-               Yêu cầu máu
-            </Title>
-          </Col>
-          <Col>
-            <Space>
-              <Text type="secondary">
-                <CalendarOutlined style={{ marginRight: 4 }} />
-                {new Date().toLocaleDateString('vi-VN')}
-              </Text>
-              <Text type="secondary">
-                <UserOutlined style={{ marginRight: 4 }} />
-                Quản trị viên
-              </Text>
-            </Space>
-          </Col>
-        </Row>
-      </Header>
+    <div className="p-6 bg-gray-50 min-h-screen">
+      {/* Header */}
+      <div className="mb-6">
+        <Title level={2} className="mb-2 text-gray-800">
+          <HeartOutlined className="mr-3 text-red-500" />
+          Quản lý lịch sử truyền máu
+        </Title>
+        <Text type="secondary" className="text-base">
+          Theo dõi và quản lý các yêu cầu truyền máu trong hệ thống
+        </Text>
+      </div>
 
-<Content style={{ padding: '24px', background: '#f0f2f5' }}>
       {/* Filters */}
       <Card className="mb-6 shadow-sm">
         <Row gutter={16} align="middle">
@@ -847,9 +704,9 @@ const bloodComponentReverseMap = {
                       })()}
                     </Descriptions.Item>
                     
-                    {/* <Descriptions.Item label="Mức ưu tiên làm sàng">
+                    <Descriptions.Item label="Mức ưu tiên làm sàng">
                       <Badge status="error" text="RED" />
-                    </Descriptions.Item> */}
+                    </Descriptions.Item>
                   </Descriptions>
                 </Col>
                 <Col span={12}>
@@ -857,15 +714,6 @@ const bloodComponentReverseMap = {
                     <Descriptions.Item label="Lý do">
                       {selectedRecord.reason}
                     </Descriptions.Item>
-                    <Descriptions.Item label="Số túi yêu cầu">
-                      <Text strong>{selectedRecord.bagCount} </Text>
-                    </Descriptions.Item>
-                    {/* <Descriptions.Item label="Thành phần máu">
-                      {selectedRecord.bloodComponent}
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Loại máu">
-                      {selectedRecord.bloodType}
-                    </Descriptions.Item> */}
                   </Descriptions>
                 </Col>
               </Row>
@@ -890,7 +738,7 @@ const bloodComponentReverseMap = {
                 <Col span={12}>
                   <Descriptions column={1} size="small">
                     <Descriptions.Item label="Họ tên">
-                      <Text strong>BS. Nguyễn Văn A</Text>
+                      <Text strong>{selectedRecord.requester?.name}</Text>
                     </Descriptions.Item>
                   </Descriptions>
                 </Col>
@@ -924,7 +772,7 @@ const bloodComponentReverseMap = {
                 </Col>
                 <Col span={12}>
                   <Descriptions column={1} size="small">
-                    {/* <Descriptions.Item label="Nhóm máu">
+                    <Descriptions.Item label="Nhóm máu">
                       <Tag color="red" className="font-semibold">
                         {selectedRecord.bloodType}
                       </Tag>
@@ -936,14 +784,14 @@ const bloodComponentReverseMap = {
                     </Descriptions.Item>
                     <Descriptions.Item label="Mã bệnh nhân">
                       <Text strong>#{selectedRecord.donnorId}</Text>
-                    </Descriptions.Item> */}
+                    </Descriptions.Item>
                   </Descriptions>
                 </Col>
               </Row>
             </Card>
 
             {/* Notes and Alerts */}
-            {/* <Card title="Ghi chú và tiền sử" size="small">
+            <Card title="Ghi chú và tiền sử" size="small">
               <Space direction="vertical" className="w-full">
                 <div>
                   <Tag color="orange" icon={<WarningOutlined />}>Warning Note:</Tag>
@@ -981,7 +829,7 @@ const bloodComponentReverseMap = {
                   <Tag color="red" className="ml-2">Không</Tag>
                 </Col>
               </Row>
-            </Card> */}
+            </Card>
 
             {/* Processing Timeline */}
             <Card title={<><CalendarOutlined className="mr-2" />Thời gian xử lý</>} size="small">
@@ -995,32 +843,13 @@ const bloodComponentReverseMap = {
                 <Descriptions.Item label="Ngày được phê duyệt">
                   {selectedRecord.processingTime?.approvedTime}
                 </Descriptions.Item>
-                
+
               </Descriptions>
             </Card>
           </div>
         )}
       </Modal>
-<Modal
-  title="Xem"
-  open={isModalOpen}
-  onCancel={() => setIsModalOpen(false)}
-  footer={null}
-  width={1000}
->
-{currentRecord && (
-  <BloodUnitSelector
-    id={{
-      componentId: currentRecord.componentId,
-      bloodTypeId: currentRecord.bloodTypeId,
-      requestId: currentRecord.requestId,
-    }}
-    onSelect={handleUnitSelected}
-  />
-)}
 
-
-</Modal>
       <style jsx global>{`
         .custom-table .ant-table-thead > tr > th {
           background-color: #f8fafc;
@@ -1042,9 +871,8 @@ const bloodComponentReverseMap = {
           color: #374151;
         }
       `}</style>
-    </Content>
-    </Layout>
+    </div>
   );
 };
 
-export default AdminBloodRequests;
+export default StaffBloodRequests;

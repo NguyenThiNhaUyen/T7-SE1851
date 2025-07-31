@@ -130,7 +130,7 @@ export default function Login() {
 
                   <div className="register-wrapper">
                     <Text type="secondary">Chưa có tài khoản? </Text>
-                    <Button type="link" className="login-link" onClick={() => navigate("/register")}>
+                    <Button type="link" className="login-link" onClick={() => navigate("/register/information")}>
                       Đăng ký ngay
                     </Button>
                   </div>

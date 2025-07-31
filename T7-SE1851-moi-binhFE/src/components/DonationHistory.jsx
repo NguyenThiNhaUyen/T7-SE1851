@@ -6,16 +6,19 @@ import {
   Tag,
   Descriptions,
   message,
-  Button,
+  Layout,
   Row,
   Col,
+  Space,
 } from "antd";
-import { DownloadOutlined } from "@ant-design/icons";
+import { HistoryOutlined,CalendarOutlined,UserOutlined } from "@ant-design/icons";
 import axios from "axios";
 import dayjs from "dayjs";
 import * as XLSX from "xlsx";
 
-const { Title } = Typography;
+const { Title,Text } = Typography;
+const { Header, Content } = Layout;
+
 
 const DonationHistory = () => {
   const [history, setHistory] = useState([]);
@@ -89,26 +92,31 @@ const donatedHistory = history.filter((item) => item.status === "DONATED");
   ];
 
   return (
-    <div className="p-6">
-      <Row justify="space-between" align="middle">
-        <Col>
-          <Title level={3}>📊 Lịch sử hiến máu</Title>
-          <p>
-            Tổng số lượt hiến máu: <strong>{history.filter(item => item.status === "DONATED").length}</strong>
+    <Layout style={{ minHeight: '100vh' }}>
+      <Header style={{ background: '#fff', padding: '0 24px', borderBottom: '1px solid #f0f0f0' }}>
+        <Row justify="space-between" align="middle">
+          <Col>
+            <Title level={3} style={{ margin: 0, color: '#1890ff' }}>
+              <HistoryOutlined style={{ marginRight: 8 }} />
+              Lịch sử Hiến máu
+            </Title>
+          </Col>
+          <Col>
+            <Space>
+              <Text type="secondary">
+                <CalendarOutlined style={{ marginRight: 4 }} />
+                {new Date().toLocaleDateString('vi-VN')}
+              </Text>
+              <Text type="secondary">
+                <UserOutlined style={{ marginRight: 4 }} />
+                Quản trị viên
+              </Text>
+            </Space>
+          </Col>
+        </Row>
+      </Header>
 
-          </p>
-        </Col>
-        <Col>
-          <Button
-            type="primary"
-            icon={<DownloadOutlined />}
-            onClick={handleExportExcel}
-          >
-            Xuất Excel
-          </Button>
-        </Col>
-      </Row>
-
+      <Content style={{ padding: '24px' }}>
       <Table
         columns={columns}
         dataSource={history.filter((item) => item.status === "DONATED")}
@@ -149,7 +157,8 @@ const donatedHistory = history.filter((item) => item.status === "DONATED");
           </Descriptions>
         )}
       </Modal>
-    </div>
+      </Content>
+</Layout>
   );
 };
 

@@ -16,6 +16,7 @@ import {
   Tooltip,
   Row,
   Col,
+  Layout,
   message 
 } from 'antd';
 import {
@@ -39,6 +40,7 @@ import VnPayPaymentFormContent from "./VnPayPayment";
 import BloodUnitSelector from './BloodUnitSelector';
 
 
+const { Header, Content } = Layout;
 const { Title, Text } = Typography;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
@@ -411,13 +413,21 @@ const handleStatusChange = async (recordId, newStatus) => {
 
 
   const columns = [
+         {
+    title: 'STT',
+    width: 60,
+    align: 'center',
+    render: (_, __, index) => index + 1,
+  },
     {
-      title: 'ID',
-      dataIndex: 'id',
-      key: 'id',
-      width: 60,
-      align: 'center',
-    },
+  title: 'ID',
+  dataIndex: 'id',
+  key: 'id',
+  width: 60,
+  align: 'center',
+  sorter: (a, b) => a.id - b.id,
+  defaultSortOrder: 'descend',
+},
     {
       title: 'Bệnh nhân',
       dataIndex: 'patientName',
@@ -727,19 +737,32 @@ const bloodComponentReverseMap = {
 
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      {/* Header */}
-      <div className="mb-6">
-        <Title level={2} className="mb-2 text-gray-800">
-          <HeartOutlined className="mr-3 text-red-500" />
-          Quản lý thanh toán
-        </Title>
-        <Text type="secondary" className="text-base">
-          Theo dõi và quản lý các yêu cầu truyền máu trong hệ thống
-        </Text>
-      </div>
+    <Layout style={{ minHeight: '100vh' }}>
+    <Header style={{ background: '#fff', padding: '0 24px', borderBottom: '1px solid #f0f0f0' }}>
+      <Row justify="space-between" align="middle">
+        <Col>
+          <Title level={3} style={{ margin: 0, color: '#1890ff' }}>
+            <CheckCircleOutlined style={{ marginRight: 8 }} />
+           Thanh toán
+          </Title>
+        </Col>
+        <Col>
+          <Space>
+            <Text type="secondary">
+              <CalendarOutlined style={{ marginRight: 4 }} />
+              {new Date().toLocaleDateString('vi-VN')}
+            </Text>
+            <Text type="secondary">
+              <UserOutlined style={{ marginRight: 4 }} />
+              Quản trị viên
+            </Text>
+          </Space>
+        </Col>
+      </Row>
+    </Header>
 
-      {/* Filters */}
+    
+     <Content style={{ padding: '24px' }}>
       <Card className="mb-6 shadow-sm">
         <Row gutter={16} align="middle">
           <Col span={8}>
@@ -1113,7 +1136,8 @@ const bloodComponentReverseMap = {
           color: #374151;
         }
       `}</style>
-    </div>
+    </Content>
+  </Layout>
   );
 };
 export default VnPayPaymentForm ;

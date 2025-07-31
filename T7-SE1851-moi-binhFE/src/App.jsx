@@ -47,6 +47,8 @@ import InventoryChart from "./components/InventoryChart";
 import StaffStatistics from "./components/StaffStatistics";
 import BloodUnitList from "./components/BloodUnitList"; 
 import UrgentRequests from "./components/UrgentRequests"; // chỉ import 1 lần
+import BloodUnitUsedList from "./components/BloodUnitUsedList";
+import StaffBloodRequests from "./components/StaffBloodRequests";
 
 // 👑 Quản trị viên
 import BoardAdmin from "./components/BoardAdmin";
@@ -72,6 +74,7 @@ import DonationTermsPage from "./components/DonationTermsPage";
 
 // 🔐 Dịch vụ
 import AuthService from "./services/auth.service";
+
 
 
 const App = () => {
@@ -170,7 +173,7 @@ const App = () => {
             <Route index element={<BoardAdmin />} />
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="blood-requests" element={<AdminBloodRequests />} />
-            <Route path="donation-history" element={<DonationHistory />} />
+            <Route path="donation-history" element={<DonationHistory/>} />
             <Route path="transfusion-history" element={<TransfusionHistory />} />
             <Route path="urgent-list" element={<UrgentList />} />
             <Route path="staff&doctor" element={<StaffManagement />} />
@@ -196,6 +199,8 @@ const App = () => {
             <Route path="vnpay" element={<VnPayPaymentForm/>} />
              <Route path="separation-dashboard" element={<SeparationDashboard />} />
              <Route path="unit" element={<BloodUnitList />} />
+             <Route path="unitused" element={<BloodUnitUsedList/>} />
+             <Route path="blood-requests" element={<StaffBloodRequests/>} />
           </Route>
 
           {/* User */}

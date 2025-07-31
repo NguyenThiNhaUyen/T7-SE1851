@@ -76,43 +76,63 @@ const VnPayPayment = ({ request, selectedUnits = [] }) => {
     }
   };
 
-  const handleSubmit = async (values) => {
-    if (!user) {
-      return message.error("Bạn cần đăng nhập để thực hiện thanh toán.");
-    }
+const handleSubmit = async (values) => {
+  if (!user) {
+    return message.error("Bạn cần đăng nhập để thực hiện thanh toán.");
+  }
 
-    try {
-      setLoading(true);
+  try {
+    setLoading(true);
 
-      const payload = {
-        user: { userId: user.userId },
-        amount: values.amount,
-        transactionCode: values.transactionCode,
-        status: values.status,
-        paymentTime: dayjs().toISOString(),
-        bloodRequest: { id: request?.id },
-        // bhyt: values.bhyt || false,
-        // thietBi: values.thietBi || false,
-      };
+    const payload = {
+      user: { userId: user.userId },
+      amount: values.amount,
+      transactionCode: values.transactionCode,
+      status: values.status,
+      paymentTime: dayjs().toISOString(),
+      bloodRequest: { id: request?.id },
+      // bhyt: values.bhyt || false,
+      // thietBi: values.thietBi || false,
+    };
 
-      await axios.post("http://localhost:8080/api/vnpay/create", payload, {
+    // ✅ 1. Gửi thông tin thanh toán
+    await axios.post("http://localhost:8080/api/vnpay/create", payload, {
+      headers: {
+        Authorization: `Bearer ${user.accessToken}`,
+      },
+    });
+
+    // ✅ 2. Đánh dấu các đơn vị máu là đã sử dụng
+    await markUnitsAsUsed();
+
+    // ✅ 3. Cập nhật trạng thái yêu cầu máu sang COMPLETED
+    await axios.put(
+      "http://localhost:8080/api/blood-requests/approve",
+      {
+        bloodRequestId: request?.id,
+        status: "COMPLETED",
+        approvedBy: user.userId,
+        confirmedVolumeMl: selectedUnits.reduce(
+          (sum, unit) => sum + (unit.quantityMl || unit.volume || 0),
+          0
+        ),
+      },
+      {
         headers: {
           Authorization: `Bearer ${user.accessToken}`,
         },
-      });
+      }
+    );
 
-      // ✅ Đánh dấu đơn vị máu là đã sử dụng
-      await markUnitsAsUsed();
-
-      message.success("✅ Thanh toán thành công!");
-      form.resetFields();
-    } catch (err) {
-      console.error(err);
-      message.error("❌ Thanh toán thất bại. Vui lòng thử lại!");
-    } finally {
-      setLoading(false);
-    }
-  };
+    message.success("✅ Thanh toán và cập nhật trạng thái thành công!");
+    form.resetFields();
+  } catch (err) {
+    console.error(err);
+    message.error("❌ Thanh toán thất bại. Vui lòng thử lại!");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <Card

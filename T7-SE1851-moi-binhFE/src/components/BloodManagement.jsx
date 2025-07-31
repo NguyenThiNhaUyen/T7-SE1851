@@ -420,9 +420,9 @@ const BloodManagement = () => {
       <Header style={{ background: '#fff', padding: '0 24px', borderBottom: '1px solid #f0f0f0' }}>
         <Row justify="space-between" align="middle">
           <Col>
-            <Title level={2} style={{ margin: 0, color: '#1890ff' }}>
-              <HeartOutlined style={{ marginRight: 8 }} />
-              Quản lý Máu
+            <Title level={3} style={{ margin: 0, color: '#1890ff' }}>
+              <ExperimentOutlined style={{ marginRight: 8 }} />
+               Nhóm máu & Thành phần
             </Title>
           </Col>
           <Col>

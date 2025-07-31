@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import axios from 'axios';
+import { useEffect } from 'react';
+
 import { 
   Form, 
   Input, 
@@ -23,7 +26,8 @@ import {
   Popconfirm,
   Switch,
   Badge,
-  Tabs
+  Tabs,
+  Layout
 } from "antd";
 import { 
   UserOutlined, 
@@ -31,7 +35,6 @@ import {
   TeamOutlined, 
   PhoneOutlined, 
   MailOutlined,
-  HomeOutlined,
   IdcardOutlined,
   CalendarOutlined,
   LockOutlined,
@@ -39,13 +42,10 @@ import {
   DeleteOutlined,
   EyeOutlined,
   PlusOutlined,
-  SearchOutlined,
-  FilterOutlined,
-  UserAddOutlined,
   UsergroupAddOutlined
 } from "@ant-design/icons";
 import dayjs from "dayjs";
-
+const { Header, Content } = Layout;
 const { Title, Text } = Typography;
 const { Option } = Select;
 const { TextArea } = Input;
@@ -62,64 +62,44 @@ const StaffManagement = () => {
   const [searchText, setSearchText] = useState("");
   const [filterRole, setFilterRole] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
+  const [staffList, setStaffList] = useState([]);
+useEffect(() => {
+  const fetchStaffs = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get("http://localhost:8080/api/admin/staffs", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = response.data;
+
+const mapped = data.map((staff, index) => ({
+  id: staff.userId,
+  staffId: `${staff.staffPosition === 'Doctor' ? 'BS' : 'NV'}${(index + 1).toString().padStart(3, '0')}`,
+  username: staff.username,
+  fullName: staff.fullName,
+  email: staff.email,
+  role: staff.staffPosition === 'Doctor' ? 'DOCTOR' : 'STAFF',
+  position: staff.staffPosition === 'Staff' ? 'Nhân viên' : undefined,
+  specialty: staff.staffPosition === 'Doctor' ? 'Chuyên khoa chưa rõ' : undefined,
+  department: undefined,
+  status: staff.enable ? 'ACTIVE' : 'INACTIVE',
+}));
+
+
+      setStaffList(mapped);
+    } catch (err) {
+      console.error("Lỗi khi gọi API /staffs:", err);
+    }
+  };
+
+  fetchStaffs();
+}, []);
 
   // Dữ liệu mẫu nhân viên
-  const [staffList, setStaffList] = useState([
-    {
-      id: 1,
-      staffId: "BS001",
-      username: "bs.nguyen",
-      fullName: "BS. Nguyễn Văn A",
-      email: "bs.nguyen@hospital.com",
-      phone: "0909 123 456",
-      role: "DOCTOR",
-      specialty: "Nội tổng hợp",
-      department: "Khoa Nội",
-      status: "ACTIVE",
-      dateOfBirth: "1980-05-01",
-      gender: "Nam",
-      citizenId: "123456789012",
-      address: "123 Trần Hưng Đạo, Q1, TP.HCM",
-      joinDate: "2020-01-01",
-      avatar: null
-    },
-    {
-      id: 2,
-      staffId: "NV002",
-      username: "nv.tran",
-      fullName: "Điều dưỡng Trần Thị B",
-      email: "tran.b@hospital.com",
-      phone: "0933 456 789",
-      role: "STAFF",
-      position: "Điều dưỡng",
-      department: "Khoa Ngoại",
-      status: "ACTIVE",
-      dateOfBirth: "1985-03-15",
-      gender: "Nữ",
-      citizenId: "987654321098",
-      address: "456 Nguyễn Huệ, Q1, TP.HCM",
-      joinDate: "2021-03-01",
-      avatar: null
-    },
-    {
-      id: 3,
-      staffId: "BS003",
-      username: "bs.le",
-      fullName: "BS. Lê Văn C",
-      email: "le.c@hospital.com",
-      phone: "0908 789 123",
-      role: "DOCTOR",
-      specialty: "Sản phụ khoa",
-      department: "Khoa Sản",
-      status: "INACTIVE",
-      dateOfBirth: "1975-12-20",
-      gender: "Nam",
-      citizenId: "456789123456",
-      address: "789 Lê Lợi, Q3, TP.HCM",
-      joinDate: "2019-06-15",
-      avatar: null
-    }
-  ]);
+  
 
   // Danh sách chuyên khoa và phòng ban
   const specialties = [
@@ -263,11 +243,11 @@ const StaffManagement = () => {
         </Tag>
       )
     },
-    {
-      title: 'Phòng ban',
-      dataIndex: 'department',
-      width: 150
-    },
+    // {
+    //   title: 'Phòng ban',
+    //   dataIndex: 'department',
+    //   width: 150
+    // },
     {
       title: 'Liên hệ',
       width: 200,
@@ -284,58 +264,58 @@ const StaffManagement = () => {
         </div>
       )
     },
-    {
-      title: 'Trạng thái',
-      dataIndex: 'status',
-      width: 100,
-      render: (status, record) => (
-        <div>
-          <Badge 
-            status={status === 'ACTIVE' ? 'success' : 'error'} 
-            text={status === 'ACTIVE' ? 'Đang làm' : 'Nghỉ việc'} 
-          />
-          <br />
-          <Switch
-            size="small"
-            checked={status === 'ACTIVE'}
-            onChange={() => toggleStatus(record.id)}
-            style={{ marginTop: '4px' }}
-          />
-        </div>
-      )
-    },
-    {
-      title: 'Thao tác',
-      width: 120,
-      render: (_, record) => (
-        <Space>
-          <Tooltip title="Xem chi tiết">
-            <Button 
-              type="text" 
-              icon={<EyeOutlined />} 
-              onClick={() => setViewingStaff(record)}
-            />
-          </Tooltip>
-          <Tooltip title="Chỉnh sửa">
-            <Button 
-              type="text" 
-              icon={<EditOutlined />} 
-              onClick={() => handleEdit(record)}
-            />
-          </Tooltip>
-          <Tooltip title="Xóa">
-            <Popconfirm
-              title="Bạn có chắc chắn muốn xóa nhân viên này?"
-              onConfirm={() => handleDelete(record.id)}
-              okText="Xóa"
-              cancelText="Hủy"
-            >
-              <Button type="text" icon={<DeleteOutlined />} danger />
-            </Popconfirm>
-          </Tooltip>
-        </Space>
-      )
-    }
+    // {
+    //   title: 'Trạng thái',
+    //   dataIndex: 'status',
+    //   width: 100,
+    //   render: (status, record) => (
+    //     <div>
+    //       <Badge 
+    //         status={status === 'ACTIVE' ? 'success' : 'error'} 
+    //         text={status === 'ACTIVE' ? 'Đang làm' : 'Nghỉ việc'} 
+    //       />
+    //       <br />
+    //       <Switch
+    //         size="small"
+    //         checked={status === 'ACTIVE'}
+    //         onChange={() => toggleStatus(record.id)}
+    //         style={{ marginTop: '4px' }}
+    //       />
+    //     </div>
+    //   )
+    // },
+    // {
+    //   title: 'Thao tác',
+    //   width: 120,
+    //   render: (_, record) => (
+    //     <Space>
+    //       <Tooltip title="Xem chi tiết">
+    //         <Button 
+    //           type="text" 
+    //           icon={<EyeOutlined />} 
+    //           onClick={() => setViewingStaff(record)}
+    //         />
+    //       </Tooltip>
+    //       <Tooltip title="Chỉnh sửa">
+    //         <Button 
+    //           type="text" 
+    //           icon={<EditOutlined />} 
+    //           onClick={() => handleEdit(record)}
+    //         />
+    //       </Tooltip>
+    //       <Tooltip title="Xóa">
+    //         <Popconfirm
+    //           title="Bạn có chắc chắn muốn xóa nhân viên này?"
+    //           onConfirm={() => handleDelete(record.id)}
+    //           okText="Xóa"
+    //           cancelText="Hủy"
+    //         >
+    //           <Button type="text" icon={<DeleteOutlined />} danger />
+    //         </Popconfirm>
+    //       </Tooltip>
+    //     </Space>
+    //   )
+    // }
   ];
 
   const statsData = [
@@ -346,14 +326,33 @@ const StaffManagement = () => {
   ];
 
   return (
-    <div style={{ padding: '24px' }}>
-      <Card>
-        <div style={{ marginBottom: '24px' }}>
-          <Title level={2} style={{ color: '#1890ff', marginBottom: '8px' }}>
-            <UsergroupAddOutlined style={{ marginRight: '12px' }} />
-            Quản Lý Nhân Viên Y Tế
-          </Title>
-          
+    <Layout style={{ minHeight: '100vh' }}>
+      <Header style={{ background: '#fff', padding: '0 24px', borderBottom: '1px solid #f0f0f0' }}>
+        <Row justify="space-between" align="middle">
+          <Col>
+            <Title level={3} style={{ margin: 0, color: '#1890ff' }}>
+              <UsergroupAddOutlined style={{ marginRight: 8 }} />
+              Quản lý Nhân viên Y tế
+            </Title>
+          </Col>
+          <Col>
+            <Space>
+              <Text type="secondary">
+                <CalendarOutlined style={{ marginRight: 4 }} />
+                {new Date().toLocaleDateString('vi-VN')}
+              </Text>
+              <Text type="secondary">
+                <UserOutlined style={{ marginRight: 4 }} />
+                Quản trị viên
+              </Text>
+            </Space>
+          </Col>
+        </Row>
+      </Header>
+
+<Content style={{ padding: '24px' }}>
+        <Card>
+          <div style={{ marginBottom: '24px' }}>          
           {/* Thống kê */}
           <Row gutter={16} style={{ marginBottom: '24px' }}>
             {statsData.map((stat, index) => (
@@ -431,6 +430,8 @@ const StaffManagement = () => {
           />
         </div>
       </Card>
+      </Content>
+
 
       {/* Drawer tạo/sửa nhân viên */}
       <Drawer
@@ -818,7 +819,7 @@ const StaffManagement = () => {
           </div>
         )}
       </Modal>
-    </div>
+    </Layout>
   );
 };
 

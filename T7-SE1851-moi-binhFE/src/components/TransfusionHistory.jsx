@@ -13,18 +13,17 @@ import {
   Typography,
   Divider,
   Badge,
-  Tooltip,
+  Layout,
   Row,
   Col,
   message 
 } from 'antd';
 import {
-  EyeOutlined,
+  MedicineBoxOutlined,
   SearchOutlined,
   FilterOutlined,
   UserOutlined,
   CalendarOutlined,
-  HeartOutlined,
   AlertOutlined,
   CheckCircleOutlined,
   ExclamationCircleOutlined,
@@ -34,6 +33,7 @@ import {
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import axios from 'axios';
+const { Header, Content } = Layout;
 const { Title, Text } = Typography;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
@@ -103,9 +103,9 @@ const bloodTypeMap = {
   8: 'O-',
 };
 const bloodComponentMap = {
-  1: 'Hồng cầu',
+  3: 'Hồng cầu',
   2: 'Huyết tương',
-  3: 'Tiểu cầu',
+  1: 'Tiểu cầu',
 };
 
     // Chuẩn hoá dữ liệu
@@ -519,18 +519,32 @@ const handleStatusChange = async (recordId, newStatus) => {
 
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      {/* Header */}
-      <div className="mb-6">
-        <Title level={2} className="mb-2 text-gray-800">
-          <HeartOutlined className="mr-3 text-red-500" />
-          Quản lý lịch sử truyền máu
-        </Title>
-        <Text type="secondary" className="text-base">
-          Theo dõi và quản lý các yêu cầu truyền máu trong hệ thống
-        </Text>
-      </div>
+    <Layout style={{ minHeight: '100vh' }}>
+      <Header style={{ background: '#fff', padding: '0 24px', borderBottom: '1px solid #f0f0f0' }}>
+        <Row justify="space-between" align="middle">
+          <Col>
+            <Title level={3} style={{ margin: 0, color: '#1890ff' }}>
+              <MedicineBoxOutlined style={{ marginRight: 8 }} />
+              Lịch sử truyền máu
+            </Title>
+          </Col>
+          <Col>
+            <Space>
+              <Text type="secondary">
+                <CalendarOutlined style={{ marginRight: 4 }} />
+                {new Date().toLocaleDateString('vi-VN')}
+              </Text>
+              <Text type="secondary">
+                <UserOutlined style={{ marginRight: 4 }} />
+                Quản trị viên
+              </Text>
+            </Space>
+          </Col>
+        </Row>
+      </Header>
 
+<Content style={{ padding: '24px' }}>
+        <div className="bg-gray-50 min-h-screen">
       {/* Filters */}
       <Card className="mb-6 shadow-sm">
         <Row gutter={16} align="middle">
@@ -874,8 +888,9 @@ const handleStatusChange = async (recordId, newStatus) => {
           color: #374151;
         }
       `}</style>
-    </div>
-  );
+</div>
+      </Content>
+    </Layout>  );
 };
 
 export default AdminBloodRequests;

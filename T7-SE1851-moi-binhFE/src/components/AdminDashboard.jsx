@@ -27,7 +27,7 @@ import {
   notification
 } from 'antd';
 import {
-  SearchOutlined,
+  DashboardOutlined,
   ReloadOutlined,
   DownloadOutlined,
   UserOutlined,
@@ -790,8 +790,8 @@ const AdminDashboard = () => {
         <Row justify="space-between" align="middle">
           <Col>
             <Title level={3} style={{ margin: 0, color: '#1890ff' }}>
-              <HeartOutlined style={{ marginRight: 8 }} />
-              Bảng điều khiển quản trị
+              <DashboardOutlined style={{ marginRight: 8 }} />
+              Tổng quan
             </Title>
           </Col>
           <Col>
@@ -803,15 +803,6 @@ const AdminDashboard = () => {
                 icon={<ReloadOutlined />}
                 onClick={handleRefresh}
                 loading={loading}
-                type="text"
-              />
-              <Button
-                icon={<DownloadOutlined />}
-                onClick={handleExport}
-                type="text"
-              />
-              <Button
-                icon={<SettingOutlined />}
                 type="text"
               />
             </Space>

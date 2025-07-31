@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { getAuthHeader } from "../services/user.service";
 import {
   Form,
   Input,
@@ -33,7 +34,7 @@ import dayjs from 'dayjs';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
-
+import axios from 'axios';
 const Profile = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
@@ -43,139 +44,76 @@ const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
 
   // Fetch user profile from database
-  const fetchUserProfile = async () => {
-    try {
-      setDataLoading(true);
-      // Simulate API call to get user profile
-      await new Promise(resolve => setTimeout(resolve, 1000));
+const fetchUserProfile = async () => {
+  try {
+    setDataLoading(true);
+    const res = await axios.get("http://localhost:8080/api/userprofiles/me", {
+            headers: getAuthHeader(),
+          });
+    const profile = res.data;
 
-      const mockProfile = {
-        id: 1,
-        username: "user123",
-        cccd: "123456789012",
-        full_name: "Nguyễn Văn An",
-        dob: "1990-05-15",
-        gender: "Male",
-        bloodType: "O+",
-        phone: "0901234567",
-        address: "123 Nguyễn Văn Cừ, Quận 5, TP.HCM",
-        lastDonation: "2024-01-15",
-        recoveryTime: "90",
-        avatar: null,
-        createdAt: "2023-01-01",
-        updatedAt: "2024-01-15"
-      };
+    setUserProfile(profile);
 
-      setUserProfile(mockProfile);
+    form.setFieldsValue({
+      username: profile.username || '',
+      cccd: profile.citizenId || '',
+      full_name: profile.fullName || '',
+      dob: profile.dob ? dayjs(profile.dob) : null,
+      gender: profile.gender || '',
+      bloodType: profile.bloodType || '',
+      phone: profile.phone || '',
+      address: profile.addressFull || '',
+      lastDonation: profile.lastDonationDate ? dayjs(profile.lastDonationDate) : null,
+      recoveryTime: profile.recoveryTime || ''
+    });
+  } catch (error) {
+    console.error("Error fetching profile:", error);
+    message.error("Không thể tải thông tin hồ sơ");
+  } finally {
+    setDataLoading(false);
+  }
+};
 
-      // Set form values
-      form.setFieldsValue({
-        username: mockProfile.username,
-        cccd: mockProfile.cccd,
-        full_name: mockProfile.full_name,
-        dob: mockProfile.dob ? dayjs(mockProfile.dob) : null,
-        gender: mockProfile.gender,
-        bloodType: mockProfile.bloodType,
-        phone: mockProfile.phone,
-        address: mockProfile.address,
-        lastDonation: mockProfile.lastDonation ? dayjs(mockProfile.lastDonation) : null,
-        recoveryTime: mockProfile.recoveryTime
-      });
-
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-      message.error("Không thể tải thông tin hồ sơ");
-    } finally {
-      setDataLoading(false);
-    }
-  };
-
-  // Fetch donation history from database
-  const fetchDonationHistory = async () => {
-    try {
-      // Simulate API call to get donation history
-      await new Promise(resolve => setTimeout(resolve, 800));
-
-      const mockHistory = [
-        {
-          id: 1,
-          date: '2024-01-15',
-          location: 'Bệnh viện Chợ Rẫy',
-          status: 'completed',
-          volume: 350,
-          bloodType: 'O+',
-          notes: 'Hiến máu định kỳ'
-        },
-        {
-          id: 2,
-          date: '2023-10-20',
-          location: 'Trung tâm Huyết học',
-          status: 'completed',
-          volume: 450,
-          bloodType: 'O+',
-          notes: 'Hiến máu cấp cứu'
-        },
-        {
-          id: 3,
-          date: '2023-07-12',
-          location: 'Bệnh viện Đại học Y Dược',
-          status: 'completed',
-          volume: 350,
-          bloodType: 'O+',
-          notes: 'Hiến máu tình nguyện'
-        }
-      ];
-
-      setHistory(mockHistory);
-    } catch (error) {
-      console.error('Error fetching history:', error);
-      message.error("Không thể tải lịch sử hiến máu");
-    }
-  };
+const fetchDonationHistory = async () => {
+  try {
+    const res = await axios.get("http://localhost:8080/api/donations/history");
+    setHistory(res.data);
+  } catch (error) {
+    console.error("Error fetching history:", error);
+    message.error("Không thể tải lịch sử hiến máu");
+  }
+};
 
   useEffect(() => {
     fetchUserProfile();
     fetchDonationHistory();
   }, []);
+const handleSubmit = async (values) => {
+  try {
+    setLoading(true);
 
-  const handleSubmit = async (values) => {
-    try {
-      setLoading(true);
+    const payload = {
+      fullName: values.full_name,
+      dob: values.dob ? values.dob.format('YYYY-MM-DD') : null,
+      gender: values.gender,
+      bloodType: values.bloodType,
+      phone: values.phone,
+      addressFull: values.address,
+      lastDonationDate: values.lastDonation ? values.lastDonation.format('YYYY-MM-DD') : null,
+      recoveryTime: values.recoveryTime
+    };
 
-      // Prepare data for API
-      const updateData = {
-        full_name: values.full_name,
-        dob: values.dob ? values.dob.format('YYYY-MM-DD') : null,
-        gender: values.gender,
-        bloodType: values.bloodType,
-        phone: values.phone,
-        address: values.address,
-        lastDonation: values.lastDonation ? values.lastDonation.format('YYYY-MM-DD') : null,
-        recoveryTime: values.recoveryTime
-      };
-
-      // Simulate API call to update profile
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
-      // Update local state
-      setUserProfile(prev => ({
-        ...prev,
-        ...updateData,
-        dob: updateData.dob,
-        lastDonation: updateData.lastDonation,
-        updatedAt: new Date().toISOString()
-      }));
-
-      message.success("Cập nhật hồ sơ thành công!");
-      setIsEditing(false);
-
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      message.error("Có lỗi xảy ra khi cập nhật hồ sơ. Vui lòng thử lại!");
-    } finally {
-      setLoading(false);
-    }
-  };
+    const res = await axios.put("http://localhost:8080/api/userprofiles/me", payload);
+    setUserProfile(res.data);
+    message.success("Cập nhật hồ sơ thành công");
+    setIsEditing(false);
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    message.error("Có lỗi khi cập nhật hồ sơ");
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleCancel = () => {
     if (userProfile) {
@@ -275,9 +213,6 @@ const Profile = () => {
                 <Title level={4} style={{ color: '#771813', margin: 0 }}>
                   {userProfile?.full_name || 'Người dùng'}
                 </Title>
-                <Text type="secondary">
-                  Thành viên từ {userProfile?.createdAt ? dayjs(userProfile.createdAt).format('DD/MM/YYYY') : 'N/A'}
-                </Text>
               </div>
 
               <Form
@@ -285,7 +220,6 @@ const Profile = () => {
                 layout="vertical"
                 onFinish={handleSubmit}
                 size="large"
-                disabled={!isEditing}
               >
                 <Row gutter={16}>
                   <Col span={12}>
@@ -295,7 +229,6 @@ const Profile = () => {
                     >
                       <Input
                         prefix={<UserOutlined style={{ color: '#999' }} />}
-                        disabled
                         style={{ backgroundColor: '#f5f5f5' }}
                       />
                     </Form.Item>
@@ -308,7 +241,6 @@ const Profile = () => {
                     >
                       <Input
                         prefix={<IdcardOutlined style={{ color: '#999' }} />}
-                        disabled
                         style={{ backgroundColor: '#f5f5f5' }}
                       />
                     </Form.Item>

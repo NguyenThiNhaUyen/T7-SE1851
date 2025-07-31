@@ -45,7 +45,7 @@ const BloodRequestForm = () => {
   const [form] = Form.useForm();
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({
-    doctorId: 2,
+    doctorId: null,
     patientName: "",
     patientPhone: "",
     patientAge: "",
@@ -87,21 +87,15 @@ const BloodRequestForm = () => {
   const currentUser = AuthService.getCurrentUser();
   const token = localStorage.getItem('token');
 
-  useEffect(() => {
-    if (currentUser) {
-      const generatedCode = `BA${new Date().getFullYear()}${currentUser.userId.toString().padStart(4, '0')}`;
-
-      setFormData(prev => ({
-        ...prev,
-        requesterId: currentUser.userId,
-        medical_record_id: generatedCode
-      }));
-
-      form.setFieldsValue({
-        medical_record_id: generatedCode
-      });
-    }
-  }, [form]);
+useEffect(() => {
+  if (currentUser) {
+    setFormData(prev => ({
+      ...prev,
+      requesterId: currentUser.userId,
+      doctorId: currentUser.userId  
+    }));
+  }
+}, [form]);
 
   // Calculate form progress
   useEffect(() => {
@@ -113,42 +107,42 @@ const BloodRequestForm = () => {
   }, [form]);
 
   const handleFormChange = (changedValues, allValues) => {
-  // Lấy label của nhóm máu và chế phẩm
-  const selectedBloodType = bloodTypeOptions.find(opt => opt.value === allValues.bloodTypeId);
-  const selectedComponent = bloodComponentOptions.find(opt => opt.value === allValues.bloodComponentId);
+    // Lấy label của nhóm máu và chế phẩm
+    const selectedBloodType = bloodTypeOptions.find(opt => opt.value === allValues.bloodTypeId);
+    const selectedComponent = bloodComponentOptions.find(opt => opt.value === allValues.bloodComponentId);
 
-  // Cập nhật formData đầy đủ
-  setFormData(prev => ({
-    ...prev,
-    ...allValues,
-    blood_type: selectedBloodType?.label || "",
-    blood_component: selectedComponent?.label || ""
-  }));
+    // Cập nhật formData đầy đủ
+    setFormData(prev => ({
+      ...prev,
+      ...allValues,
+      blood_type: selectedBloodType?.label || "",
+      blood_component: selectedComponent?.label || ""
+    }));
 
-  // Tính progress
-  const requiredFields = [
-    'patient_name', 'age', 'gender', 'weight', 'contact',
-    'bloodTypeId', 'bloodComponentId', 'unit_count', 'quantity_ml',
-    'urgency_level', 'clinical_indication', 'required_time'
-  ];
-  const filledFields = requiredFields.filter(field => allValues[field] !== undefined && allValues[field] !== '');
-  const progress = Math.round((filledFields.length / requiredFields.length) * 100);
-  setFormProgress(progress);
-};
+    // Tính progress
+    const requiredFields = [
+      'patient_name', 'age', 'gender', 'weight', 'contact',
+      'bloodTypeId', 'bloodComponentId', 'unit_count', 'quantity_ml',
+      'urgency_level', 'clinical_indication', 'required_time'
+    ];
+    const filledFields = requiredFields.filter(field => allValues[field] !== undefined && allValues[field] !== '');
+    const progress = Math.round((filledFields.length / requiredFields.length) * 100);
+    setFormProgress(progress);
+  };
 
-const unitCount = Form.useWatch('unit_count', form);
-const bloodComponentId = Form.useWatch('bloodComponentId', form);
+  const unitCount = Form.useWatch('unit_count', form);
+  const bloodComponentId = Form.useWatch('bloodComponentId', form);
 
-useEffect(() => {
-  if (!unitCount || !bloodComponentId) return;
+  useEffect(() => {
+    if (!unitCount || !bloodComponentId) return;
 
-  let volume = 0;
-  if (bloodComponentId === 3) volume = unitCount * 250;
-  else if (bloodComponentId === 2) volume = unitCount * 200;
-  else if (bloodComponentId === 1) volume = unitCount * 50;
+    let volume = 0;
+    if (bloodComponentId === 3) volume = unitCount * 250;
+    else if (bloodComponentId === 2) volume = unitCount * 200;
+    else if (bloodComponentId === 1) volume = unitCount * 50;
 
-  form.setFieldsValue({ quantity_ml: volume });
-}, [unitCount, bloodComponentId]);
+    form.setFieldsValue({ quantity_ml: volume });
+  }, [unitCount, bloodComponentId]);
   const validateForm = (values) => {
     const age = parseInt(values.age);
     const weight = parseFloat(values.weight);
@@ -163,64 +157,64 @@ useEffect(() => {
     return null;
   };
 
-   const handleSubmit = async (values) => {
-  const error = validateForm(values);
-  if (error) {
-    message.error(error);
-    return;
-  }
+  const handleSubmit = async (values) => {
+    const error = validateForm(values);
+    if (error) {
+      message.error(error);
+      return;
+    }
 
-  setIsSubmitting(true);
-  try {
-    const payload = {
-      requesterId: formData.requesterId,
-      doctorId: formData.doctorId,
-      patientName: values.patient_name,
-      patientPhone: values.contact,
-      patientAge: Number(values.age),
-      patientGender: values.gender,
-      patientWeight: Number(values.weight),
-      patientBloodGroup: formData.blood_type || "", // lấy từ formData đã map label
-      bloodTypeId: values.bloodTypeId,
-      componentId: values.bloodComponentId,
-      quantityBag: Number(values.unit_count),
-      quantityMl: Number(values.quantity_ml),
-      urgencyLevel: values.urgency_level, // đã là BINH_THUONG, KHAN_CAP, CAP_CUU
-      triageLevel: formData.triageLevel || "RED",
-      reason: values.clinical_indication,
-      neededAt: values.required_time ? dayjs(values.required_time).format("YYYY-MM-DDTHH:mm:ss") : null,
-      crossmatchRequired: values.crossmatch_required || false,
-      hasTransfusionHistory: values.previous_transfusion || false,
-      hasReactionHistory: values.previous_reaction || false,
-      isPregnant: values.is_pregnant || false,
-      hasAntibodyIssue: values.abnormal_antibody || false,
-      warningNote: values.warning_factor || "",
-      specialNote: values.special_notes || "",
-      isUnmatched: false,
-      codeRedId: null
-    };
+    setIsSubmitting(true);
+    try {
+      const payload = {
+        requesterId: formData.requesterId,
+        doctorId: formData.doctorId,
+        patientName: values.patient_name,
+        patientPhone: values.contact,
+        patientAge: Number(values.age),
+        patientGender: values.gender,
+        patientWeight: Number(values.weight),
+        patientBloodGroup: formData.blood_type || "", // lấy từ formData đã map label
+        bloodTypeId: values.bloodTypeId,
+        componentId: values.bloodComponentId,
+        quantityBag: Number(values.unit_count),
+        quantityMl: Number(values.quantity_ml),
+        urgencyLevel: values.urgency_level, // đã là BINH_THUONG, KHAN_CAP, CAP_CUU
+        triageLevel: formData.triageLevel || "RED",
+        reason: values.clinical_indication,
+        neededAt: values.required_time ? dayjs(values.required_time).format("YYYY-MM-DDTHH:mm:ss") : null,
+        crossmatchRequired: values.crossmatch_required || false,
+        hasTransfusionHistory: values.previous_transfusion || false,
+        hasReactionHistory: values.previous_reaction || false,
+        isPregnant: values.is_pregnant || false,
+        hasAntibodyIssue: values.abnormal_antibody || false,
+        warningNote: values.warning_factor || "",
+        specialNote: values.special_notes || "",
+        isUnmatched: false,
+        codeRedId: null
+      };
 
-    const response = await axios.post(
-      "http://localhost:8080/api/blood-requests",
-      payload,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
+      const response = await axios.post(
+        "http://localhost:8080/api/blood-requests",
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+          }
         }
-      }
-    );
+      );
 
-    message.success("Gửi yêu cầu máu thành công!");
-    setFormData(prev => ({ ...prev, ...values, submitted_at: new Date() }));
-    setCurrentStep(2);
-  } catch (err) {
-    console.error(err);
-    message.error("❌ Lỗi khi gửi yêu cầu máu.");
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+      message.success("Gửi yêu cầu máu thành công!");
+      setFormData(prev => ({ ...prev, ...values, submitted_at: new Date() }));
+      setCurrentStep(2);
+    } catch (err) {
+      console.error(err);
+      message.error("❌ Lỗi khi gửi yêu cầu máu.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const requiredMessage = (label) => [{ required: true, message: `Vui lòng nhập ${label}` }];
 
@@ -237,15 +231,14 @@ useEffect(() => {
   ];
 
   const bloodComponentOptions = [
-    { value: 1, label: "Hồng cầu (PRBC)" },
+    { value: 3, label: "Hồng cầu (PRBC)" },
     { value: 2, label: "Huyết tương" },
-    { value: 3, label: "Tiểu cầu" }
+    { value: 1, label: "Tiểu cầu" }
   ];
 
   const urgencyOptions = [
     { value: "BINH_THUONG", label: "Bình thường" },
-    { value: "KHAN_CAP", label: "Khẩn cấp" },
-    { value: "CAP_CUU", label: "Cấp cứu" }
+    { value: "KHAN_CAP", label: "Khẩn cấp" }
   ];
 
   const getBloodTypeColor = (bloodType) => {
@@ -311,8 +304,8 @@ useEffect(() => {
         <Header style={{ background: '#fff', padding: '0 24px', borderBottom: '1px solid #f0f0f0' }}>
           <Row justify="space-between" align="middle">
             <Col>
-              <Title level={2} style={{ margin: 0, color: '#1890ff' }}>
-                <HeartOutlined style={{ marginRight: 8 }} />
+              <Title level={3} style={{ margin: 0, color: '#1890ff' }}>
+                <ExclamationCircleOutlined style={{ marginRight: 8 }} />
                 Phiếu Yêu Cầu Truyền Máu
               </Title>
             </Col>
@@ -324,7 +317,7 @@ useEffect(() => {
                 </Text>
                 <Text type="secondary">
                   <UserOutlined style={{ marginRight: 4 }} />
-                  {currentUser.name}
+                  Quản trị viên
                 </Text>
               </Space>
             </Col>
@@ -384,9 +377,7 @@ useEffect(() => {
                       >
                         <Input
                           size="large"
-                          placeholder="Tự động tạo mã"
-                          disabled
-                          style={{ backgroundColor: '#f5f5f5' }}
+                          placeholder="Nhập mã bệnh án"
                         />
                       </Form.Item>
                     </Col>
@@ -585,7 +576,7 @@ useEffect(() => {
                       </Form.Item>
                     </Col>
 
-                    <Col span={3}>
+                    <Col span={4}>
                       <Form.Item
                         label={
                           <Space>
@@ -644,7 +635,7 @@ useEffect(() => {
                       </Form.Item>
                     </Col>
 
-                    <Col span={8}>
+                    <Col span={7}>
                       <Form.Item
                         label={
                           <Space>

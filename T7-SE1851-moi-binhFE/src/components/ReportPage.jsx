@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
 import { 
   Button, 
   Card, 
@@ -22,6 +24,7 @@ import {
   Layout
 } from 'antd';
 import {
+  BarChartOutlined,
   SearchOutlined,
   ReloadOutlined,
   DownloadOutlined,
@@ -53,114 +56,215 @@ const ReportPage = () => {
     readiness: null,
     hospital: null,
   });
+  const token = localStorage.getItem('token');
   const [activeTab, setActiveTab] = useState('dashboard');
   const [selectedDonor, setSelectedDonor] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [inactiveUrgentCount, setInactiveUrgentCount] = useState(0);
+  const [userProfileCount, setUserProfileCount] = useState(0);
+  const [emergencyDonorCount, setEmergencyDonorCount] = useState(0);
+  const [regularDonorCount, setRegularDonorCount] = useState(0);
+  const [successfulDonationCount, setSuccessfulDonationCount] = useState(0);
+  const [bloodTypeData, setBloodTypeData] = useState([]);
+const [donorTypeData, setDonorTypeData] = useState([]);
 
-  // Mock data
-  const donorData = [
-    {
-      id: 1,
-      name: 'Nguyễn Văn A',
-      bloodType: 'O+',
-      donorType: 'Hồng cầu',
-      readiness: 'NOW',
-      distance: '2.3 km',
-      lastDonation: '2025-07-08',
-      phone: '0123456789',
-      address: 'Quận 1, TP.HCM',
-      donationCount: 5,
-      status: 'Đã phục hồi',
-      hospital: 'BV Chợ Rẫy',
-      avatar: null,
-    },
-    {
-      id: 2,
-      name: 'Trần Thị B',
-      bloodType: 'A-',
-      donorType: 'Tiểu cầu',
-      readiness: 'FLEXIBLE',
-      distance: '5.6 km',
-      lastDonation: '2025-06-30',
-      phone: '0987654321',
-      address: 'Quận 3, TP.HCM',
-      donationCount: 3,
-      status: 'Đang chờ',
-      hospital: 'BV Chợ Rẫy',
-      avatar: null,
-    },
-    {
-      id: 3,
-      name: 'Lê Văn C',
-      bloodType: 'B+',
-      donorType: 'Huyết tương',
-      readiness: 'REGULAR',
-      distance: '12.0 km',
-      lastDonation: '2025-05-20',
-      phone: '0345678901',
-      address: 'Quận 7, TP.HCM',
-      donationCount: 2,
-      status: 'Không liên hệ',
-      hospital: 'BV Chợ Rẫy',
-      avatar: null,
-    },
-    {
-      id: 4,
-      name: 'Phạm Thị D',
-      bloodType: 'AB+',
-      donorType: 'Hồng cầu',
-      readiness: 'NOW',
-      distance: '8.1 km',
-      lastDonation: '2025-06-15',
-      phone: '0456789012',
-      address: 'Quận 5, TP.HCM',
-      donationCount: 7,
-      status: 'Đã phục hồi',
-      hospital: 'BV Chợ Rẫy',
-      avatar: null,
-    },
-    {
-      id: 5,
-      name: 'Hoàng Văn E',
-      bloodType: 'O-',
-      donorType: 'Tiểu cầu',
-      readiness: 'FLEXIBLE',
-      distance: '15.2 km',
-      lastDonation: '2025-05-10',
-      phone: '0567890123',
-      address: 'Quận 9, TP.HCM',
-      donationCount: 4,
-      status: 'Đang chờ',
-      hospital: 'BV Chợ Rẫy',
-      avatar: null,
-    },
-  ];
 
-  const kpiData = {
-    totalDonors: 853,
-    emergencyDonors: 132,
-    regularDonors: 721,
-    responseRate: 14.5,
-    avgResponseTime: 42,
-    successfulDonations: 210,
+
+useEffect(() => {
+  const fetchUserProfiles = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/api/userprofiles', {
+  headers: {
+    Authorization: `Bearer ${token}`, // ✅ Thay token bằng giá trị thực
+  }
+});
+      const countDonors = response.data.length;
+      setUserProfileCount(countDonors);
+    } catch (error) {
+      console.error('Lỗi khi gọi API userprofiles:', error);
+    }
   };
 
-  const bloodTypeData = [
-    { bloodType: 'O+', count: 213 },
-    { bloodType: 'A+', count: 182 },
-    { bloodType: 'B+', count: 140 },
-    { bloodType: 'AB+', count: 92 },
-    { bloodType: 'O-', count: 78 },
-    { bloodType: 'A-', count: 65 },
-    { bloodType: 'B-', count: 48 },
-    { bloodType: 'AB-', count: 35 },
-  ];
+  fetchUserProfiles();
+}, []);
+useEffect(() => {
+  const fetchEmergencyDonors = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get('http://localhost:8080/api/admin/urgent-donors/list', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-  const donorTypeData = [
-    { type: 'Hồng cầu', value: 469 },
-    { type: 'Tiểu cầu', value: 256 },
-    { type: 'Huyết tương', value: 128 },
-  ];
+      setEmergencyDonorCount(response.data.length); // hoặc response.data.total nếu có
+    } catch (error) {
+      console.error('Lỗi khi gọi API emergency donors:', error);
+    }
+  };
+
+  fetchEmergencyDonors();
+}, []);
+useEffect(() => {
+  const fetchRegularDonations = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get('http://localhost:8080/api/donation', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setRegularDonorCount(response.data.length); // hoặc response.data.total nếu là object
+    } catch (error) {
+      console.error('Lỗi khi gọi API donation:', error);
+    }
+  };
+
+  fetchRegularDonations();
+}, []);
+useEffect(() => {
+  const fetchSuccessfulDonations = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get('http://localhost:8080/api/blood-requests/admin/requests/completed', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setSuccessfulDonationCount(response.data.length); // hoặc .total nếu là object
+    } catch (error) {
+      console.error('Lỗi khi gọi API completed donations:', error);
+    }
+  };
+
+  fetchSuccessfulDonations();
+}, []);
+useEffect(() => {
+  const fetchBloodBags = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get('http://localhost:8080/api/blood-units', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const bags = response.data;
+
+      // Map ID sang tên nhóm máu và thành phần máu
+      const bloodTypeMap = {
+        1: 'A+',
+        2: 'A-',
+        3: 'B+',
+        4: 'B-',
+        5: 'AB+',
+        6: 'AB-',
+        7: 'O+',
+        8: 'O-',
+        13: 'O+',
+      };
+
+      const donorTypeMap = {
+        1: 'Tiểu cầu',
+        2: 'Huyết tương',
+        3: 'Hồng cầu',
+      };
+
+      const bloodTypeCounts = {};
+      const donorTypeCounts = {};
+
+     bags.forEach(bag => {
+  if (bag.status !== 'AVAILABLE') return; // 👉 chỉ xử lý khi status là AVAILABLE
+
+  const bloodTypeLabel = bloodTypeMap[bag.bloodTypeId];
+  const componentLabel = donorTypeMap[bag.componentId];
+
+  if (bloodTypeLabel) {
+    bloodTypeCounts[bloodTypeLabel] = (bloodTypeCounts[bloodTypeLabel] || 0) + 1;
+  }
+
+  if (componentLabel) {
+    donorTypeCounts[componentLabel] = (donorTypeCounts[componentLabel] || 0) + 1;
+  }
+});
+      const bloodTypeDataFormatted = Object.entries(bloodTypeCounts).map(([bloodType, count]) => ({
+        bloodType,
+        count,
+      }));
+
+      const donorTypeDataFormatted = Object.entries(donorTypeCounts).map(([type, value]) => ({
+        type,
+        value,
+      }));
+
+      setBloodTypeData(bloodTypeDataFormatted);
+      setDonorTypeData(donorTypeDataFormatted);
+
+    } catch (error) {
+      console.error('Lỗi khi gọi API blood-units:', error);
+    }
+  };
+
+  fetchBloodBags();
+}, []);
+
+
+useEffect(() => {
+  setKpiData(prev => ({
+    ...prev,
+    totalDonors: userProfileCount,
+  }));
+}, [userProfileCount]);
+
+useEffect(() => {
+  setKpiData(prev => ({
+    ...prev,
+    emergencyDonors: emergencyDonorCount,
+  }));
+}, [emergencyDonorCount]);
+useEffect(() => {
+  setKpiData(prev => ({
+    ...prev,
+    regularDonors: regularDonorCount,
+  }));
+}, [regularDonorCount]);
+useEffect(() => {
+  setKpiData(prev => ({
+    ...prev,
+    successfulDonations: successfulDonationCount,
+  }));
+}, [successfulDonationCount]);
+
+
+  // Mock data
+  
+  const [kpiData, setKpiData] = useState({
+  totalDonors: 0, // sẽ được gán lại
+  emergencyDonors: 0,
+  regularDonors: 0,
+  responseRate: 14.5,
+  avgResponseTime: 84,
+  successfulDonations: 0,
+});
+
+  // const bloodTypeData = [
+  //   { bloodType: 'O+', count: 213 },
+  //   { bloodType: 'A+', count: 182 },
+  //   { bloodType: 'B+', count: 140 },
+  //   { bloodType: 'AB+', count: 92 },
+  //   { bloodType: 'O-', count: 78 },
+  //   { bloodType: 'A-', count: 65 },
+  //   { bloodType: 'B-', count: 48 },
+  //   { bloodType: 'AB-', count: 35 },
+  // ];
+
+  // const donorTypeData = [
+  //   { type: 'Hồng cầu', value: 469 },
+  //   { type: 'Tiểu cầu', value: 256 },
+  //   { type: 'Huyết tương', value: 128 },
+  // ];
 
   const getReadinessColor = (readiness) => {
     switch (readiness) {
@@ -477,32 +581,37 @@ const ReportPage = () => {
 
   // Simple chart replacements using CSS
   const renderSimpleBarChart = () => (
-    <div style={{ padding: '20px' }}>
-      <Title level={5} style={{ marginBottom: 20 }}>Thống kê nhóm máu</Title>
-      {bloodTypeData.map((item, index) => (
+  <div style={{ padding: '20px' }}>
+    <Title level={5} style={{ marginBottom: 20 }}>Thống kê nhóm máu</Title>
+
+    {bloodTypeData.length === 0 ? (
+      <Text type="secondary">Không có dữ liệu nhóm máu</Text>
+    ) : (
+      bloodTypeData.map((item, index) => (
         <div key={index} style={{ marginBottom: 12 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
             <Text strong>{item.bloodType}</Text>
             <Text>{item.count}</Text>
           </div>
-          <div style={{ 
-            width: '100%', 
-            height: 8, 
-            backgroundColor: '#f0f0f0', 
+          <div style={{
+            width: '100%',
+            height: 8,
+            backgroundColor: '#f0f0f0',
             borderRadius: 4,
             overflow: 'hidden'
           }}>
-            <div style={{ 
-              width: `${(item.count / 213) * 100}%`, 
-              height: '100%', 
+            <div style={{
+              width: `${(item.count / Math.max(...bloodTypeData.map(i => i.count), 1)) * 100}%`,
+              height: '100%',
               backgroundColor: '#1890ff',
               borderRadius: 4
             }} />
           </div>
         </div>
-      ))}
-    </div>
-  );
+      ))
+    )}
+  </div>
+);
 
   const renderSimplePieChart = () => (
     <div style={{ padding: '20px' }}>
@@ -545,7 +654,7 @@ const ReportPage = () => {
         </Card>
       </Col>
       <Col xs={24}>
-        <Card title="Thống kê theo mức độ sẵn sàng" size="small">
+        {/* <Card title="Thống kê theo mức độ sẵn sàng" size="small">
           <div style={{ padding: '20px' }}>
             <Row gutter={[16, 16]}>
               <Col span={8}>
@@ -580,7 +689,7 @@ const ReportPage = () => {
               </Col>
             </Row>
           </div>
-        </Card>
+        </Card> */}
       </Col>
     </Row>
   );
@@ -719,41 +828,8 @@ const ReportPage = () => {
         </Space>
       ),
     },
-    {
-      key: 'map',
-      label: 'Bản đồ phân bố',
-      children: (
-        <Card title="Bản đồ phân bố người hiến máu" size="small">
-          <div style={{ 
-            height: 400, 
-            background: '#f5f5f5', 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center',
-            border: '1px dashed #d9d9d9'
-          }}>
-            <div style={{ textAlign: 'center' }}>
-              <EnvironmentOutlined style={{ fontSize: 48, color: '#d9d9d9' }} />
-              <div style={{ marginTop: 16, color: '#999' }}>
-                Google Maps Integration
-                <br />
-                Hiển thị vị trí người hiến máu với marker màu sắc theo mức độ sẵn sàng
-              </div>
-            </div>
-          </div>
-        </Card>
-      ),
-    },
-    {
-      key: 'data',
-      label: 'Dữ liệu chi tiết',
-      children: (
-        <Space direction="vertical" style={{ width: '100%' }} size="large">
-          {renderFilters()}
-          {renderDataTable()}
-        </Space>
-      ),
-    },
+    
+
   ];
 
   return (
@@ -762,14 +838,14 @@ const ReportPage = () => {
         <Row justify="space-between" align="middle">
           <Col>
             <Title level={3} style={{ margin: 0, color: '#1890ff' }}>
-              <HeartOutlined style={{ marginRight: 8 }} />
-              Hệ thống quản lý hiến máu
+              <BarChartOutlined style={{ marginRight: 8 }} />
+              Báo cáo & Thống kê
             </Title>
           </Col>
           <Col>
             <Space>
               <Text type="secondary">
-                Cơ sở tiếp nhận: <strong>BV Chợ Rẫy</strong>
+                Cơ sở tiếp nhận: <strong>BV FPTU</strong>
               </Text>
               <Text type="secondary">
                 Số cơ sở y tế tham gia: <strong>5 bệnh viện</strong>

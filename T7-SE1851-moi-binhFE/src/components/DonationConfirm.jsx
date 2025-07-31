@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { getAuthHeader } from "../services/user.service";
+
 import {
   Table,
   Button,
@@ -22,7 +23,7 @@ import {
   notification,
   Badge,
   Tooltip,
-  Steps,
+  Layout,
   Alert
 } from 'antd';
 import {
@@ -36,12 +37,14 @@ import {
   HeartOutlined,
   UserOutlined,
   CalendarOutlined,
-  MedicineBoxOutlined
+  MedicineBoxOutlined,
+  ExclamationCircleOutlined
 } from '@ant-design/icons';
 import "../styles/staff.css";
 import { Descriptions } from 'antd';
 import dayjs from 'dayjs';
 
+const { Header, Content } = Layout;
 const { Title, Text } = Typography;
 const { Option } = Select;
 
@@ -134,9 +137,9 @@ const DonationConfirm = () => {
   const [selectedRegisterId, setSelectedRegisterId] = useState(null);
   const [selectedDonationId, setSelectedDonationId] = useState(null);
   const [editBloodBagModalVisible, setEditBloodBagModalVisible] = useState(false);
-const [selectedBloodBag, setSelectedBloodBag] = useState(null);
+  const [selectedBloodBag, setSelectedBloodBag] = useState(null);
   const [savedVolumes, setSavedVolumes] = useState(() => {
-    const saved = localStorage.getItem("savedVolumes"); 
+    const saved = localStorage.getItem("savedVolumes");
     return saved ? JSON.parse(saved) : {};
   });
 
@@ -203,101 +206,101 @@ const [selectedBloodBag, setSelectedBloodBag] = useState(null);
       console.warn("⚠️ Trạng thái không hợp lệ:", newStatus);
     }
   };
-const UpdateBloodBagForm = ({ bloodBag, onClose }) => {
-  const [form] = Form.useForm();
+  const UpdateBloodBagForm = ({ bloodBag, onClose }) => {
+    const [form] = Form.useForm();
 
-  const handleFinish = (values) => {
-    const payload = {
-      ...values,
+    const handleFinish = (values) => {
+      const payload = {
+        ...values,
+      };
+
+      axios.put(`${API_BASE}/api/blood-bags/${bloodBag.bloodBagId}`, payload, {
+        headers: getAuthHeader(),
+      })
+        .then(() => {
+          notification.success({ message: "Cập nhật thành công" });
+          onClose?.();
+        })
+        .catch(() => {
+          notification.error({ message: "Lỗi cập nhật túi máu" });
+        });
     };
 
-    axios.put(`${API_BASE}/api/blood-bags/${bloodBag.bloodBagId}`, payload, {
-      headers: getAuthHeader(),
-    })
-    .then(() => {
-      notification.success({ message: "Cập nhật thành công" });
-      onClose?.();
-    })
-    .catch(() => {
-      notification.error({ message: "Lỗi cập nhật túi máu" });
-    });
+    return (
+      <Form
+        layout="vertical"
+        form={form}
+        onFinish={handleFinish}
+        initialValues={{
+          ...bloodBag,
+        }}
+      >
+        <Form.Item
+          name="bloodType"
+          label="Nhóm máu"
+          rules={[{ required: true, message: "Chọn nhóm máu" }]}
+        >
+          <Select placeholder="Chọn nhóm máu">
+            <Option value="1">A+</Option>
+            <Option value="2">A−</Option>
+            <Option value="3">B+</Option>
+            <Option value="4">B−</Option>
+            <Option value="5">AB+</Option>
+            <Option value="6">AB−</Option>
+            <Option value="7">O+</Option>
+            <Option value="8">O−</Option>
+          </Select>
+        </Form.Item>
+
+        <Form.Item
+          name="rh"
+          label="Rh"
+          rules={[{ required: true }]}
+        >
+          <Select>
+            <Option value="D+">D+</Option>
+            <Option value="D-">D-</Option>
+          </Select>
+        </Form.Item>
+
+        <Form.Item
+          name="volume"
+          label="Thể tích (ml)"
+          rules={[{ required: true, type: "number", min: 0 }]}
+        >
+          <InputNumber style={{ width: "100%" }} />
+        </Form.Item>
+
+
+
+        <Form.Item name="testStatus" label="Trạng thái xét nghiệm">
+          <Select>
+            <Option value="PENDING">PENDING</Option>
+            <Option value="PASSED">PASSED</Option>
+            <Option value="FAILED">FAILED</Option>
+          </Select>
+        </Form.Item>
+
+        <Form.Item name="status" label="Trạng thái túi máu">
+          <Select>
+            <Option value="COLLECTED">COLLECTED</Option>
+            <Option value="SEPARATED">SEPARATED</Option>
+            <Option value="USED">USED</Option>
+          </Select>
+        </Form.Item>
+
+        <Form.Item name="note" label="Ghi chú">
+          <Input.TextArea rows={3} />
+        </Form.Item>
+
+        <Form.Item>
+          <Button type="primary" htmlType="submit" block>
+            Cập nhật
+          </Button>
+        </Form.Item>
+      </Form>
+    );
   };
-
-  return (
-    <Form
-      layout="vertical"
-      form={form}
-      onFinish={handleFinish}
-      initialValues={{
-        ...bloodBag,
-      }}
-    >
-      <Form.Item
-        name="bloodType"
-        label="Nhóm máu"
-        rules={[{ required: true, message: "Chọn nhóm máu" }]}
-      >
-        <Select placeholder="Chọn nhóm máu">
-          <Option value="1">A+</Option>
-          <Option value="2">A−</Option>
-          <Option value="3">B+</Option>
-          <Option value="4">B−</Option>
-          <Option value="5">AB+</Option>
-          <Option value="6">AB−</Option>
-          <Option value="7">O+</Option>
-          <Option value="8">O−</Option>
-        </Select>
-      </Form.Item>
-
-      <Form.Item
-        name="rh"
-        label="Rh"
-        rules={[{ required: true }]}
-      >
-        <Select>
-          <Option value="D+">D+</Option>
-          <Option value="D-">D-</Option>
-        </Select>
-      </Form.Item>
-
-      <Form.Item
-        name="volume"
-        label="Thể tích (ml)"
-        rules={[{ required: true, type: "number", min: 0 }]}
-      >
-        <InputNumber style={{ width: "100%" }} />
-      </Form.Item>
-
-
-
-      <Form.Item name="testStatus" label="Trạng thái xét nghiệm">
-        <Select>
-          <Option value="PENDING">PENDING</Option>
-          <Option value="PASSED">PASSED</Option>
-          <Option value="FAILED">FAILED</Option>
-        </Select>
-      </Form.Item>
-
-      <Form.Item name="status" label="Trạng thái túi máu">
-        <Select>
-          <Option value="COLLECTED">COLLECTED</Option>
-          <Option value="SEPARATED">SEPARATED</Option>
-          <Option value="USED">USED</Option>
-        </Select>
-      </Form.Item>
-
-      <Form.Item name="note" label="Ghi chú">
-        <Input.TextArea rows={3} />
-      </Form.Item>
-
-      <Form.Item>
-        <Button type="primary" htmlType="submit" block>
-          Cập nhật
-        </Button>
-      </Form.Item>
-    </Form>
-  );
-};
 
 
   const handleClickCreateBloodBag = async (record) => {
@@ -479,119 +482,119 @@ const UpdateBloodBagForm = ({ bloodBag, onClose }) => {
     { id: 7, label: "O+" },
     { id: 8, label: "O-" }
   ];
-const handleOpenModal = async (item, mode = "edit") => {
-  console.log("🟢 Mở modal với chế độ:", mode);
-  setSelectedDonation(item);
-  setModalMode(mode);
+  const handleOpenModal = async (item, mode = "edit") => {
+    console.log("🟢 Mở modal với chế độ:", mode);
+    setSelectedDonation(item);
+    setModalMode(mode);
 
-  try {
-    const res = await axios.get(`${API_BASE}/api/blood-bags/by-registration`, {
-      params: { registrationId: item.registrationId },
-      headers: getAuthHeader()
-    });
+    try {
+      const res = await axios.get(`${API_BASE}/api/blood-bags/by-registration`, {
+        params: { registrationId: item.registrationId },
+        headers: getAuthHeader()
+      });
 
-    const bag = res.data?.[0];
-    setSelectedBloodBag(bag);
+      const bag = res.data?.[0];
+      setSelectedBloodBag(bag);
 
-    const savedData = savedVolumes[item.registrationId] || {};
-    const defaults = bag ? {
-      total: bag.volume,
-      bloodType: Number(bag.bloodType)
-    } : {};
+      const savedData = savedVolumes[item.registrationId] || {};
+      const defaults = bag ? {
+        total: bag.volume,
+        bloodType: Number(bag.bloodType)
+      } : {};
 
-    form.setFieldsValue({
-      total: savedData.total ?? defaults.total ?? "",
-      bloodType: savedData.bloodType ?? defaults.bloodType ?? "",
-      redCellsMl: savedData.redCellsMl ?? "",
-      plateletsMl: savedData.plateletsMl ?? "",
-      plasmaMl: savedData.plasmaMl ?? "",
-    });
+      form.setFieldsValue({
+        total: savedData.total ?? defaults.total ?? "",
+        bloodType: savedData.bloodType ?? defaults.bloodType ?? "",
+        redCellsMl: savedData.redCellsMl ?? "",
+        plateletsMl: savedData.plateletsMl ?? "",
+        plasmaMl: savedData.plasmaMl ?? "",
+      });
 
-    setModalVisible(true);
-  } catch (err) {
-    console.error("❌ Lỗi khi lấy túi máu:", err);
-    setSelectedBloodBag(null);
-    notification.error({
-      message: "Không thể lấy túi máu",
-      description: "Vui lòng kiểm tra lại đăng ký"
-    });
-  }
-};
+      setModalVisible(true);
+    } catch (err) {
+      console.error("❌ Lỗi khi lấy túi máu:", err);
+      setSelectedBloodBag(null);
+      notification.error({
+        message: "Không thể lấy túi máu",
+        description: "Vui lòng kiểm tra lại đăng ký"
+      });
+    }
+  };
 
 
   const handleSaveVolume = async () => {
-  try {
-    const values = await form.validateFields();
+    try {
+      const values = await form.validateFields();
 
-    // ✅ 1. Lưu local
-    const updated = { ...savedVolumes, [selectedDonation.registrationId]: values };
-    setSavedVolumes(updated);
-    localStorage.setItem("savedVolumes", JSON.stringify(updated));
-    handleStatusChange(selectedDonation.registrationId, "Đã nhập dữ liệu");
-    updateStatusMap(selectedDonation.registrationId, "Đã nhập dữ liệu");
+      // ✅ 1. Lưu local
+      const updated = { ...savedVolumes, [selectedDonation.registrationId]: values };
+      setSavedVolumes(updated);
+      localStorage.setItem("savedVolumes", JSON.stringify(updated));
+      handleStatusChange(selectedDonation.registrationId, "Đã nhập dữ liệu");
+      updateStatusMap(selectedDonation.registrationId, "Đã nhập dữ liệu");
 
-    // ✅ 2. Dùng bloodBag có sẵn từ state
-    const bag = selectedBloodBag;
-    if (!bag) {
-      notification.error({ message: "Không tìm thấy túi máu" });
-      return;
-    }
+      // ✅ 2. Dùng bloodBag có sẵn từ state
+      const bag = selectedBloodBag;
+      if (!bag) {
+        notification.error({ message: "Không tìm thấy túi máu" });
+        return;
+      }
 
-    const bloodBagId = bag.bloodBagId;
-    const methodText = suggestForm.getFieldValue("method");
-    const method = methodText === "gạn tách" ? "MACHINE" : "CENTRIFUGE";
+      const bloodBagId = bag.bloodBagId;
+      const methodText = suggestForm.getFieldValue("method");
+      const method = methodText === "gạn tách" ? "MACHINE" : "CENTRIFUGE";
 
-    const payload = {
-      redCellsMl: values.redCellsMl,
-      plasmaMl: values.plasmaMl,
-      plateletsMl: values.plateletsMl,
-      redCellLabel: "PRC-" + values.bloodType,
-      plasmaLabel: "FFP-" + values.bloodType,
-      plateletsLabel: "PLT-" + values.bloodType,
-      note: "Tách từ giao diện xác nhận hiến máu"
-    };
-
-    // ✅ 3. Kiểm tra lệnh tách đã tồn tại chưa
-    const checkRes = await axios.get(`${API_BASE}/api/separation-orders/exists`, {
-      params: { bloodBagId },
-      headers: getAuthHeader()
-    });
-
-    const existed = checkRes.data;
-    console.log("🩸 Bag ID:", bloodBagId, "Đã tách chưa:", existed);
-
-    if (existed) {
-      await axios.put(`${API_BASE}/api/separation-orders/update-suggestion?bloodBagId=${bloodBagId}`, payload, {
-        headers: getAuthHeader()
-      });
-      notification.success({ message: "Cập nhật lệnh tách thành công" });
-    } else {
-      const params = {
-        bloodBagId,
-        operatorId: selectedDonation?.userId,
-        machineId: 1,
-        type: method,
-        ...payload,
-        bagCode: bag.bagCode,
-        status: "AVAILABLE"
+      const payload = {
+        redCellsMl: values.redCellsMl,
+        plasmaMl: values.plasmaMl,
+        plateletsMl: values.plateletsMl,
+        redCellLabel: "PRC-" + values.bloodType,
+        plasmaLabel: "FFP-" + values.bloodType,
+        plateletsLabel: "PLT-" + values.bloodType,
+        note: "Tách từ giao diện xác nhận hiến máu"
       };
 
-      await axios.post(`${API_BASE}/api/separation-orders/create-manual`, null, {
-        params,
+      // ✅ 3. Kiểm tra lệnh tách đã tồn tại chưa
+      const checkRes = await axios.get(`${API_BASE}/api/separation-orders/exists`, {
+        params: { bloodBagId },
         headers: getAuthHeader()
       });
-      notification.success({ message: "Tạo lệnh tách thành công" });
-    }
 
-    setModalVisible(false);
-  } catch (err) {
-    console.error("❌ Lỗi tách máu:", err);
-    notification.error({
-      message: "Thao tác thất bại",
-      description: err?.response?.data?.message || "Vui lòng kiểm tra lại dữ liệu"
-    });
-  }
-};
+      const existed = checkRes.data;
+      console.log("🩸 Bag ID:", bloodBagId, "Đã tách chưa:", existed);
+
+      if (existed) {
+        await axios.put(`${API_BASE}/api/separation-orders/update-suggestion?bloodBagId=${bloodBagId}`, payload, {
+          headers: getAuthHeader()
+        });
+        notification.success({ message: "Cập nhật lệnh tách thành công" });
+      } else {
+        const params = {
+          bloodBagId,
+          operatorId: selectedDonation?.userId,
+          machineId: 1,
+          type: method,
+          ...payload,
+          bagCode: bag.bagCode,
+          status: "AVAILABLE"
+        };
+
+        await axios.post(`${API_BASE}/api/separation-orders/create-manual`, null, {
+          params,
+          headers: getAuthHeader()
+        });
+        notification.success({ message: "Tạo lệnh tách thành công" });
+      }
+
+      setModalVisible(false);
+    } catch (err) {
+      console.error("❌ Lỗi tách máu:", err);
+      notification.error({
+        message: "Thao tác thất bại",
+        description: err?.response?.data?.message || "Vui lòng kiểm tra lại dữ liệu"
+      });
+    }
+  };
 
   const handleResetAll = () => {
     Modal.confirm({
@@ -669,37 +672,37 @@ const handleOpenModal = async (item, mode = "edit") => {
       })
       .finally(() => setHealthFormLoading(false));
   };
-  
-const handleSubmit = async () => {
-  if (modalMode === "view") return; // ⛔ Không làm gì nếu chỉ xem
 
-  const values = await form.validateFields();
+  const handleSubmit = async () => {
+    if (modalMode === "view") return; // ⛔ Không làm gì nếu chỉ xem
 
-  const payload = {
-    redCellsMl: values.redCellsMl,
-    plasmaMl: values.plasmaMl,
-    plateletsMl: values.plateletsMl,
-    redCellLabel: "PRC-" + values.bloodType,
-    plasmaLabel: "FFP-" + values.bloodType,
-    plateletsLabel: "PLT-" + values.bloodType,
-    note: "Người dùng chỉnh sửa",
+    const values = await form.validateFields();
+
+    const payload = {
+      redCellsMl: values.redCellsMl,
+      plasmaMl: values.plasmaMl,
+      plateletsMl: values.plateletsMl,
+      redCellLabel: "PRC-" + values.bloodType,
+      plasmaLabel: "FFP-" + values.bloodType,
+      plateletsLabel: "PLT-" + values.bloodType,
+      note: "Người dùng chỉnh sửa",
+    };
+
+    const bloodBagId = selectedBloodBag?.bloodBagId;
+
+    if (modalMode === "edit" && bloodBagId) {
+      await fetch(`/api/separation-orders/update-suggestion?bloodBagId=${bloodBagId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+
+      });
+
+      message.success("Cập nhật thành công!");
+      setModalVisible(false);
+      // refresh lại danh sách nếu cần
+    }
   };
-
-  const bloodBagId = selectedBloodBag?.bloodBagId;
-
-  if (modalMode === "edit" && bloodBagId) {
-    await fetch(`/api/separation-orders/update-suggestion?bloodBagId=${bloodBagId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-
-    });
-
-    message.success("Cập nhật thành công!");
-    setModalVisible(false);
-    // refresh lại danh sách nếu cần
-  }
-};
 
 
   const handleUpdateHealthCheck = () => {
@@ -761,8 +764,15 @@ const handleSubmit = async () => {
   };
 
   const columns = [
+     {
+    title: 'STT',
+    width: 60,
+    align: 'center',
+    render: (_, __, index) => index + 1,
+  },
     {
-      title: 'STT',
+      
+      title: 'ID',
       dataIndex: 'registrationId',
       key: 'registrationId',
       width: 70,
@@ -777,7 +787,7 @@ const handleSubmit = async () => {
         <div>
           <div style={{ fontWeight: 600, marginBottom: 4 }}>
             <UserOutlined style={{ marginRight: 8, color: '#1890ff' }} />
-            {record.donorName || `User ${record.userId}`}
+            {record.donorName || ` ${record.fullName}`}
           </div>
           <div style={{ fontSize: '12px', color: '#666' }}>
             ID: {record.userId} | SĐT: {record.phone || 'N/A'}
@@ -814,46 +824,46 @@ const handleSubmit = async () => {
     }
     ,
 
-{
-  title: 'Túi máu',
-  dataIndex: 'bloodBagId',
-  key: 'bloodBagId',
-  align: 'center',
-  width: 160,
-  render: (_, record) => (
-    <Button
-      size="small"
-      type="primary"
-      onClick={async () => {
-        try {
-          const res = await axios.get(`${API_BASE}/api/blood-bags/by-registration`, {
-            headers: getAuthHeader(),
-            params: { registrationId: record.registrationId },
-          });
+    {
+      title: 'Túi máu',
+      dataIndex: 'bloodBagId',
+      key: 'bloodBagId',
+      align: 'center',
+      width: 160,
+      render: (_, record) => (
+        <Button
+          size="small"
+          type="primary"
+          onClick={async () => {
+            try {
+              const res = await axios.get(`${API_BASE}/api/blood-bags/by-registration`, {
+                headers: getAuthHeader(),
+                params: { registrationId: record.registrationId },
+              });
 
-          const existing = res.data;
-          if (existing && existing.length > 0) {
-            // ✅ Đã có túi máu → mở modal cập nhật
-            setSelectedBloodBag(existing[0]);
-            setEditBloodBagModalVisible(true); // <-- Modal cập nhật
-          } else {
-            // ✅ Chưa có → cho phép tạo
-            setSelectedDonation(record);
-            setSelectedDonationId(record.donationId);
-            setCreateModalVisible(true); // <-- Modal tạo mới
-          }
-        } catch (error) {
-          notification.error({
-            message: 'Lỗi',
-            description: 'Không thể kiểm tra túi máu.',
-          });
-        }
-      }}
-    >
-      {record.bloodBagId ? 'Xem / Sửa' : 'Tạo'}
-    </Button>
-  )
-}
+              const existing = res.data;
+              if (existing && existing.length > 0) {
+                // ✅ Đã có túi máu → mở modal cập nhật
+                setSelectedBloodBag(existing[0]);
+                setEditBloodBagModalVisible(true); // <-- Modal cập nhật
+              } else {
+                // ✅ Chưa có → cho phép tạo
+                setSelectedDonation(record);
+                setSelectedDonationId(record.donationId);
+                setCreateModalVisible(true); // <-- Modal tạo mới
+              }
+            } catch (error) {
+              notification.error({
+                message: 'Lỗi',
+                description: 'Không thể kiểm tra túi máu.',
+              });
+            }
+          }}
+        >
+          {record.bloodBagId ? 'Xem / Sửa' : 'Tạo'}
+        </Button>
+      )
+    }
 
 
     ,
@@ -1010,458 +1020,476 @@ const handleSubmit = async () => {
   ];
 
   return (
-    <div style={{ backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
-      <Card>
-        <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
+    <Layout style={{ minHeight: '100vh' }}>
+      <Header style={{ background: '#fff', padding: '0 24px', borderBottom: '1px solid #f0f0f0' }}>
+        <Row justify="space-between" align="middle">
           <Col>
-            <Title level={2} style={{ margin: 0, color: '#ff4d4f' }}>
-              <HeartOutlined style={{ marginRight: 12 }} />
-              Quản lý Hiến máu
+            <Title level={3} style={{ margin: 0, color: '#1890ff' }}>
+              <HeartOutlined style={{ marginRight: 8 }} />
+              Xác nhận hiến máu
             </Title>
-            <Text type="secondary">Bảng điều khiển xác nhận và quản lý các đăng ký hiến máu</Text>
           </Col>
           <Col>
             <Space>
-              <Tooltip title="Làm mới dữ liệu">
-                <Button
-                  icon={<ReloadOutlined />}
-                  onClick={loadDonations}
-                  loading={loading}
-                >
-                  Làm mới
-                </Button>
-              </Tooltip>
-              <Button
-                danger
-                icon={<DeleteOutlined />}
-                onClick={handleResetAll}
-              >
-                Reset thao tác
-              </Button>
+              <Text type="secondary">
+                <CalendarOutlined style={{ marginRight: 4 }} />
+                {new Date().toLocaleDateString('vi-VN')}
+              </Text>
+              <Text type="secondary">
+                <UserOutlined style={{ marginRight: 4 }} />
+               Quản trị viên
+              </Text>
             </Space>
           </Col>
         </Row>
+      </Header>
 
-        {/* Thống kê nhanh */}
-        <Row gutter={16} style={{ marginBottom: 24 }}>
-          <Col span={6}>
-            <Card size="small" style={{ textAlign: 'center', backgroundColor: '#fff2e8' }}>
-              <Text strong style={{ color: '#fa8c16' }}>Đang chờ</Text>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#fa8c16' }}>
-                {donations.filter(d => getStatusInfo(d.status, d.registrationId).text === 'Đang chờ').length}
-              </div>
-            </Card>
-          </Col>
-          <Col span={6}>
-            <Card size="small" style={{ textAlign: 'center', backgroundColor: '#e6f7ff' }}>
-              <Text strong style={{ color: '#1890ff' }}>Đang xử lý</Text>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#1890ff' }}>
-                {donations.filter(d => getStatusInfo(d.status, d.registrationId).text === 'Đang xử lý').length}
-              </div>
-            </Card>
-          </Col>
-          <Col span={6}>
-            <Card size="small" style={{ textAlign: 'center', backgroundColor: '#f6ffed' }}>
-              <Text strong style={{ color: '#52c41a' }}>Hoàn thành</Text>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#52c41a' }}>
-                {donations.filter(d => getStatusInfo(d.status, d.registrationId).text === 'Đã nhập dữ liệu').length}
-              </div>
-            </Card>
-          </Col>
-          <Col span={6}>
-            <Card size="small" style={{ textAlign: 'center', backgroundColor: '#fff1f0' }}>
-              <Text strong style={{ color: '#ff4d4f' }}>Đã hủy</Text>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#ff4d4f' }}>
-                {donations.filter(d => getStatusInfo(d.status, d.registrationId).text === 'Đã hủy').length}
-              </div>
-            </Card>
-          </Col>
-        </Row>
-
-        <Table
-          columns={columns}
-          dataSource={donations}
-          rowKey="registrationId"
-          loading={loading}
-          pagination={{
-            pageSize: 10,
-            showSizeChanger: true,
-            showQuickJumper: true,
-            showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} mục`
-          }}
-          scroll={{ x: 1200 }}
-          rowClassName={(record) => {
-            const statusInfo = getStatusInfo(record.status, record.registrationId);
-            return statusInfo.text === 'Đã hủy' ? 'cancelled-row' : '';
-          }}
-        />
-      </Card>
-
-      {/* Modal nhập/xem lượng máu */}
-     <Modal
-  title={
-    <div style={{ textAlign: 'center' }}>
-      <MedicineBoxOutlined style={{ marginRight: 8, color: '#ff4d4f' }} />
-      {modalMode === "view" ? "Xem thông tin lượng máu" : "Nhập thông tin lượng máu"}
-    </div>
-  }
-  open={modalVisible}
-  onCancel={() => setModalVisible(false)}
-  width={600}
-  footer={null}
->
-  {selectedDonation && (
-    <>
-      <Alert
-        message={`Người hiến: ${selectedDonation.donorName || `User ${selectedDonation.userId}`}`}
-        description={`Ngày hiến: ${new Date(selectedDonation.scheduledDate).toLocaleString('vi-VN')}`}
-        type="info"
-        showIcon
-        style={{ marginBottom: 24 }}
-      />
-
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={handleSaveVolume}
-      >
-        <Row gutter={16}>
-          <Col span={12}>
-            <Form.Item
-  label="Tổng lượng máu (ml)"
-  name="total"
-  rules={[
-    {
-      validator: (_, value) => {
-        const { redCellsMl = 0, plateletsMl = 0, plasmaMl = 0 } = form.getFieldsValue();
-        const sum = redCellsMl + plateletsMl + plasmaMl;
-        if (value === undefined || value >= sum) return Promise.resolve();
-        return Promise.reject(new Error("Tổng thành phần không được lớn hơn tổng lượng máu"));
-      }
-    }
-  ]}
->
-  <InputNumber
-    min={0}
-    max={650}
-    style={{ width: '100%' }}
-    disabled  // ❗ luôn disabled
-    readOnly
-  />
-</Form.Item>
-
-<Form.Item
-  label="Nhóm máu"
-  name="bloodType"
->
-  <Select disabled readOnly>
-    {bloodTypeOptions.map(type => (
-      <Option key={type.id} value={type.id}>{type.label}</Option>
-    ))}
-  </Select>
-</Form.Item>
-
-          </Col>
-        </Row>
-
-        <Divider orientation="left">Chi tiết thành phần</Divider>
-
-        <Row gutter={16}>
-          <Col span={8}>
-            <Form.Item label="Hồng cầu (ml)" name="redCellsMl">
-              <InputNumber
-                min={0}
-                max={650}
-                style={{ width: '100%' }}
-                disabled={modalMode === "view"}
-                onChange={() => form.validateFields(['total'])}
-              />
-            </Form.Item>
-          </Col>
-          <Col span={8}>
-            <Form.Item label="Tiểu cầu (ml)" name="plateletsMl">
-              <InputNumber
-                min={0}
-                max={650}
-                style={{ width: '100%' }}
-                disabled={modalMode === "view"}
-                onChange={() => form.validateFields(['total'])}
-              />
-            </Form.Item>
-          </Col>
-          <Col span={8}>
-            <Form.Item label="Huyết tương (ml)" name="plasmaMl">
-              <InputNumber
-                min={0}
-                max={650}
-                style={{ width: '100%' }}
-                disabled={modalMode === "view"}
-                onChange={() => form.validateFields(['total'])}
-              />
-            </Form.Item>
-          </Col>
-        </Row>
-
-        <Divider />
-
-        <Row justify="end" gutter={8}>
-          {modalMode === "edit" && (
-            <>
-              <Col>
+      <Content style={{ padding: '24px', background: '#f0f2f5' }}>
+        <Card className="mb-6 shadow-sm">
+          <Row gutter={16} style={{ marginBottom: 24 }}>
+            <Col>
+              <Space>
+                <Tooltip title="Làm mới dữ liệu">
+                  <Button
+                    icon={<ReloadOutlined />}
+                    onClick={loadDonations}
+                    loading={loading}
+                  >
+                    Làm mới
+                  </Button>
+                </Tooltip>
                 <Button
-                  icon={<BulbOutlined />}
-                  onClick={() => setSuggestModalVisible(true)}
+                  danger
+                  icon={<DeleteOutlined />}
+                  onClick={handleResetAll}
                 >
-                  Gợi ý
+                  Reset thao tác
+                </Button>
+              </Space>
+            </Col>
+          </Row>
+
+
+          {/* Thống kê nhanh */}
+          <Row gutter={16} style={{ marginBottom: 24 }}>
+            <Col span={6}>
+              <Card size="small" style={{ textAlign: 'center', backgroundColor: '#fff2e8' }}>
+                <Text strong style={{ color: '#fa8c16' }}>Đang chờ</Text>
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#fa8c16' }}>
+                  {donations.filter(d => getStatusInfo(d.status, d.registrationId).text === 'Đang chờ').length}
+                </div>
+              </Card>
+            </Col>
+            <Col span={6}>
+              <Card size="small" style={{ textAlign: 'center', backgroundColor: '#e6f7ff' }}>
+                <Text strong style={{ color: '#1890ff' }}>Đang xử lý</Text>
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#1890ff' }}>
+                  {donations.filter(d => getStatusInfo(d.status, d.registrationId).text === 'Đang xử lý').length}
+                </div>
+              </Card>
+            </Col>
+            <Col span={6}>
+              <Card size="small" style={{ textAlign: 'center', backgroundColor: '#f6ffed' }}>
+                <Text strong style={{ color: '#52c41a' }}>Hoàn thành</Text>
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#52c41a' }}>
+                  {donations.filter(d => getStatusInfo(d.status, d.registrationId).text === 'Đã nhập dữ liệu').length}
+                </div>
+              </Card>
+            </Col>
+            <Col span={6}>
+              <Card size="small" style={{ textAlign: 'center', backgroundColor: '#fff1f0' }}>
+                <Text strong style={{ color: '#ff4d4f' }}>Đã hủy</Text>
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#ff4d4f' }}>
+                  {donations.filter(d => getStatusInfo(d.status, d.registrationId).text === 'Đã hủy').length}
+                </div>
+              </Card>
+            </Col>
+          </Row>
+
+          <Table
+            columns={columns}
+            dataSource={donations}
+            rowKey="registrationId"
+            loading={loading}
+            pagination={{
+              pageSize: 10,
+              showSizeChanger: true,
+              showQuickJumper: true,
+              showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} mục`
+            }}
+            scroll={{ x: 1200 }}
+            rowClassName={(record) => {
+              const statusInfo = getStatusInfo(record.status, record.registrationId);
+              return statusInfo.text === 'Đã hủy' ? 'cancelled-row' : '';
+            }}
+          />
+        </Card>
+
+        {/* Modal nhập/xem lượng máu */}
+        <Modal
+          title={
+            <div style={{ textAlign: 'center' }}>
+              <MedicineBoxOutlined style={{ marginRight: 8, color: '#ff4d4f' }} />
+              {modalMode === "view" ? "Xem thông tin lượng máu" : "Nhập thông tin lượng máu"}
+            </div>
+          }
+          open={modalVisible}
+          onCancel={() => setModalVisible(false)}
+          width={600}
+          footer={null}
+        >
+          {selectedDonation && (
+            <>
+              <Alert
+                message={`Người hiến: ${selectedDonation.donorName || `User ${selectedDonation.userId}`}`}
+                description={`Ngày hiến: ${new Date(selectedDonation.scheduledDate).toLocaleString('vi-VN')}`}
+                type="info"
+                showIcon
+                style={{ marginBottom: 24 }}
+              />
+
+              <Form
+                form={form}
+                layout="vertical"
+                onFinish={handleSaveVolume}
+              >
+                <Row gutter={16}>
+                  <Col span={12}>
+                    <Form.Item
+                      label="Tổng lượng máu (ml)"
+                      name="total"
+                      rules={[
+                        {
+                          validator: (_, value) => {
+                            const { redCellsMl = 0, plateletsMl = 0, plasmaMl = 0 } = form.getFieldsValue();
+                            const sum = redCellsMl + plateletsMl + plasmaMl;
+                            if (value === undefined || value >= sum) return Promise.resolve();
+                            return Promise.reject(new Error("Tổng thành phần không được lớn hơn tổng lượng máu"));
+                          }
+                        }
+                      ]}
+                    >
+                      <InputNumber
+                        min={0}
+                        max={650}
+                        style={{ width: '100%' }}
+                        disabled  // ❗ luôn disabled
+                        readOnly
+                      />
+                    </Form.Item>
+
+                    <Form.Item
+                      label="Nhóm máu"
+                      name="bloodType"
+                    >
+                      <Select disabled readOnly>
+                        {bloodTypeOptions.map(type => (
+                          <Option key={type.id} value={type.id}>{type.label}</Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+
+                  </Col>
+                </Row>
+
+                <Divider orientation="left">Chi tiết thành phần</Divider>
+
+                <Row gutter={16}>
+                  <Col span={8}>
+                    <Form.Item label="Hồng cầu (ml)" name="redCellsMl">
+                      <InputNumber
+                        min={0}
+                        max={650}
+                        style={{ width: '100%' }}
+                        disabled={modalMode === "view"}
+                        onChange={() => form.validateFields(['total'])}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col span={8}>
+                    <Form.Item label="Tiểu cầu (ml)" name="plateletsMl">
+                      <InputNumber
+                        min={0}
+                        max={650}
+                        style={{ width: '100%' }}
+                        disabled={modalMode === "view"}
+                        onChange={() => form.validateFields(['total'])}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col span={8}>
+                    <Form.Item label="Huyết tương (ml)" name="plasmaMl">
+                      <InputNumber
+                        min={0}
+                        max={650}
+                        style={{ width: '100%' }}
+                        disabled={modalMode === "view"}
+                        onChange={() => form.validateFields(['total'])}
+                      />
+                    </Form.Item>
+                  </Col>
+                </Row>
+
+                <Divider />
+
+                <Row justify="end" gutter={8}>
+                  {modalMode === "edit" && (
+                    <>
+                      <Col>
+                        <Button
+                          icon={<BulbOutlined />}
+                          onClick={() => setSuggestModalVisible(true)}
+                        >
+                          Gợi ý
+                        </Button>
+                      </Col>
+                      <Col>
+                        <Button type="primary" htmlType="submit">
+                          Lưu thông tin
+                        </Button>
+                      </Col>
+                    </>
+                  )}
+                  <Col>
+                    <Button onClick={() => setModalVisible(false)}>
+                      Đóng
+                    </Button>
+                  </Col>
+                </Row>
+              </Form>
+            </>
+          )}
+        </Modal>
+
+
+        {/* Modal gợi ý */}
+        <Modal
+          title={
+            <div style={{ textAlign: 'center' }}>
+              <BulbOutlined style={{ marginRight: 8, color: '#faad14' }} />
+              Gợi ý lượng máu
+            </div>
+          }
+          open={suggestModalVisible}
+          onCancel={() => setSuggestModalVisible(false)}
+          footer={null}
+          width={400}
+        >
+          <Alert
+            message="Thông tin gợi ý"
+            description="Nhập thông tin cơ bản để hệ thống tính toán lượng máu phù hợp"
+            type="info"
+            showIcon
+            style={{ marginBottom: 24 }}
+          />
+
+          <Form
+            form={suggestForm}
+            layout="vertical"
+            onFinish={handleApplySuggestion}
+          >
+            <Form.Item
+              label="Cân nặng (kg)"
+              name="weight"
+              rules={[{ required: true, message: 'Vui lòng nhập cân nặng' }]}
+            >
+              <InputNumber
+                min={0}
+                max={200}
+                style={{ width: '100%' }}
+                placeholder="Nhập cân nặng"
+              />
+            </Form.Item>
+
+            <Form.Item
+              label="Giới tính"
+              name="gender"
+              rules={[{ required: true, message: 'Vui lòng chọn giới tính' }]}
+            >
+              <Select placeholder="Chọn giới tính">
+                <Option value="Nam">Nam</Option>
+                <Option value="Nữ">Nữ</Option>
+              </Select>
+            </Form.Item>
+
+            <Form.Item label="Phương pháp tách" name="method">
+              <Select placeholder="Chọn phương pháp tách">
+                <Option value="gạn tách">Gạn tách</Option>
+                <Option value="li tâm">Li tâm</Option>
+              </Select>
+            </Form.Item>
+
+            <Divider />
+
+            <Row justify="end" gutter={8}>
+              <Col>
+                <Button onClick={() => setSuggestModalVisible(false)}>
+                  Hủy
                 </Button>
               </Col>
               <Col>
                 <Button type="primary" htmlType="submit">
-                  Lưu thông tin
+                  Áp dụng gợi ý
                 </Button>
               </Col>
-            </>
-          )}
-          <Col>
-            <Button onClick={() => setModalVisible(false)}>
-              Đóng
-            </Button>
-          </Col>
-        </Row>
-      </Form>
-    </>
-  )}
-</Modal>
-
-
-      {/* Modal gợi ý */}
-      <Modal
-        title={
-          <div style={{ textAlign: 'center' }}>
-            <BulbOutlined style={{ marginRight: 8, color: '#faad14' }} />
-            Gợi ý lượng máu
-          </div>
-        }
-        open={suggestModalVisible}
-        onCancel={() => setSuggestModalVisible(false)}
-        footer={null}
-        width={400}
-      >
-        <Alert
-          message="Thông tin gợi ý"
-          description="Nhập thông tin cơ bản để hệ thống tính toán lượng máu phù hợp"
-          type="info"
-          showIcon
-          style={{ marginBottom: 24 }}
-        />
-
-        <Form
-          form={suggestForm}
-          layout="vertical"
-          onFinish={handleApplySuggestion}
-        >
-          <Form.Item
-            label="Cân nặng (kg)"
-            name="weight"
-            rules={[{ required: true, message: 'Vui lòng nhập cân nặng' }]}
-          >
-            <InputNumber
-              min={0}
-              max={200}
-              style={{ width: '100%' }}
-              placeholder="Nhập cân nặng"
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Giới tính"
-            name="gender"
-            rules={[{ required: true, message: 'Vui lòng chọn giới tính' }]}
-          >
-            <Select placeholder="Chọn giới tính">
-              <Option value="Nam">Nam</Option>
-              <Option value="Nữ">Nữ</Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item label="Phương pháp tách" name="method">
-            <Select placeholder="Chọn phương pháp tách">
-              <Option value="gạn tách">Gạn tách</Option>
-              <Option value="li tâm">Li tâm</Option>
-            </Select>
-          </Form.Item>
-
-          <Divider />
-
-          <Row justify="end" gutter={8}>
-            <Col>
-              <Button onClick={() => setSuggestModalVisible(false)}>
-                Hủy
-              </Button>
-            </Col>
-            <Col>
-              <Button type="primary" htmlType="submit">
-                Áp dụng gợi ý
-              </Button>
-            </Col>
-          </Row>
-        </Form>
-      </Modal>
-      <Modal
-        title={
-          <div style={{ textAlign: 'center' }}>
-            <MedicineBoxOutlined style={{ marginRight: 8, color: '#52c41a' }} />
-            Phiếu Khám Sức Khỏe
-          </div>
-        }
-        open={healthModalVisible}
-        onCancel={() => setHealthModalVisible(false)}
-        footer={[
-          <Button key="cancel" onClick={() => setHealthModalVisible(false)}>
-            Hủy
-          </Button>,
-          <Button key="update" type="primary" onClick={handleUpdateHealthCheck}>
-            Cập nhật
-          </Button>
-        ]}
-        width={800}
-      >
-        {healthFormLoading ? (
-          <div style={{ textAlign: 'center', padding: '24px' }}>
-            <Text>Đang tải dữ liệu...</Text>
-          </div>
-        ) : (
-          <Form form={healthForm} layout="vertical">
-            <Row gutter={16}>
-              <Col span={12}>
-                <Form.Item name="heightCm" label="Chiều cao (cm)">
-                  <InputNumber style={{ width: '100%' }} />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item name="weightKg" label="Cân nặng (kg)">
-                  <InputNumber style={{ width: '100%' }} />
-                </Form.Item>
-              </Col>
             </Row>
-
-            <Row gutter={16}>
-              <Col span={12}>
-                <Form.Item label="Huyết áp tâm thu / trương" style={{ marginBottom: 0 }}>
-                  <Input.Group compact>
-                    <Form.Item name="bloodPressureSys" noStyle>
-                      <InputNumber placeholder="Tâm thu" style={{ width: '50%' }} />
-                    </Form.Item>
-                    <Form.Item name="bloodPressureDia" noStyle>
-                      <InputNumber placeholder="Tâm trương" style={{ width: '50%' }} />
-                    </Form.Item>
-                  </Input.Group>
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item name="bodyTemperature" label="Nhiệt độ (°C)">
-                  <InputNumber style={{ width: '100%' }} step={0.1} />
-                </Form.Item>
-              </Col>
-            </Row>
-
-            <Row gutter={16}>
-              <Col span={12}>
-                <Form.Item name="heartRate" label="Mạch (bpm)">
-                  <InputNumber style={{ width: '100%' }} />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item
-                  name="isEligible"
-                  label="Đủ điều kiện hiến máu?"
-                  valuePropName="checked"
-                >
-                  <Switch checkedChildren="Có" unCheckedChildren="Không" />
-                </Form.Item>
-              </Col>
-            </Row>
-
-            <Row gutter={16}>
-              <Col span={12}>
-                <Form.Item name="hasChronicIllness" label="Có bệnh mãn tính" valuePropName="checked">
-                  <Switch />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item name="hasFever" label="Đang bị sốt" valuePropName="checked">
-                  <Switch />
-                </Form.Item>
-              </Col>
-            </Row>
-
-            <Row gutter={16}>
-              <Col span={12}>
-                <Form.Item name="isPregnantOrBreastfeeding" label="Mang thai / Cho con bú" valuePropName="checked">
-                  <Switch />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item name="hadRecentTattooOrSurgery" label="Xăm / phẫu thuật gần đây" valuePropName="checked">
-                  <Switch />
-                </Form.Item>
-              </Col>
-            </Row>
-
-            <Row gutter={16}>
-              <Col span={12}>
-                <Form.Item name="hasRiskySexualBehavior" label="Quan hệ rủi ro" valuePropName="checked">
-                  <Switch />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item name="tookAntibioticsRecently" label="Dùng kháng sinh gần đây" valuePropName="checked">
-                  <Switch />
-                </Form.Item>
-              </Col>
-            </Row>
-
-            <Form.Item name="notesByStaff" label="Ghi chú">
-              <Input.TextArea rows={3} />
-            </Form.Item>
           </Form>
-        )}
-      </Modal>
-      <Modal
-        open={editBloodBagModalVisible}
-        onCancel={() => setEditBloodBagModalVisible(false)}
-        footer={null}
-        title={`Cập nhật túi máu: ${selectedBloodBag?.bagCode}`}
-      >
-        {selectedBloodBag && (
-          <UpdateBloodBagForm
-            bloodBag={selectedBloodBag}
-            onClose={() => {
-              setEditBloodBagModalVisible(false);
-              loadDonations(); // reload bảng nếu cần
+        </Modal>
+        <Modal
+          title={
+            <div style={{ textAlign: 'center' }}>
+              <MedicineBoxOutlined style={{ marginRight: 8, color: '#52c41a' }} />
+              Phiếu Khám Sức Khỏe
+            </div>
+          }
+          open={healthModalVisible}
+          onCancel={() => setHealthModalVisible(false)}
+          footer={[
+            <Button key="cancel" onClick={() => setHealthModalVisible(false)}>
+              Hủy
+            </Button>,
+            <Button key="update" type="primary" onClick={handleUpdateHealthCheck}>
+              Cập nhật
+            </Button>
+          ]}
+          width={800}
+        >
+          {healthFormLoading ? (
+            <div style={{ textAlign: 'center', padding: '24px' }}>
+              <Text>Đang tải dữ liệu...</Text>
+            </div>
+          ) : (
+            <Form form={healthForm} layout="vertical">
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item name="heightCm" label="Chiều cao (cm)">
+                    <InputNumber style={{ width: '100%' }} />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item name="weightKg" label="Cân nặng (kg)">
+                    <InputNumber style={{ width: '100%' }} />
+                  </Form.Item>
+                </Col>
+              </Row>
+
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item label="Huyết áp tâm thu / trương" style={{ marginBottom: 0 }}>
+                    <Input.Group compact>
+                      <Form.Item name="bloodPressureSys" noStyle>
+                        <InputNumber placeholder="Tâm thu" style={{ width: '50%' }} />
+                      </Form.Item>
+                      <Form.Item name="bloodPressureDia" noStyle>
+                        <InputNumber placeholder="Tâm trương" style={{ width: '50%' }} />
+                      </Form.Item>
+                    </Input.Group>
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item name="bodyTemperature" label="Nhiệt độ (°C)">
+                    <InputNumber style={{ width: '100%' }} step={0.1} />
+                  </Form.Item>
+                </Col>
+              </Row>
+
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item name="heartRate" label="Mạch (bpm)">
+                    <InputNumber style={{ width: '100%' }} />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item
+                    name="isEligible"
+                    label="Đủ điều kiện hiến máu?"
+                    valuePropName="checked"
+                  >
+                    <Switch checkedChildren="Có" unCheckedChildren="Không" />
+                  </Form.Item>
+                </Col>
+              </Row>
+
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item name="hasChronicIllness" label="Có bệnh mãn tính" valuePropName="checked">
+                    <Switch />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item name="hasFever" label="Đang bị sốt" valuePropName="checked">
+                    <Switch />
+                  </Form.Item>
+                </Col>
+              </Row>
+
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item name="isPregnantOrBreastfeeding" label="Mang thai / Cho con bú" valuePropName="checked">
+                    <Switch />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item name="hadRecentTattooOrSurgery" label="Xăm / phẫu thuật gần đây" valuePropName="checked">
+                    <Switch />
+                  </Form.Item>
+                </Col>
+              </Row>
+
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item name="hasRiskySexualBehavior" label="Quan hệ rủi ro" valuePropName="checked">
+                    <Switch />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item name="tookAntibioticsRecently" label="Dùng kháng sinh gần đây" valuePropName="checked">
+                    <Switch />
+                  </Form.Item>
+                </Col>
+              </Row>
+
+              <Form.Item name="notesByStaff" label="Ghi chú">
+                <Input.TextArea rows={3} />
+              </Form.Item>
+            </Form>
+          )}
+        </Modal>
+        <Modal
+          open={editBloodBagModalVisible}
+          onCancel={() => setEditBloodBagModalVisible(false)}
+          footer={null}
+          title={`Cập nhật túi máu: ${selectedBloodBag?.bagCode}`}
+        >
+          {selectedBloodBag && (
+            <UpdateBloodBagForm
+              bloodBag={selectedBloodBag}
+              onClose={() => {
+                setEditBloodBagModalVisible(false);
+                loadDonations(); // reload bảng nếu cần
+              }}
+            />
+          )}
+        </Modal>
+
+        <Modal
+          title="Tạo túi máu mới"
+          open={createModalVisible}
+          onCancel={() => setCreateModalVisible(false)}
+          footer={null}
+        >
+          <CreateBloodBagForm
+            donorId={selectedDonation?.userId}               // Vì userId nằm trực tiếp trong selectedDonation
+            donationId={selectedDonation?.registrationId}    // Vì registrationId nằm trực tiếp trong selectedDonation
+            onSuccess={() => {
+              setCreateModalVisible(false);
+              loadDonations();
             }}
           />
-        )}
-      </Modal>
 
-      <Modal
-        title="Tạo túi máu mới"
-        open={createModalVisible}
-        onCancel={() => setCreateModalVisible(false)}
-        footer={null}
-      >
-        <CreateBloodBagForm
-          donorId={selectedDonation?.userId}               // Vì userId nằm trực tiếp trong selectedDonation
-          donationId={selectedDonation?.registrationId}    // Vì registrationId nằm trực tiếp trong selectedDonation
-          onSuccess={() => {
-            setCreateModalVisible(false);
-            loadDonations();
-          }}
-        />
-
-      </Modal>
-      {/* CSS tùy chỉnh */}
-      <style jsx>{`
+        </Modal>
+        {/* CSS tùy chỉnh */}
+        <style jsx>{`
         .cancelled-row {
           background-color: #f5f5f5 !important;
           opacity: 0.7;
@@ -1513,7 +1541,8 @@ const handleSubmit = async () => {
           border-color: #ff4d4f;
         }
       `}</style>
-    </div>
+      </Content>
+    </Layout>
   );
 };
 

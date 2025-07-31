@@ -23,7 +23,7 @@ import {
 import { 
   SearchOutlined, 
   PhoneOutlined, 
-  EnvironmentOutlined,
+  UnorderedListOutlined,
   ClockCircleOutlined,
   UserOutlined,
   HeartOutlined,
@@ -47,8 +47,6 @@ const UrgentList = () => {
   const [levelFilter, setLevelFilter] = useState('all');
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(false);
-const GOOGLE_API_KEY = 'YOUR_GOOGLE_API_KEY';
-const FPT_ADDRESS = 'FPT University Ho Chi Minh City, Khu Công nghệ cao, TP Thủ Đức';
 
 // Hàm chuẩn hóa địa chỉ từ các field detail
 const getFullAddress = (donor) => {
@@ -62,40 +60,48 @@ const getFullAddress = (donor) => {
   return parts.filter(Boolean).join(', ');
 };
 
-// Hàm tính khoảng cách từ địa chỉ đến FPT
-const getDistanceToFPT = async (destinationAddress) => {
-  const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${encodeURIComponent(FPT_ADDRESS)}&destinations=${encodeURIComponent(destinationAddress)}&key=${GOOGLE_API_KEY}&language=vi`;
-
-  try {
-    const res = await axios.get(url);
-    const element = res.data.rows[0].elements[0];
-    if (element.status === 'OK') {
-      return element.distance.text; // ví dụ "14,2 km"
-    }
-  } catch (err) {
-    console.error("❌ Lỗi khi tính khoảng cách:", err);
-  }
-  return "--";
-};
 
 // Hàm fetch danh sách người hiến máu khẩn cấp và tính khoảng cách
 const fetchUrgentDonors = async () => {
   try {
+    setLoading(true);
+
+    // B1: Gọi danh sách người hiến
     const res = await axios.get("http://localhost:8080/api/admin/urgent-donors/list");
+
     const enriched = await Promise.all(
       res.data.map(async (donor) => {
-        const address = getFullAddress(donor) || donor.address || '';
-        const distance = await getDistanceToFPT(address);
-        return { ...donor, distanceToFpt: distance };
+        // B2: Lấy profile theo donorId
+        let profile = {};
+        try {
+          const profileRes = await axios.get(`http://localhost:8080/api/userprofiles/${donor.donorId}`);
+          profile = profileRes.data;
+        } catch (e) {
+          console.warn(`⚠️ Không tìm thấy profile của donorId=${donor.donorId}`);
+        }
+
+        // B3: Tính khoảng cách theo profile.addressId
+        const addressId = profile.addressId;
+        const distanceKm = distanceMap[addressId?.toString()];
+        const distanceText = distanceKm ? `${distanceKm} km` : '--';
+
+        return {
+          ...donor,
+          profile,
+          distanceToFpt: distanceText,
+        };
       })
     );
+
+    console.log("✅ Dữ liệu enriched:", enriched);
     setData(enriched);
   } catch (err) {
-    console.error("❌ Không thể tải danh sách người hiến:", err);
-    message.error("Lỗi khi tải dữ liệu người hiến.");
+    console.error("❌ Lỗi khi lấy người hiến:", err);
+    message.error("Không thể tải dữ liệu người hiến máu khẩn cấp.");
+  } finally {
+    setLoading(false);
   }
 };
-
 
   useEffect(() => {
     fetchUrgentDonors();
@@ -152,6 +158,37 @@ const fetchUrgentDonors = async () => {
 
   const handleCall = (phone) => {
     window.open(`tel:${phone}`);
+  };
+  const distanceMap = {
+  "1": 16,"2": 16,"3": 16,"4": 16,"5": 16,"6": 16,"7": 16,"8": 16,"9": 16,"10": 14,
+  "11": 14,"12": 14,"13": 14,"14": 14,"15": 14,"16": 14,"17": 14,"18": 14,"19": 14,"20": 14,
+  "21": 17,"22": 17,"23": 17,"24": 17,"25": 17,"26": 17,"27": 17,"28": 17,"29": 17,"30": 17,
+  "31": 17,"32": 17,"33": 17,"34": 17,"35": 17,"36": 17,"37": 17,"38": 17,"39": 17,"40": 17,
+  "41": 17,"42": 17,"43": 17,"44": 17,"45": 17,"46": 17,"47": 17,"48": 17,"49": 17,"50": 20,
+  "51": 20,"52": 20,"53": 20,"54": 20,"55": 20,"56": 20,"57": 20,"58": 20,"59": 20,"60": 20,
+  "61": 20,"62": 20,"63": 20,"64": 18,"65": 18,"66": 18,"67": 18,"68": 18,"69": 18,"70": 18,
+  "71": 18,"72": 18,"73": 19,"74": 19,"75": 19,"76": 19,"77": 19,"78": 19,"79": 19,"80": 19,
+  "81": 19,"82": 19,"83": 19,"84": 19,"85": 19,"86": 19,"87": 19,"88": 19,"89": 15,"90": 15,
+  "91": 15,"92": 15,"93": 15,"94": 15,"95": 15, "96": 15,"97": 15,"98": 15,"99": 15,"100": 15,
+  "101": 15,"102": 15,"103": 15,"104": 17,"105": 17,"106": 17,"107": 17,"108": 17,"109": 17,"110": 17,
+  "111": 17,"112": 17,"113": 17,"114": 17,"115": 17,"116": 17,"117": 17,"118": 17,"119": 17,"120": 10,
+  "121": 10,"122": 10,"123": 10,"124": 10,"125": 10,"126": 10,"127": 10,"128": 10,"129": 10,"130": 12,
+  "131": 12,"132": 12,"133": 12,"134": 12,"135": 12,"136": 12,"137": 12,"138": 12,"139": 12,"140": 12,
+  "141": 12,"142": 12,"143": 12,"144": 12,"145": 12,"146": 9,"147": 9,"148": 9,"149": 9,"150": 9,
+  "151": 9,"152": 9,"153": 9,"154": 9,"155": 9,"156": 9,"157": 9,"158": 9,"159": 9,"160": 9,
+  "161": 9,"162": 9,"163": 9,"164": 9,"165": 9,"166": 11,"167": 11,"168": 11,"169": 11,"170": 11,
+  "171": 11,"172": 11,"173": 11,"174": 11,"175": 11,"176": 11,"177": 11,"178": 11,"179": 16,"180": 16,
+  "181": 16,"182": 16,"183": 16,"184": 16,"185": 16,"186": 16,"187": 16,"188": 16,"189": 16,"190": 16,
+  "191": 16,"192": 16,"193": 16,"194": 18,"195": 18,"196": 18,"197": 18,"198": 18,"199": 18,"200": 18,
+  "201": 18,"202": 18,"203": 18,"204": 18,"205": 21,"206": 21,"207": 21,"208": 21,"209": 21,"210": 21,
+  "211": 21,"212": 21,"213": 21,"214": 21,"215": 3,"216": 3,"217": 3,"218": 3,"219": 3,"220": 3,
+  "221": 3,"222": 3,"223": 3,"224": 3,"225": 3,"226": 25,"227": 25,"228": 25,"229": 25,"230": 25,
+  "231": 25,"232": 25,"233": 25,"234": 25,"235": 25,"236": 25,"237": 25,"238": 25,"239": 25,"240": 35,
+  "241": 35,"242": 35, "243": 35,"244": 35,"245": 35,"246": 35,"247": 35,"248": 35,"249": 35,"250": 35,
+  "251": 35,"252": 35,"253": 35,"254": 35,"255": 35,"256": 35,"257": 35,"258": 35,"259": 35,"260": 30,
+  "261": 30,"262": 30,"263": 30,"264": 30,"265": 30,"266": 30,"267": 30,"268": 30,"269": 30,"270": 30,
+  "271": 24,"272": 24,"273": 24,"274": 24,"275": 24,"276": 24,"277": 60,"278": 60,"279": 60,"280": 60,
+  "281": 60,"282": 60,"283": 60
   };
 
  const columns = [
@@ -258,8 +295,8 @@ const fetchUrgentDonors = async () => {
     <Header style={{ background: '#fff', padding: '0 24px', borderBottom: '1px solid #f0f0f0' }}>
       <Row justify="space-between" align="middle">
         <Col>
-          <Title level={2} style={{ margin: 0, color: '#1890ff' }}>
-            <FireOutlined style={{ marginRight: 8 }} />
+          <Title level={3} style={{ margin: 0, color: '#1890ff' }}>
+            <UnorderedListOutlined style={{ marginRight: 8 }} />
             Danh sách người hiến máu khẩn cấp
           </Title>
         </Col>

@@ -35,7 +35,7 @@ const { Header, Content } = Layout;
 const { Title, Text } = Typography;
 
 
-const BloodUnitList = () => {
+const BloodUnitUsedList = () => {
   const [units, setUnits] = useState([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
@@ -54,7 +54,6 @@ const BloodUnitList = () => {
       color: 'red',
     }
   };
-
   const fetchBloodBagById = async (bloodId) => {
     try {
       const token = localStorage.getItem('token');
@@ -78,7 +77,7 @@ const BloodUnitList = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        const filtered = (res.data || []).filter(unit => unit.status === 'AVAILABLE');
+        const filtered = (res.data || []).filter(unit => unit.status !== 'AVAILABLE');
         setUnits(filtered);
 
         // Gọi song song thông tin túi máu
@@ -107,8 +106,6 @@ const BloodUnitList = () => {
     fetchUnits();
   }, []);
 
-
-
   const columns = [
     {
       title: 'Mã túi máu',
@@ -116,7 +113,8 @@ const BloodUnitList = () => {
       key: 'bloodBagId',
       width: 130,
       render: (id) => bloodBagMap[id] || 'Đang tải...'
-    },
+    }
+    ,
     {
       title: 'ID',
       dataIndex: 'bloodUnitId', // Đảm bảo đúng key từ DTO
@@ -189,7 +187,7 @@ const BloodUnitList = () => {
           <Col>
             <Title level={3} style={{ margin: 0, color: '#1890ff' }}>
               <ExperimentOutlined style={{ marginRight: 8 }} />
-              Quản lý kho máu
+              Quản lý  máu Hết hạn sử dụng
             </Title>
           </Col>
           <Col>
@@ -225,4 +223,4 @@ const BloodUnitList = () => {
   );
 };
 
-export default BloodUnitList; 
+export default BloodUnitUsedList; 
