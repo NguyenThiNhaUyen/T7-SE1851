@@ -75,6 +75,10 @@ const handleUnitSelected = (units) => {
   setSelectedUnits(simplified); // ✅ đây là state gửi sang VnPayPayment
   setIsModalOpen(false);
 };
+const [pagination, setPagination] = useState({
+  current: 1,
+  pageSize: 10,
+});
 const handleSelectUnits = (units) => {
   console.log("🩸 Đơn vị máu đã chọn:", units);
   setSelectedUnits(units);
@@ -163,6 +167,7 @@ const closeUnitSelector = () => {
         urgencyLevel: item.urgencyLevel,
         status: item.status,
         createdDate: formatDate(item.createdAt),
+        rawDate: new Date(item.createdAt),
         requester: {
           name: `#${item.requesterId}`,
           phone: item.requesterPhone || '—',
@@ -388,21 +393,22 @@ const handleOpenModal = (record) => {
 
 
   const columns = [
-      {
-    title: 'STT',
-    width: 60,
-    align: 'center',
-    render: (_, __, index) => index + 1,
-  },
-    {
-  title: 'ID',
-  dataIndex: 'id',
-  key: 'id',
+     {
+  title: 'STT',
   width: 60,
   align: 'center',
-  sorter: (a, b) => a.id - b.id,
-  defaultSortOrder: 'descend',
-},
+  render: (_, __, index) => (pagination.current - 1) * pagination.pageSize + index + 1,
+}
+,
+//     {
+//   title: 'ID',
+//   dataIndex: 'id',
+//   key: 'id',
+//   width: 60,
+//   align: 'center',
+//   sorter: (a, b) => a.id - b.id,
+//   defaultSortOrder: 'descend',
+// },
     {
       title: 'Bệnh nhân',
       dataIndex: 'patientName',
@@ -566,18 +572,20 @@ const bloodComponentReverseMap = {
   },
 }
 ,
-    {
-      title: 'Ngày tạo',
-      dataIndex: 'createdDate',
-      key: 'createdDate',
-      width: 120,
-      render: (text) => (
-        <div className="flex items-center">
-          <CalendarOutlined className="mr-1 text-gray-500" />
-          {text}
-        </div>
-      ),
-    },
+   {
+     title: 'Ngày tạo',
+     dataIndex: 'createdDate',
+     key: 'createdDate',
+     width: 160,
+     defaultSortOrder: 'descend',
+     sorter: (a, b) => a.rawDate - b.rawDate, // dùng rawDate để so sánh
+     render: (text) => (
+       <div className="flex items-center">
+         <CalendarOutlined className="mr-1 text-gray-500" />
+         {text}
+       </div>
+     ),
+   },
     {
       title: 'Thao tác',
       key: 'action',
@@ -687,7 +695,7 @@ const bloodComponentReverseMap = {
 
 <Content style={{ padding: '24px', background: '#f0f2f5' }}>
       {/* Filters */}
-      <Card className="mb-6 shadow-sm">
+      {/* <Card className="mb-6 shadow-sm">
         <Row gutter={16} align="middle">
           <Col span={8}>
             <Input
@@ -738,7 +746,6 @@ const bloodComponentReverseMap = {
             </Button>
           </Col>
         </Row>
-        {/* Hàng thứ hai - Date Range Picker */}
         <Row gutter={16} align="middle" className="mt-2">
           <Col span={7}>
             <RangePicker
@@ -760,7 +767,6 @@ const bloodComponentReverseMap = {
           </Col>
         </Row>
 
-        {/* Hiển thị khoảng thời gian đã chọn */}
         {dateRange && (
           <Row>
             <Col span={24}>
@@ -779,26 +785,31 @@ const bloodComponentReverseMap = {
             </Col>
           </Row>
         )}
-      </Card>
+      </Card> */}
 
       {/* Table */}
       <Card className="shadow-sm">
         <Table
-          columns={columns}
-          dataSource={bloodRequests}  // ✅ Dữ liệu thật từ API
-          rowKey="bloodRequestId"
-          loading={loading}           // ✅ Hiển thị loading khi đang tải
-          pagination={{
-            total: bloodRequests.length,
-            pageSize: 10,
-            showSizeChanger: true,
-            showQuickJumper: true,
-            showTotal: (total, range) =>
-              `${range[0]}-${range[1]} trong ${total} bản ghi`,
-          }}
-          scroll={{ x: 1000 }}
-          className="custom-table"
-        />
+  columns={columns}
+  dataSource={bloodRequests}
+  rowKey="id"
+  loading={loading}
+  pagination={{
+    current: pagination.current,
+    pageSize: pagination.pageSize,
+    total: bloodRequests.length,
+    showSizeChanger: true,
+    showQuickJumper: true,
+    onChange: (page, pageSize) => {
+      setPagination({ current: page, pageSize });
+    },
+    showTotal: (total, range) =>
+      `${range[0]}-${range[1]} trong ${total} bản ghi`,
+  }}
+  scroll={{ x: 1000 }}
+  className="custom-table"
+/>
+
       </Card>
 
 

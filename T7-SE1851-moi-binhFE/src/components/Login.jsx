@@ -40,6 +40,7 @@ export default function Login() {
     }
 
     message.success("Đăng nhập thành công!");
+     window.dispatchEvent(new Event("login-success")); // 👈 THÊM DÒNG NÀY
     setTimeout(() => {
       if (res.role === "ADMIN") navigate("/admin");
       else if (res.role === "STAFF") navigate("/staff");
@@ -47,7 +48,7 @@ export default function Login() {
     }, 800);
   } catch (err) {
     console.error("Login failed", err);
-    message.error(err.response?.data?.message || "Lỗi đăng nhập");
+    message.error(err.response?.data?.message || "Sai tài khoản hoặc mật khẩu");
   } finally {
     setLoading(false);
   }

@@ -28,6 +28,7 @@ import {
   FileExcelOutlined,
   InfoCircleOutlined,
   ExclamationCircleOutlined,
+  WarningOutlined,
 } from "@ant-design/icons";
 import "../styles/staff.css";
 
@@ -53,34 +54,56 @@ const InventoryChart = () => {
   const [summary, setSummary] = useState({ totalBlood: 0, lowStockTypes: [] });
   const [modalOpen, setModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState([]);
+  const [expiredBloodUnits, setExpiredBloodUnits] = useState([]);
 
   const { token } = theme.useToken();
 
+  const isExpired = (component, createdAt) => {
+    const createdDate = new Date(createdAt);
+    const now = new Date();
+    const diffDays = (now - createdDate) / (1000 * 60 * 60 * 24);
+    switch (component) {
+      case "Hồng cầu":
+        return diffDays > 35;
+      case "Huyết tương":
+        return diffDays > 365;
+      case "Tiểu cầu":
+        return diffDays > 5;
+      default:
+        return false;
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
-  try {
-  const bloodUnitsRes = await fetch("/api/blood-units");
-  const bloodUnits = await bloodUnitsRes.json();
-  // Gọi modal hiển thị ngay nếu muốn show lúc tải
-  setModalContent(bloodUnits);
-  setModalOpen(true);
-} catch (error) {
-  message.error("Không thể tải dữ liệu chi tiết tồn kho máu.");
-}
+      try {
+        const bloodUnitsRes = await fetch("/api/blood-units");
+        const bloodUnits = await bloodUnitsRes.json();
+        setRawData(bloodUnits);
+        setModalContent(bloodUnits);
+        setModalOpen(true);
 
+        const expired = bloodUnits.filter((unit) =>
+          isExpired(unit.component, unit.createdAt)
+        );
+        setExpiredBloodUnits(expired);
+      } catch (error) {
+        message.error("Không thể tải dữ liệu chi tiết tồn kho máu.");
+      }
     };
     fetchData();
   }, []);
-const openBloodUnitsDetails = async () => {
-  try {
-    const res = await fetch("/api/blood-units");
-    const data = await res.json();
-    setModalContent(data);
-    setModalOpen(true);
-  } catch (error) {
-    message.error("Không thể tải dữ liệu chi tiết tồn kho máu.");
-  }
-};
+
+  const openBloodUnitsDetails = async () => {
+    try {
+      const res = await fetch("/api/blood-units");
+      const data = await res.json();
+      setModalContent(data);
+      setModalOpen(true);
+    } catch (error) {
+      message.error("Không thể tải dữ liệu chi tiết tồn kho máu.");
+    }
+  };
 
   useEffect(() => {
     const filtered = rawData.filter(
@@ -194,26 +217,37 @@ const openBloodUnitsDetails = async () => {
       </Row>
 
       <Row gutter={16}>
-        <Col span={12}>
+        <Col span={8}>
           <Card title="Tổng lượng máu trong kho" bordered>
             <Text strong>{summary.totalBlood} ml</Text>
             <Button
-  type="link"
-  icon={<InfoCircleOutlined />}
-  onClick={openBloodUnitsDetails}
->
-  Nhập chi tiết tồn kho máu
-</Button>
-
+              type="link"
+              icon={<InfoCircleOutlined />}
+              onClick={openBloodUnitsDetails}
+            >
+              Nhập chi tiết tồn kho máu
+            </Button>
           </Card>
         </Col>
-        <Col span={12}>
+        <Col span={8}>
           <Card title="Nhóm máu thiếu hụt" bordered>
             <Text type="danger">{summary.lowStockTypes.length} nhóm</Text>
             <Button
               type="link"
               icon={<ExclamationCircleOutlined />}
               onClick={() => openDetails(summary.lowStockTypes)}
+            >
+              Xem chi tiết
+            </Button>
+          </Card>
+        </Col>
+        <Col span={8}>
+          <Card title="Đơn vị máu hết hạn" bordered>
+            <Text type="danger">{expiredBloodUnits.length} đơn vị</Text>
+            <Button
+              type="link"
+              icon={<WarningOutlined />}
+              onClick={() => openDetails(expiredBloodUnits)}
             >
               Xem chi tiết
             </Button>
@@ -295,9 +329,7 @@ const openBloodUnitsDetails = async () => {
         <Table
           rowKey={(record, index) => index}
           columns={columns}
-          dataSource={modalContent.sort(
-            (a, b) => a.total_quantity_ml - b.total_quantity_ml
-          )}
+          dataSource={modalContent.sort((a, b) => a.total_quantity_ml - b.total_quantity_ml)}
           pagination={false}
           bordered
         />

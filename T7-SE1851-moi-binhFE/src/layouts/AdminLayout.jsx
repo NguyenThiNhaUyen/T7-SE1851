@@ -31,13 +31,13 @@ const AdminLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
 
   const adminMenuItems = [
-    { key: 'dashboard', icon: <DashboardOutlined />, label: 'Tổng quan', path: '/admin/dashboard' },
+    // { key: 'dashboard', icon: <DashboardOutlined />, label: 'Tổng quan', path: '/admin/dashboard' },
     { key: 'blood-requests', icon: <ExclamationCircleOutlined />, label: 'Yêu cầu máu', path: '/admin/blood-requests' },
     { key: 'donation-history', icon: <HistoryOutlined />, label: 'Lịch sử hiến máu', path: '/admin/donation-history' },
     { key: 'transfusion-history', icon: <MedicineBoxOutlined />, label: 'Lịch sử truyền máu', path: '/admin/transfusion-history' },
     { key: 'urgent-list', icon: <UnorderedListOutlined />, label: 'DS người hiến máu khẩn cấp', path: '/admin/urgent-list' },
     { key: 'staff&doctor', icon: <TeamOutlined />, label: 'Nhân viên y tế', path: '/admin/staff&doctor' },
-    { key: 'blood', icon: <ExperimentOutlined />, label: 'Nhóm máu & Thành phần', path: '/admin/blood' },
+    // { key: 'blood', icon: <ExperimentOutlined />, label: 'Nhóm máu & Thành phần', path: '/admin/blood' },
     { key: 'compatibility', icon: <ShareAltOutlined />, label: 'Quy tắc tương thích', path: '/admin/compatibility' },
     { key: 'report', icon: <BarChartOutlined />, label: 'Báo cáo & Thống kê', path: '/admin/report' },
   ];

@@ -31,7 +31,8 @@ const infoSections = [
 const Home = () => {
   const [content, setContent] = useState("");
   const navigate = useNavigate();
-
+const token = localStorage.getItem("token");
+const user = JSON.parse(localStorage.getItem("user") || "{}");
   useEffect(() => {
     let isMounted = true;
     UserService.getPublicContent().then(
@@ -62,16 +63,26 @@ const Home = () => {
         <div className="video-overlay">
           <h1>Hiến máu - Cứu người</h1>
           <p>Mỗi giọt máu cho đi là một cuộc đời ở lại</p>
-          <Button
-            type="primary"
-            size="large"
-            className="cta-button"
-            onClick={() => {
-              const token = localStorage.getItem("token");
-              navigate(token ? "/donation-intent" : "/login");
-            }}>
-            Hiến máu ngay
-          </Button>
+<Button
+  type="primary"
+  size="large"
+  className="cta-button"
+  onClick={() => {
+    const token = localStorage.getItem("token");
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+    if (token && user.userId) {
+      // ✅ Đã đăng nhập → Chuyển đến trang đăng ký hiến máu
+      navigate(`/user/${user.userId}/register`);
+    } else {
+      // ❌ Chưa đăng nhập → Đưa về trang đăng nhập
+      navigate("/login");
+    }
+  }}
+>
+  Hiến máu ngay
+</Button>
+
         </div>
       </div>
 

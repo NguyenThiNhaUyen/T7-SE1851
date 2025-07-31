@@ -38,10 +38,23 @@ const register = (username, email, password, profile) => {
 };
 
 // ✅ Đăng xuất
-const logout = () => {
-  localStorage.removeItem('user');
-  localStorage.removeItem('token');
-  delete axios.defaults.headers.common["Authorization"];
+const logout = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    if (token) {
+      await axios.post("http://localhost:8080/api/auth/logout", null, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    }
+  } catch (err) {
+    console.warn("⚠️ Logout API lỗi (có thể đã hết hạn):", err);
+  } finally {
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    delete axios.defaults.headers.common["Authorization"];
+  }
 };
 
 // ✅ Lấy user hiện tại

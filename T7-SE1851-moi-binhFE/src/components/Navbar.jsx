@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
     Layout,
@@ -33,24 +33,168 @@ import {
     SearchOutlined
 } from "@ant-design/icons";
 import "../styles/Navbar.css";
-
+import AuthService from "../services/auth.service";
 const { Header } = Layout;
 const { Text, Title } = Typography;
 
-const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, showUserBoard, logOut }) => {
+const Navbar = () => {
     const navigate = useNavigate();
-    // const currentUser = AuthService.getCurrentUser();
 
     // Mock notification data - XÓA SAU KHI TÍCH HỢP API THẬT
-    const [notifications, setNotifications] = useState([]);
+    
 
     // Đếm thông báo chưa đọc
-    const unreadCount = notifications.filter(n => !n.isRead).length;
 
-    const handleLogout = () => {
-        logOut();
-        navigate("/login");
-    };
+
+
+
+const handleLogout = () => {
+  AuthService.logout();
+  setCurrentUser(null);
+  navigate("/login");
+};
+// ⬇️ Tất cả các useState đặt trước
+const [currentUser, setCurrentUser] = useState(null);
+const [showAdminBoard, setShowAdminBoard] = useState(false);
+const [showStaffBoard, setShowStaffBoard] = useState(false);
+const [showUserBoard, setShowUserBoard] = useState(false);
+const [notifications, setNotifications] = useState([
+  
+]);
+
+// ⬇️ Chia thông báo theo role sau khi đã có currentUser
+let userNotifications = [];
+let unreadCount = 0;
+
+if (currentUser) {
+  const staffNotifications = notifications.filter(n => n.targetRole === "STAFF");
+  const memberNotifications = notifications.filter(n => n.targetRole === "MEMBER");
+
+  if (currentUser.role === "STAFF") {
+    userNotifications = staffNotifications;
+  } else if (currentUser.role === "MEMBER") {
+    userNotifications = memberNotifications;
+  } else {
+    userNotifications = []; // Nếu role khác (hoặc ADMIN không có thông báo)
+  }
+
+  unreadCount = userNotifications.filter(n => !n.isRead).length;
+}
+
+useEffect(() => {
+  const syncLogin = async () => {
+    const user = AuthService.getCurrentUser();
+    setCurrentUser(user);
+
+    if (user?.roles) {
+      setShowAdminBoard(user.roles.includes("ROLE_ADMIN"));
+      setShowStaffBoard(user.roles.includes("ROLE_STAFF"));
+      setShowUserBoard(user.roles.includes("ROLE_USER"));
+    }
+console.log("USER trong syncLogin:", user);
+console.log("userId:", user?.userId);
+
+    try {
+      let fetchedNotifs = [];
+
+      // 🔴 STAFF: lấy từ API blood-requests/admin
+      if (user?.role === "STAFF" && user?.accessToken) {
+        const response = await fetch("http://localhost:8080/api/blood-requests/admin", {
+          headers: {
+            Authorization: `Bearer ${user.accessToken}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+
+       const staffNotifs = data.map((item, index) => {
+  const urgencyMap = {
+    "KHAN_CAP": "khẩn cấp",
+    "BINH_THUONG": "bình thường",
+  };
+
+  const statusMap = {
+    "APPROVED": "đã được duyệt",
+    "COMPLETED": "đã hoàn thành",
+    "PENDING": "đang chờ duyệt",
+    "REJECTED": "bị từ chối",
+  };
+
+  const urgency = urgencyMap[item.urgencyLevel] || item.urgencyLevel.toLowerCase();
+  const status = statusMap[item.status] || item.status.toLowerCase();
+
+  return {
+    id: `staff-${index}`,
+    title: "Yêu cầu hiến máu",
+    message: (
+  <>
+    Đơn xin máu của bệnh nhân <strong>{item.patientName}</strong> với mức độ <strong>{urgency}</strong> <strong>{status}</strong>.
+  </>
+),
+    time: "", // TODO: add timestamp
+    isRead: false,
+    type: "blood_request",
+    targetRole: "STAFF",
+  };
+});
+
+
+        fetchedNotifs = [...fetchedNotifs, ...staffNotifs];
+      }
+
+      // 🔵 MEMBER: lấy từ API donation/history/${userId}
+      if (user?.role === "MEMBER" && user?.accessToken) {
+         const response = await fetch(`http://localhost:8080/api/donation/history/${user.userId}`, {
+    headers: {
+      Authorization: `Bearer ${user.accessToken}`,
+      "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const history = await response.json();
+
+        const memberNotifs = history.map((donation, index) => {
+          let message = "";
+          if (donation.status === "DONATED") {
+            const nextDate = new Date(donation.updatedAt);
+            nextDate.setDate(nextDate.getDate() + 84);
+            const formattedDate = nextDate.toLocaleDateString("vi-VN");
+            message = `Cảm ơn bạn ${donation.fullName} đã hiến máu thành công...(lời cảm ơn Trấn Thành). Nhắc nhở: Bạn cần chăm sóc sức khoẻ cho đến ${formattedDate} để có thể được hiến máu lại.`;
+          } else if (donation.status === "CANCELLED") {
+            message = `Đơn đăng ký của bạn ${donation.fullName} đã bị huỷ.`;
+          } else if (donation.status === "PENDING") {
+            message = `Bạn đã đăng ký hiến máu thành công. Vui lòng tới ${donation.location} để được hướng dẫn hiến máu.`;
+          }
+
+          return {
+            id: `member-${index}`,
+            title: "Thông báo hiến máu",
+            message,
+            time: " ", // TODO: thêm thời gian nếu có
+            isRead: false,
+            type: donation.status === "DONATED" ? "donation_success" : "reminder",
+            targetRole: "MEMBER",
+          };
+        });
+
+        fetchedNotifs = [...fetchedNotifs, ...memberNotifs];
+      }
+
+     setNotifications((prev) => [...fetchedNotifs, ...prev]);
+    } catch (error) {
+      console.error("Lỗi khi tải thông báo từ API:", error.message);
+    }
+  };
+
+  syncLogin();
+  window.addEventListener("login-success", syncLogin);
+  return () => window.removeEventListener("login-success", syncLogin);
+}, []);
+
+
 
     // Xử lý click thông báo
     const handleNotificationClick = (notification) => {
@@ -153,7 +297,7 @@ const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, showUserBoard, lo
             {notifications.length > 0 ? (
                 <List
                     itemLayout="horizontal"
-                    dataSource={notifications}
+                    dataSource={userNotifications}
                     style={{ padding: 0 }}
                     renderItem={(notification) => (
                         <List.Item
@@ -275,13 +419,13 @@ const Navbar = ({ currentUser, showAdminBoard, showStaffBoard, showUserBoard, lo
                     borderTop: '1px solid #f0f0f0',
                     textAlign: 'center'
                 }}>
-                    <Button
+                    {/* <Button
                         type="link"
                         onClick={() => navigate('/notifications')}
                         style={{ padding: 0, fontSize: '14px', fontWeight: 500 }}
                     >
                         Xem tất cả thông báo
-                    </Button>
+                    </Button> */}
                 </div>
             )}
         </div>

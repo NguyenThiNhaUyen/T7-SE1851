@@ -66,7 +66,7 @@ const StaffBloodRequests = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:8080/api/blood-requests/Staff", {
+      const res = await axios.get("http://localhost:8080/api/blood-requests/admin", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -123,6 +123,7 @@ const StaffBloodRequests = () => {
         urgencyLevel: item.urgencyLevel,
         status: item.status,
         createdDate: formatDate(item.createdAt),
+        rawDate: new Date(item.createdAt),
         requester: {
           name: `#${item.requesterId}`,
           phone: item.requesterPhone || '—',
@@ -332,13 +333,12 @@ const StaffBloodRequests = () => {
 
 
   const columns = [
-    {
-      title: 'ID',
-      dataIndex: 'id',
-      key: 'id',
-      width: 60,
-      align: 'center',
-    },
+            {
+  title: 'STT',
+  width: 60,
+  align: 'center',
+  render: (_, __, index) => (pagination.current - 1) * pagination.pageSize + index + 1,
+},
     {
       title: 'Bệnh nhân',
       dataIndex: 'patientName',
@@ -436,35 +436,22 @@ const StaffBloodRequests = () => {
   },
 }
 ,
-    {
-      title: 'Ngày tạo',
-      dataIndex: 'createdDate',
-      key: 'createdDate',
-      width: 120,
-      render: (text) => (
-        <div className="flex items-center">
-          <CalendarOutlined className="mr-1 text-gray-500" />
-          {text}
-        </div>
-      ),
-    },
-    {
-      title: 'Thao tác',
-      key: 'action',
-      width: 100,
-      align: 'center',
-      render: (_, record) => (
-        <Tooltip title="Xem chi tiết">
-          <Button
-            type="primary"
-            icon={<EyeOutlined />}
-            size="small"
-            onClick={() => handleViewDetail(record)}
-            className="bg-blue-500 hover:bg-blue-600"
-          />
-        </Tooltip>
-      ),
-    },
+{
+  title: 'Ngày tạo',
+  dataIndex: 'createdDate',
+  key: 'createdDate',
+  width: 160,
+  defaultSortOrder: 'descend',
+  sorter: (a, b) => a.rawDate - b.rawDate, // dùng rawDate để so sánh
+  render: (text) => (
+    <div className="flex items-center">
+      <CalendarOutlined className="mr-1 text-gray-500" />
+      {text}
+    </div>
+  ),
+}
+,
+    
   ];
 
   const handleViewDetail = (record) => {
@@ -640,22 +627,27 @@ const StaffBloodRequests = () => {
 
       {/* Table */}
       <Card className="shadow-sm">
-        <Table
-          columns={columns}
-          dataSource={bloodRequests}  // ✅ Dữ liệu thật từ API
-          rowKey="bloodRequestId"
-          loading={loading}           // ✅ Hiển thị loading khi đang tải
-          pagination={{
-            total: bloodRequests.length,
-            pageSize: 10,
-            showSizeChanger: true,
-            showQuickJumper: true,
-            showTotal: (total, range) =>
-              `${range[0]}-${range[1]} trong ${total} bản ghi`,
-          }}
-          scroll={{ x: 1000 }}
-          className="custom-table"
-        />
+       <Table
+  columns={columns}
+  dataSource={bloodRequests}
+  rowKey="id"
+  loading={loading}
+  pagination={{
+    current: pagination.current,
+    pageSize: pagination.pageSize,
+    total: bloodRequests.length,
+    showSizeChanger: true,
+    showQuickJumper: true,
+    onChange: (page, pageSize) => {
+      setPagination({ current: page, pageSize });
+    },
+    showTotal: (total, range) =>
+      `${range[0]}-${range[1]} trong ${total} bản ghi`,
+  }}
+  scroll={{ x: 1000 }}
+  className="custom-table"
+/>
+
       </Card>
 
 

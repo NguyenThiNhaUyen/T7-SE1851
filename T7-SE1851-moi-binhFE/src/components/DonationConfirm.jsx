@@ -770,15 +770,15 @@ const DonationConfirm = () => {
     align: 'center',
     render: (_, __, index) => index + 1,
   },
-    {
+    // {
       
-      title: 'ID',
-      dataIndex: 'registrationId',
-      key: 'registrationId',
-      width: 70,
-      align: 'center',
-      render: (text) => <Badge count={text} style={{ backgroundColor: '#52c41a' }} />
-    },
+    //   title: 'ID',
+    //   dataIndex: 'registrationId',
+    //   key: 'registrationId',
+    //   width: 70,
+    //   align: 'center',
+    //   render: (text) => <Badge count={text} style={{ backgroundColor: '#52c41a' }} />
+    // },
     {
       title: 'Thông tin người hiến',
       key: 'donorInfo',
